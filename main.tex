@@ -1,0 +1,32 @@
+\documentclass[12pt]{article}
+\usepackage{config}
+
+\import{}{glossaire}
+
+\begin{document}
+\import{couverture/}{couverture}
+
+% Page de remerciement
+\thispagestyle{empty}\vspace*{\fill}%
+\begin{center}remerciements
+\end{center}%
+\vfill\cleardoublepage%
+
+% Table des matières, figures et tableaux
+\tableofcontents
+\listoffigures
+\listoftables
+\printglossaries % Glossaire et acronymes
+\vfill\cleardoublepage%
+
+% Contenu du document
+\import{chapitres/1_introduction/}{index}
+\import{chapitres/10_conclusions/}{index}
+
+% Bibliographie
+\printbibliography[title={Bibliographie},heading=bibnumbered,prenote={bib-intro}]
+
+% Annexes
+\import{chapitres/11_annexes/}{index}
+
+\end{document}
