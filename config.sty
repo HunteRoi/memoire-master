@@ -2,6 +2,8 @@
 
 % Configuration
 \usepackage{import}
+\usepackage{pdflscape}
+\usepackage{pgfgantt}
 %
 
 % Configuration document français
@@ -12,7 +14,7 @@
 \usepackage[french]{babel}
 \usepackage[autolanguage]{numprint}
 
-\usepackage{microtype} % pour éviter "overfull \hbox" (corrigé avec \begin{sloppy} pour la bibliographie)
+\usepackage[babel=true,kerning=true]{microtype} % pour éviter "overfull \hbox" (corrigé avec \begin{sloppy} pour la bibliographie)
 \usepackage{hyphenat}
 \hyphenation{mathéma-tiques récu-pérer entre-preneur opportu-nité client-èle}
 
@@ -34,9 +36,9 @@
 
 % Configuration bibliographie 
 \usepackage[backend=biber,style=ieee,language=french]{biblatex}
-\addbibresource{bibliographie.bib} % Spécifiez votre fichier .bib
+\addbibresource{references.bib} % Spécifiez votre fichier .bib
 \renewcommand*{\bibfont}{\small} % reset la police d'écriture
-\defbibnote{bib-intro}{Le contenu de ce travail a été reformulé par des intelligences artificielles.}
+\defbibnote{bib-intro}{Le contenu de ce travail a été reformulé par des intelligences artificielles génératives comme celle d'\textcite{openai_chatgpt_nodate}.}
 %
 
 % Configuration glossaire
@@ -175,9 +177,9 @@
 }
 
 % Informations destinées à la couverture
-\newcommand{\titre}{titre}
+\newcommand{\titre}{Développement d'une interface de programmation accessible pour l'initiation à la robotique éducative}
 \newcommand{\auteur}{Tinaël DEVRESSE}
-\newcommand{\promoteur}{promoteur}
+\newcommand{\promoteur}{Dr. Elio TUCI}
 \newcommand{\master}{Master 2 en Architecture des Systèmes Informatiques}
 \newcommand{\annee}{Année académique 2024-2025}
 %
@@ -185,5 +187,5 @@
 % Informations du fichier
 \title{\titre}
 \author{\auteur}
-\date{2025\\Juin}
+\date{2025\\Septembre}
 %

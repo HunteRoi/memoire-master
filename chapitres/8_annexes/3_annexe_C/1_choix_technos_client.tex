@@ -1,0 +1,28 @@
+\subsubsection{Choix technologiques concernant l'interface utilisateur} \label{sec:choix_client}
+Plusieurs technologies ont été envisagées :
+\begin{itemize}
+    \item \textbf{ElectronJS}: basé sur NodeJS et Chromium, permet de développer des applications desktop en JavaScript/TypeScript.
+    \item \textbf{Tauri}: framework moderne utilisant Rust et des technologies web, plus léger qu’Electron.
+    \item \textbf{Java Swing}: bibliothèque graphique vieillissante mais toujours fonctionnelle, multi-plateforme.
+    \item \textbf{.NET WPF}: solution riche et performante, mais limitée à Windows (ou partiellement via Mono/Wine).
+\end{itemize}
+
+\begin{longtable}[h!]{|p{0.22\textwidth}|p{0.19\textwidth}|p{0.19\textwidth}|p{0.19\textwidth}|p{0.19\textwidth}|}
+\caption{\label{tab:comparison_clients} Comparaison des frameworks pour le client lourd} \\
+
+\hline
+\textbf{Critères} & \textbf{Electron} & \textbf{Tauri} & \textbf{Java Swing} & \textbf{.NET WPF} \\
+\endfirsthead
+
+\hline
+\textbf{Multi-plateforme} & Oui & Oui & Oui & Non (principalement Windows) \\
+\hline
+\textbf{Support UI moderne} & Excellent & Bon & Limité & Très bon \\
+\hline
+\textbf{Écosystème et communauté} & Très large & En croissance & Déclinant & Large mais centré Windows \\
+\hline
+\textbf{Poids des applications} & Élevé & Faible & Modéré & Élevé \\
+\hline
+\textbf{Technologies requises} & JS/TS + Node & JS/TS + Node + Rust + C++ Build Tools & Java & C\#, .NET \\
+\hline
+\end{longtable}

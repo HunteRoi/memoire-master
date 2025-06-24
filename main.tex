@@ -1,14 +1,22 @@
 \documentclass[12pt]{article}
 \usepackage{config}
 
-\import{}{glossaire}
+\import{}{1_glossaire}
 
 \begin{document}
 \import{couverture/}{couverture}
 
 % Page de remerciement
 \thispagestyle{empty}\vspace*{\fill}%
-\begin{center}remerciements
+\begin{center}
+Je tiens à remercier toutes les personnes qui m'ont soutenu autant dans la réalisation de ce travail de fin d'étude que durant mes deux années de master.
+
+Plus particulièrement, je souhaite remercier mon promoteur, Dr. Elio Tuci, ainsi que mes professeur.e.s Dr. Laurent Philippe et Mme Laura Ramonfosse pour leur patience, leurs conseils et leur soutien indéflectible durant la rédaction de ce document.
+Je suis également reconnaissant pour la disponibilité de M. Martin Houry et la qualité de ses observations qui ont grandement contribué à enrichir ce travail, notamment grâce à son expertise en robotique moderne.
+
+J'adresse également de sincères remerciements à mes amis Loïck Arts, Christophe Bernard et Emilien Bolle et mes autres camarades de classe pour m'avoir supporté et aidé ces dernières années.
+
+Pour finir, je salue la disponibilité et les retours critiques de toutes mes relectrices et relecteurs ainsi que la pertinence de certaines questions qui m'ont permis de questionner mes décisions tout au long de la recherche liée à ce mémoire.
 \end{center}%
 \vfill\cleardoublepage%
 
@@ -20,13 +28,17 @@
 \vfill\cleardoublepage%
 
 % Contenu du document
-\import{chapitres/1_introduction/}{index}
-\import{chapitres/10_conclusions/}{index}
+\import{chapitres/2_introduction/}{index}
+\import{chapitres/3_recherche_solutions_et_technos_existantes}{index}
+\import{chapitres/4_méthodologie_et_conception_lgg}{index}
+\import{chapitres/5_implémentation}{index}
+\import{chapitres/6_évaluation}{index}
+\import{chapitres/7_conclusions/}{index}
 
 % Bibliographie
 \printbibliography[title={Bibliographie},heading=bibnumbered,prenote={bib-intro}]
 
 % Annexes
-\import{chapitres/11_annexes/}{index}
+\import{chapitres/8_annexes/}{index}
 
 \end{document}

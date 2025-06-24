@@ -1,0 +1,19 @@
+\subsubsection{Choix du framework pour le client lourd} \label{sec:client_code}
+
+Dans ce projet, l’interface utilisateur est conçue comme une application de bureau, qui devra :
+\begin{itemize}
+    \item fonctionner sous Linux en priorité mais avec support pour Windows et macOS (multi-plateforme),
+    \item accéder au système de fichiers local pour charger/sauvegarder des scripts ou des journaux d'exécution,
+    \item offrir la possibilité d'évoluer vers des interactions riches (simulation, édition visuelle, gestion multi-robot).
+\end{itemize}
+
+Le \autoref{tab:comparison_clients} compare les options possibles selon des critères pertinents dans la \autoref{sec:choix_client}.
+Le choix s’est porté sur \textbf{Electron}, car il nécessite moins de dépendances à installer et configurer, et qu'il offre :
+\begin{itemize}
+    \item une large compatibilité multi-plateforme,
+    \item une grande souplesse en interface grâce aux technologies Web,
+    \item un écosystème riche (au travers des dépendances NPM),
+    \item une évolutivité naturelle vers des outils plus complexes (simulation, dashboards).
+\end{itemize}
+
+Bien que plus gourmand en ressources que Tauri, Electron garantit une meilleure maturité et une intégration plus facile avec les bibliothèques Web existantes (e.g. React-Flow pour la programmation par blocs).

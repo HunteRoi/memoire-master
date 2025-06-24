@@ -1,9 +1,11 @@
 \section{Annexes} \label{sec:annexes}
 
-% intro
+\subimport{1_annexe_A/}{index}
 
 \AddToHook{cmd/subsection/before}{\clearpage} % nouvelle page après chaque subsection
 
-\subimport{1_annexe_A/}{index}
+% insérer prochaines annexes ici
+\subimport{2_annexe_B/}{index}
+\subimport{3_annexe_C/}{index}
 
 \RemoveFromHook{cmd/subsection/before}{\clearpage}

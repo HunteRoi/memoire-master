@@ -1,0 +1,13 @@
+\subsubsection{Choix du langage pour le code embarqué sur le robot} \label{sec:robot_code}
+
+Le robot e-puck2 utilisé dans ce projet est équipé d’un Raspberry Pi Zero W tournant sous Linux.
+Le \autoref{tab:comparison_robot_languages} compare les choix possibles dans la \autoref{sec:choix_robot}.
+Le choix s’oriente naturellement vers \textbf{Python}, car il est :
+\begin{itemize}
+    \item déjà installé et supporté,
+    \item facile à lire et à écrire pour des étudiants,
+    \item compatible avec de nombreux modules utiles (exécution dynamique, socket, etc.),
+    \item suffisamment performant dans le cadre d’un robot éducatif.
+\end{itemize}
+
+C++ reste une option à envisager pour les composants critiques (communication en temps réel, pilotage précis), mais Python constitue la base idéale pour exécuter les scripts utilisateurs envoyés depuis l’interface cliente.

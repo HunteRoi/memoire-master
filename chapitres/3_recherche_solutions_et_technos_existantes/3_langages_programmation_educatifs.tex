@@ -1,0 +1,32 @@
+\subsection{Langages de programmation éducatifs} \label{sec:lgg_progra_educatifs}
+
+L’apprentissage de la programmation et de la robotique éducative repose sur de nombreux outils et technologies visant à rendre ces disciplines plus accessibles.  
+Parmi les plus populaires, on retrouve \textit{Scratch}, \textit{Blockly}, \textit{ThymioSuite} et \textit{Tinkercad}, qui facilitent la compréhension des concepts fondamentaux grâce à des interfaces visuelles intuitives.  
+
+Une tendance marquante dans ce domaine est l’essor des \acrfull{lpv}, en particulier la \textit{programmation par blocs}, souvent utilisée dans des approches \textit{no-code} \autocites{noauthor_software_nodate}.  
+Ce paradigme simplifie la représentation des concepts complexes et rend l’apprentissage plus intuitif, notamment pour les débutants \autocites{noauthor_visual_2025}{batni_current_2025}.  
+
+Dans l'enseignement supérieur, en particulier en Belgique, ce paradigme est intégré à des initiatives pédagogiques visant à éveiller l’intérêt des jeunes en favorisant la collaboration et l'apprentissage immersif.  
+À titre d’exemple, l’\textit{Initiation ludique à la programmation avec Minecraft} à l’Hénallux \autocite{christophe_leclere_initiation_2020}, et le \textit{Thymio Escape Game} \autocite{christian_giang_thymio_nodate} mis en place à l’UNamur lors du Printemps des Sciences 2025, illustrent cette approche.
+
+\subsubsection{Caractéristiques et limites}
+Les outils éducatifs existants répondent à des besoins pédagogiques variés.  
+Le tableau \ref{tab:comparison_tools} (en \autoref{sec:annexes_a}) résume leurs principales caractéristiques.
+
+Il est possible de citer CoppeliaSim (V-REP) et Webots dans le domaine de la \textit{simulation robotique avancée}, soit la modélisation de scénarii complexes ; Blockly, Scratch, ThymioSuite et Unreal Engine Blueprints pour la \textit{programmation visuelle}, soit un accès presqu'intuitif à la logique algorithmique et le développement logiciel ; des environnements comme Arduino IDE et Lab Open Roberta pour la \textit{programmation textuelle} ; Tinkercad et Processing dans le domaine de la \textit{modélisation et conception électronique}.
+
+\subsubsection{Conclusion}
+
+L'écosystème des outils éducatifs en programmation et robotique est riche et diversifié, chaque technologie présentant des avantages en fonction du public cible et des objectifs pédagogiques.
+Associer plusieurs de ces outils permet de proposer des parcours d’apprentissage progressifs, depuis les bases jusqu’aux projets complexes de robotique et simulation.
+
+Inspirée de la ThymioSuite, l'intégration d’un langage de programmation de haut niveau tel qu'Aseba semble être une approche pertinente.
+Toutefois, ce langage a été développé pour interagir avec les fonctionnalités de base du robot et ne prend pas en charge l'ensemble des extensions avancées de l'e-puck2.
+Ainsi, certaines fonctionnalités comme l’exploitation des capteurs telle que la caméra 360°, ou l'utilisation du système de contrôle Pi-puck, nécessiteraient l’usage d’un langage plus flexible.
+
+Afin d’assurer une accessibilité optimale et une montée en compétences progressive, une approche hybride semble plus adaptée : 
+\begin{enumerate}
+    \item \textbf{Du point de vue de l’interface} : une combinaison de programmation par blocs et textuelle offrirait une transition fluide entre l’initiation et des concepts plus avancés.  
+    \item \textbf{Du point de vue logiciel} : associer des langages comme Python et C++ permettrait de mieux exploiter les extensions matérielles de l'e-puck2.
+\end{enumerate}
+Cette approche garantirait un équilibre entre accessibilité et flexibilité, facilitant l’utilisation du robot tant dans un cadre éducatif que pour des applications plus avancées.

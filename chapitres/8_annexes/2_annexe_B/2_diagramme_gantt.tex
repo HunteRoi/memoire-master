@@ -1,0 +1,32 @@
+\begin{landscape}
+
+\subsubsection{Diagramme de Gantt}
+
+\resizebox{\linewidth}{!}{
+    \begin{ganttchart}[
+        hgrid,
+        vgrid,
+        time slot format=isodate,
+        bar height=0.6,
+        bar/.style={fill=blue!60},
+        bar label font=\small\bfseries,
+        milestone/.style={fill=red},
+        link/.style={->, thick}
+    ]{2025-02-20}{2025-08-10}
+        \gantttitlecalendar{month=name, day} \\
+        \ganttbar[bar/.style={fill=green!70}]{Analyse des besoins}{2025-02-20}{2025-06-19} \\
+        \ganttbar{Conception architecture logicielle}{2025-06-01}{2025-06-22} \\
+        \ganttbar{Développement interface utilisateur}{2025-06-23}{2025-07-10} \\
+        \ganttbar{Développement firmware robot}{2025-07-11}{2025-08-03} \\
+        \ganttbar{Intégration client-robot}{2025-07-22}{2025-08-03} \\
+        \ganttbar{Tests utilisateur}{2025-08-04}{2025-08-06} \\
+        \ganttbar[bar/.style={fill=yellow!70}]{Compilation des résultats}{2025-08-07}{2025-08-10} \\
+        \ganttbar[bar/.style={fill=yellow!70}]{}{2025-02-22}{2025-03-01}
+        \ganttbar[bar/.style={fill=yellow!70}]{Relecture et corrections}{2025-06-30}{2025-08-10} \\
+        \ganttbar[bar/.style={fill=yellow!70}]{Rédaction}{2025-02-21}{2025-08-10} \\
+    \end{ganttchart}
+}
+
+\textbf{Légende:} En vert, l'analyse. En bleu, les tâches d'implémentation. En jaune, les tâches de rédaction du travail.
+
+\end{landscape}

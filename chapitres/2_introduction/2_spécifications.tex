@@ -1,0 +1,35 @@
+\subsection{Spécifications} \label{sec:specs}
+
+L’objectif d'une telle interface est de permettre la réalisation de trois grandes catégories d’actions, définies comme suit par le Dr. Tuci :  
+
+\begin{itemize}
+    \item \textbf{Navigation} : Exécution de parcours prédéfinis, comme la traversée d’un labyrinthe.
+    \item \textbf{Exploration} : Recherche et identification d’éléments spécifiques, tels que des dalles de couleur.
+    \item \textbf{Observation de comportements collectifs} : Analyse de mouvements co-déterminés, par exemple dans un scénario de type "jeu du chat et de la souris".
+\end{itemize}
+
+Afin de répondre à ces exigences, les éléments suivants constituent les spécifications fonctionnelles de l’interface à développer :
+
+\begin{enumerate}
+    \item Assurer une communication instantanée avec le robot e-puck pour permettre un développement en temps réel.
+    
+    \item Permettre la configuration et la modification de la couleur des LED du robot afin de faciliter son identification visuelle.
+
+    \item Permettre une configuration flexible des déplacements du robot :  
+        \begin{itemize}
+            \item Mouvements aléatoires.  
+            \item Mouvements pré-programmés, exécutés en une seule fois ou ajustés en temps réel, en fonction de la nouvelle position du robot.  
+        \end{itemize}  
+
+    \item Définir une vitesse de déplacement (réglable sur trois niveaux) et permettre un paramétrage de la distance parcourue.  
+
+    \item Intégrer une option d’évitement d’obstacles :  
+        \begin{itemize}
+            \item En mode aléatoire, le robot doit ajuster sa trajectoire pour contourner l’obstacle.  
+            \item En mode pré-programmé, le robot doit stopper son mouvement face à un obstacle et émettre un message d'erreur.  
+        \end{itemize}  
+
+    \item Implémenter un système de reconnaissance des zones de couleur, où le robot évolue sur une arène noire et doit identifier des cases blanches.
+
+    \item Intégrer un système de retour visuel et sonore indiquant l’état du robot (e.g. l'affichage en rouge lorsqu’il est bloqué, en vert lorsqu’un objectif est atteint, etc.). 
+\end{enumerate}  
