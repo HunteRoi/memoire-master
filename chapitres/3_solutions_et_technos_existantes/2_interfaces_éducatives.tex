@@ -1,0 +1,32 @@
+\subsection{Interfaces éducatives} \label{sec:interfaces_éducatives}
+
+Les outils éducatifs existants répondent à des besoins pédagogiques variés.
+Le tableau \ref{tab:comparison_tools} (en \autoref{sec:annexes_a}) résume leurs principales caractéristiques.
+
+Il existe plusieurs outils et environnements logiciels qui illustrent la diversité des approches pédagogiques en robotique et programmation :
+
+\begin{itemize}
+    \item \textbf{Simulation robotique avancée} : des plateformes comme \textit{CoppeliaSim (V-REP)} et \textit{Webots} permettent de modéliser des scénarios robotiques complexes dans des environnements réalistes.
+    
+    \item \textbf{Programmation visuelle} : des outils tels que \textit{Blockly}, \textit{PyBricks}, \textit{ThymioSuite} et \textit{Unreal Engine Blueprints} offrent une approche intuitive de la logique algorithmique, facilitant l’apprentissage pour les débutants grâce à des interfaces à base de blocs ou de nœuds.
+
+    \item \textbf{Programmation textuelle} : des environnements comme \textit{Arduino IDE} et \textit{Open Roberta Lab} (en mode texte) permettent une écriture directe du code, souvent à destination d’un public intermédiaire à avancé.
+
+    \item \textbf{Modélisation et conception électronique} : des outils comme \textit{Tinkercad} et \textit{Processing} sont utilisés pour représenter et tester des circuits électroniques ou des concepts visuels de manière interactive (e.g. par glisser-déposer).
+\end{itemize}
+
+L'écosystème des outils éducatifs en programmation et robotique est riche et diversifié, chaque technologie présentant des avantages en fonction du public cible et des objectifs pédagogiques.
+Associer plusieurs de ces outils permet de proposer des parcours d’apprentissage progressifs, depuis les bases jusqu’aux projets complexes de robotique et simulation.
+
+Inspirée de la \textit{ThymioSuite}, l’intégration d’un système capable de convertir une programmation visuelle en un langage de haut niveau comme Aseba apparaît comme une stratégie pertinente.
+Cependant, le langage Aseba a été initialement conçu pour exploiter les fonctionnalités de base du robot, et ne prend pas en charge certaines extensions avancées de l’e-puck2. 
+Cela inclut notamment des dispositifs comme la caméra à 360° ou le module de contrôle \textit{Pi-puck}, qui nécessitent un langage plus souple et plus puissant, tel que le C++ ou le Python.
+
+Afin d’assurer une accessibilité optimale et une montée en compétences progressive, une approche hybride semble plus adaptée : 
+\begin{enumerate}
+    \item \textbf{Sur le plan de l’interface} : combiner la programmation par blocs avec possibilité d'une interface textuelle permettrait d’assurer une transition progressive entre la découverte de la logique algorithmique et la maîtrise de concepts plus avancés.
+    
+    \item \textbf{Sur le plan technique} : l’intégration de langages comme Python ou C++ au sein du système permettrait une meilleure prise en charge des capteurs et modules complémentaires du robot, offrant ainsi une plus grande flexibilité d’usage.
+\end{enumerate}
+
+Cette approche garantirait un équilibre entre simplicité d’utilisation et flexibilité, facilitant l’accès au robot tant dans un cadre éducatif que pour des applications plus avancées.

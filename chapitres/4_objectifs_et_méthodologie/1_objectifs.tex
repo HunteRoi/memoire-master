@@ -1,0 +1,66 @@
+\subsection{Objectifs définis} \label{sec:objectifs_finaux}
+
+Ce chapitre a pour vocation de synthétiser les conclusions et orientations issues des sections précédentes. 
+Il constitue un point de passage important avant d’aborder les aspects concrets du développement.
+
+En réponse aux besoins exprimés dans les chapitres \ref{sec:limites}, \ref{sec:specs} et \ref{sec:non-functional_specs}, et en cohérence avec les conclusions du chapitre \ref{sec:conclusion_recherches}, l’objectif principal de cette version est la \textbf{conception d’une application ludique}, inspirée des codes du jeu vidéo, afin de favoriser l’apprentissage par l’expérimentation et de stimuler la motivation des élèves.
+
+L’interface proposée permettra la \textbf{connexion à un seul robot} dans un premier temps, bien que les choix techniques soient guidés par la volonté d’assurer une extensibilité future à un ensemble de robots.
+
+Cette application sera développée de manière à être \textbf{employée sur un ordinateur} (malgré le potentiel intérêt pour les appareils mobiles comme expliqué dans la \autoref{sec:interfaces_existantes}).
+
+Elle embarquera un \textbf{système de programmation par blocs}, qui \textbf{traduira} du \textbf{langage visuel} vers le \textbf{Python}.
+Chaque bloc ajouté au script sera \textbf{exécuté de manière interactive} sur le robot, dans l’ordre de leur empilement, favorisant ainsi une compréhension progressive et visuelle du déroulement du script.
+
+Deux modes d’utilisation sont ciblés: la \textbf{navigation} et l’\textbf{exploration}. 
+Pour répondre à ces exigences, le robot e-puck2 devra:
+\begin{itemize}
+    \item \textbf{se déplacer} dans toutes les directions de manière contrôlée ou aléatoire ;
+    \item \textbf{produire des signaux} visuels (\acrshort{led}s) et sonores pour refléter son état ;
+    \item \textbf{détecter les couleurs} du sol via ses capteurs.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \scalebox{0.7}{
+    \begin{tikzpicture}
+        \begin{umlsystem}[x=0]{PuckLab}           
+            \umlusecase[name=blocs,y=-2]{Programmer des blocs}
+                \umlusecase[name=python,y=-2,x=10]{Traduire les blocs en script}
+            
+            \umlusecase[name=control_script,y=-4]{Gérer l'exécution du script}
+                \umlusecase[name=move,y=-4,x=10]{Contrôler les mouvements}
+                \umlusecase[name=colours,y=-6,x=10]{Contrôler les capteurs de couleur}
+                \umlusecase[name=sounds,y=-8,x=10]{Contrôler les haut-parleurs}
+            
+            \umlusecase[name=connect,y=-10]{Se connecter au robot}
+                \umlusecase[name=start_connection,y=-10,x=10]{Ouvrir une connexion}
+                \umlusecase[name=led,y=-12,x=10]{Contrôler les \acrshort{led}s}
+
+            \umlusecase[name=disconnect,y=-14]{Se déconnecter du robot}
+                \umlusecase[name=stop_connection,y=-14,x=10]{Fermer une connexion}
+        \end{umlsystem}
+
+        \umlactor[x=-6,y=-8]{Utilisateur}
+
+        \umlassoc{Utilisateur}{blocs}
+        \umlassoc{Utilisateur}{control_script}
+        \umlassoc{Utilisateur}{connect}
+        \umlassoc{Utilisateur}{disconnect}
+
+        \umlinclude{blocs}{python}
+        \umlinclude{control_script}{move}
+        \umlinclude{control_script}{colours}
+        \umlinclude{control_script}{sounds}
+        \umlinclude{control_script}{led}
+        
+        \umlinclude{connect}{start_connection}
+        \umlinclude{connect}{led}
+        \umlinclude{disconnect}{stop_connection}
+        \umlinclude{disconnect}{led}
+        
+    \end{tikzpicture}
+    }
+    \caption{Diagramme de cas d'utilisation de l'application PuckLab}
+    \label{fig:usecase-pucklab}
+\end{figure}

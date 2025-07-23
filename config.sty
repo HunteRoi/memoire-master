@@ -4,6 +4,7 @@
 \usepackage{import}
 \usepackage{pdflscape}
 \usepackage{pgfgantt}
+\usepackage{tikz-uml}
 %
 
 % Configuration document français
@@ -14,7 +15,7 @@
 \usepackage[french]{babel}
 \usepackage[autolanguage]{numprint}
 
-\usepackage[babel=true,kerning=true]{microtype} % pour éviter "overfull \hbox" (corrigé avec \begin{sloppy} pour la bibliographie)
+\usepackage[babel=true]{microtype} % pour éviter "overfull \hbox" (corrigé avec \begin{sloppy} pour la bibliographie)
 \usepackage{hyphenat}
 \hyphenation{mathéma-tiques récu-pérer entre-preneur opportu-nité client-èle}
 
@@ -42,11 +43,11 @@
 %
 
 % Configuration glossaire
-\usepackage[toc,acronym,numberedsection]{glossaries} % ajoute le glossaire
+\usepackage[acronym]{glossaries} % ajoute le glossaire
 %
 
 % Configuration couleurs pour couverture
-\usepackage{xcolor}
+\usepackage[svgnames]{xcolor}
 \definecolor{bleu}{RGB}{0,113,185}
 \definecolor{white}{RGB}{255,255,255}
 \definecolor{black}{RGB}{0,0,0}
@@ -61,7 +62,7 @@
 \usepackage{rotating}
 \usepackage{setspace}
 \usepackage{afterpage}
-\usepackage[letterpaper,top=4cm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage[a4paper,margin=1cm,letterpaper,top=4cm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 \usepackage{fancyhdr}
 \setlength{\parskip}{5pt plus2pt} % augmenter l'interligne
 \AddToHook{cmd/section/before}{\clearpage} % nouvelle page après chaque section
@@ -100,6 +101,7 @@
 \usepackage{subcaption}
 %
 
+% Configuration bloc de code
 \usepackage{enumitem}
 \usepackage{listings}
 \lstdefinelanguage{yaml}{
@@ -175,6 +177,17 @@
       {ê}{{\^e}}{1}
       {î}{{\^i}}{1},
 }
+%
+
+% Configuration encadrement
+\usepackage[many]{tcolorbox}
+\newtcolorbox{boxitup}[1][]{
+  enhanced,drop fuzzy midday shadow,
+  boxrule=1pt,arc=4pt,boxsep=0pt,
+  left=.5em,right=.5em,top=1ex,bottom=1ex,
+  colback=gray!30,#1
+}
+%
 
 % Informations destinées à la couverture
 \newcommand{\titre}{Développement d'une interface de programmation accessible pour l'initiation à la robotique éducative}

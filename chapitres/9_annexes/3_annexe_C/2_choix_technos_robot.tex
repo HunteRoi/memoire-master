@@ -1,0 +1,28 @@
+\subsubsection{Choix technologiques concernant le processus embarqué dans le robot} \label{sec:choix_robot}
+Deux langages sont disponibles nativement dans l'e-puck2 :
+\begin{itemize}
+    \item \textbf{Python} – déjà installé, facile à manipuler, très utilisé en robotique éducative.
+    \item \textbf{C++} – compilable avec \textit{gcc} déjà disponible sur les robots, performant mais plus complexe.
+\end{itemize}
+
+\begin{longtable}[H]{|p{0.22\textwidth}|p{0.26\textwidth}|p{0.26\textwidth}|}
+\caption{\label{tab:comparison_robot_languages} Comparaison des langages utilisables sur le robot} \\
+
+\hline
+\textbf{Critères} & \textbf{Python} & \textbf{C++} \\
+\endfirsthead
+
+\hline
+\textbf{Déjà installé sur le robot} & Oui & Oui (compilateur) \\
+\hline
+\textbf{Facilité d’écriture} & Très élevée & Moyenne à faible \\
+\hline
+\textbf{Performance} & Moyenne & Élevée \\
+\hline
+\textbf{Consommation mémoire} & Moyenne & Faible \\
+\hline
+\textbf{Support robotique} & Excellent (OpenCV, PySerial, etc.) & Excellent (ROS, libs natives) \\
+\hline
+\textbf{Courbe d’apprentissage} & Douce & Abrupte \\
+\hline
+\end{longtable}

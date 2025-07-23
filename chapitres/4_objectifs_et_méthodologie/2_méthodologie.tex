@@ -1,0 +1,62 @@
+\subsection{Méthodologie} \label{sec:méthodologie}
+
+Ce projet combine des dimensions techniques, pédagogiques et exploratoires et adopte donc une approche Agile, et plus précisément la méthode \textbf{Scrum}.  
+Les fonctionnalités visées sont présentées dans la \autoref{sec:annexes_b}.
+
+L'organisation temporelle du projet est illustrée par un diagramme de Gantt (\autoref{fig:complete_gantt_chart}) complet également disponible en \autoref{sec:annexes_b}, qui couvre l’ensemble du processus de conception et de rédaction.
+La \autoref{fig:gantt_prototype_phases_detailed} présente sous forme détaillée les phases de création du prototype technique.
+
+\begin{figure}[H]
+    \centering
+    \scalebox{0.5}{
+        \begin{ganttchart}[
+            hgrid,
+            vgrid,
+            inline,
+            time slot format=isodate,
+            bar height=0.5,
+            bar/.style={fill=blue!30},
+            bar label font=\small\bfseries,
+            group right shift=0,
+            group top shift=0.7,
+            group height=0.3,
+            group peaks height=0.2,
+            group label font=\bfseries\small,
+        ]{2025-06-01}{2025-08-03}
+            \gantttitlecalendar{month=name, day} \\
+
+            % Groupe 1 : Conception
+            \ganttgroup{Conception}{2025-06-01}{2025-07-20} \\
+            \ganttbar{Analyse des besoins techniques}{2025-06-01}{2025-06-10} \\
+            \ganttbar{Spécification des fonctionnalités}{2025-06-11}{2025-06-17} \\
+            \ganttbar{Modélisation de l’architecture logicielle}{2025-06-18}{2025-06-30} \\
+            \ganttbar{Conception de l’interface utilisateur}{2025-07-01}{2025-07-17} \\
+            \ganttbar{Préparation des tests unitaires}{2025-07-18}{2025-07-20} \\
+
+            % Groupe 2 : Développement - Firmware
+            \ganttgroup{Développement firmware (robot)}{2025-07-21}{2025-07-27} \\
+            \ganttbar{Script Python principal (boucle)}{2025-07-21}{2025-07-22} \\
+            \ganttbar{Connexion WebSocket avec PC}{2025-07-22}{2025-07-23} \\
+            \ganttbar{Exécution des actions}{2025-07-23}{2025-07-24} \\
+            \ganttbar{Déplacement aléatoire}{2025-07-24}{2025-07-25} \\
+            \ganttbar{Système de codes d’erreur}{2025-07-25}{2025-07-26} \\
+            \ganttbar{LEDs + sons selon état}{2025-07-26}{2025-07-27} \\
+
+            % Groupe 3 : Développement - Interface
+            \ganttgroup{Développement interface (Electron)}{2025-07-21}{2025-07-31} \\
+            \ganttbar{Page de choix (mode)}{2025-07-21}{2025-07-22} \\
+            \ganttbar{Layout blocs + console}{2025-07-22}{2025-07-24} \\
+            \ganttbar{Catégories de blocs}{2025-07-24}{2025-07-25} \\
+            \ganttbar{Console + boutons play/stop}{2025-07-25}{2025-07-26} \\
+            \ganttbar{Écran paramètres (modal)}{2025-07-26}{2025-07-27} \\
+            \ganttbar{Formulaire TCP/IP + test}{2025-07-27}{2025-07-28} \\
+            \ganttbar{Traduction blocs → Python}{2025-07-28}{2025-07-31} \\
+
+            % Groupe 4 : Intégration & Tests
+            \ganttgroup{Intégration et tests}{2025-07-25}{2025-08-03} \\
+            \ganttbar{Connexion client-robot}{2025-07-25}{2025-08-01} \\
+            \ganttbar{Tests d’intégration globaux}{2025-08-01}{2025-08-03} \\
+        \end{ganttchart}
+    }
+    \caption{\label{fig:gantt_prototype_phases_detailed} Planning détaillé du développement du prototype}
+\end{figure}
