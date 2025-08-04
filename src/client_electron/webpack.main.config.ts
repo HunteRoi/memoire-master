@@ -17,4 +17,13 @@ export const mainConfig: Configuration = {
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
   },
+  externals: {
+    'fs': 'commonjs fs',
+    'path': 'commonjs path',
+    'fs/promises': 'commonjs fs/promises',
+  },
+  node: {
+    __dirname: true,
+    __filename: true,
+  }
 };
