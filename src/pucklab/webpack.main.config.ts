@@ -20,5 +20,5 @@ export const mainConfig: Configuration = {
   node: {
     __dirname: true,
     __filename: true,
-  }
+  },
 };

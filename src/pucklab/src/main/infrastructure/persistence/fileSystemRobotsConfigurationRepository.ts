@@ -10,7 +10,9 @@ type RobotConfig = {
   port: number;
 };
 
-export class FileSystemRobotsConfigurationRepository implements RobotsConfigurationRepository {
+export class FileSystemRobotsConfigurationRepository
+  implements RobotsConfigurationRepository
+{
   private robots: RobotConfig[] = [];
 
   private getConfigPath(): string {
@@ -25,11 +27,10 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
     try {
       const configPath = this.getConfigPath();
       const fileContent = await readFile(configPath, 'utf8');
-      return JSON.parse(fileContent) as RobotConfig[] || null;
-    }
-    catch (error) {
+      return (JSON.parse(fileContent) as RobotConfig[]) || null;
+    } catch (error) {
       console.error('Failed to read robots config:', error);
-      return null
+      return null;
     }
   }
 
@@ -37,8 +38,7 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
     try {
       const configPath = this.getConfigPath();
       await writeFile(configPath, JSON.stringify(robots, null, 2), 'utf8');
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Failed to write robots config:', error);
       throw error;
     }
@@ -46,7 +46,9 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
 
   async save(robot: Robot): Promise<void> {
     const robotConfig = robot as RobotConfig;
-    const existingIndex = this.robots.findIndex(cfg => cfg.ipAddress === robotConfig.ipAddress);
+    const existingIndex = this.robots.findIndex(
+      cfg => cfg.ipAddress === robotConfig.ipAddress
+    );
     if (existingIndex !== -1) {
       throw new Error('Robot with this IP address already exists.');
     }
@@ -56,7 +58,9 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
 
   async update(robot: Robot): Promise<void> {
     const robotConfig = robot as RobotConfig;
-    const index = this.robots.findIndex(cfg => cfg.ipAddress === robotConfig.ipAddress);
+    const index = this.robots.findIndex(
+      cfg => cfg.ipAddress === robotConfig.ipAddress
+    );
     if (index === -1) {
       throw new Error('Robot with this IP address does not exist.');
     }
@@ -65,7 +69,9 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
   }
 
   async remove(id: string): Promise<void> {
-    const index = this.robots.findIndex(cfg => cfg.ipAddress.endsWith(`.${id}`));
+    const index = this.robots.findIndex(cfg =>
+      cfg.ipAddress.endsWith(`.${id}`)
+    );
     if (index === -1) {
       throw new Error('Robot with this IP address does not exist.');
     }
@@ -80,9 +86,13 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
   }
 
   findById(id: string): Promise<Robot | null> {
-    const robotConfig = this.robots.find(cfg => cfg.ipAddress.endsWith(`.${id}`));
+    const robotConfig = this.robots.find(cfg =>
+      cfg.ipAddress.endsWith(`.${id}`)
+    );
     if (robotConfig) {
-      return Promise.resolve(new Robot(robotConfig.ipAddress, robotConfig.port));
+      return Promise.resolve(
+        new Robot(robotConfig.ipAddress, robotConfig.port)
+      );
     }
     return Promise.resolve(null);
   }
