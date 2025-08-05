@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router';
 
 import { EPuck2Robot } from '../components/EPuck2Robot';
 import { useAppContext } from '../hooks/useAppContext';
@@ -7,6 +8,7 @@ import { isSuccess } from '../../domain/result';
 import { Robot } from '../../domain/robot';
 
 export const SplashScreen: React.FC = () => {
+  const navigate = useNavigate();
   const { isLoading, error, setRobotsList, setLoading, setError } = useAppContext();
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export const SplashScreen: React.FC = () => {
         setError('Failed to load robots configuration');
       } finally {
         setLoading(false);
-        // setTimeout(navigate, 1000, '/theme-selection');
+        setTimeout(navigate, 5000, '/theme-selection');
       }
     };
 
@@ -63,7 +65,7 @@ export const SplashScreen: React.FC = () => {
       </Box>
 
       <Typography
-        variant="h2"
+        variant="h1"
         component="h1"
         sx={{
           mt: 4,
