@@ -3,14 +3,18 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 
-import type { ElectronAPI } from './domain/interface';
-
-type SerializedRobot = {
-  ipAddress: string;
-  port: number;
-};
-
 contextBridge.exposeInMainWorld('electronAPI', {
-  readRobotsConfig: (): Promise<SerializedRobot[]> => ipcRenderer.invoke('readRobotsConfig'),
-  writeRobotsConfig: (robotsData: SerializedRobot[]) => ipcRenderer.invoke('writeRobotsConfig', robotsData),
-} as ElectronAPI);
+  manageRobots: {
+    loadRobots: () => ipcRenderer.invoke('manageRobots:loadRobots'),
+    addRobot: (robot: any) => ipcRenderer.invoke('manageRobots:addRobot', robot),
+    updateRobot: (robot: any) => ipcRenderer.invoke('manageRobots:updateRobot', robot),
+    removeRobot: (robotId: string) => ipcRenderer.invoke('manageRobots:removeRobot', robotId),
+    clearRobots: () => ipcRenderer.invoke('manageRobots:clearRobots'),
+    findRobotById: (robotId: string) => ipcRenderer.invoke('manageRobots:findRobotById', robotId),
+  },
+  robotConnection: {
+    connectToRobot: (robot: any) => ipcRenderer.invoke('robotConnection:connectToRobot', robot),
+    disconnectFromRobot: (robot: any) => ipcRenderer.invoke('robotConnection:disconnectFromRobot', robot),
+    checkConnection: (robot: any) => ipcRenderer.invoke('robotConnection:checkConnection', robot),
+  },
+});

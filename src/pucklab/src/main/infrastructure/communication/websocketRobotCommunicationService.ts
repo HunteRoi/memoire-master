@@ -1,7 +1,7 @@
-import { WebSocket } from "node:http";
+import type { WebSocket } from "node:http";
 
-import { Robot } from '../../../domain/robot';
-import { RobotCommunicationService } from '../../../main/application/interfaces/robotCommunicationService';
+import type { Robot } from '../../../domain/robot';
+import type { RobotCommunicationService } from '../../../main/application/interfaces/robotCommunicationService';
 
 export class WebsocketRobotCommunicationService implements RobotCommunicationService {
     connect(robot: Robot): Promise<Robot> {

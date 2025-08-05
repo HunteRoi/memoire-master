@@ -1,5 +1,5 @@
-import { Robot } from '../../../domain/robot';
-import { RobotCommunicationService } from '../interfaces/robotCommunicationService';
+import type { Robot } from '../../../domain/robot';
+import type { RobotCommunicationService } from '../interfaces/robotCommunicationService';
 
 export class RobotConnectionUseCase {
   constructor(
@@ -40,7 +40,7 @@ export class RobotConnectionUseCase {
       }
       return false;
     }
-    catch (error) {
+    catch (_error) {
       return false;
     }
   }

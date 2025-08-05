@@ -3,9 +3,16 @@ import path from 'node:path';
 import { readFile, writeFile } from 'node:fs/promises';
 
 import { Robot } from '../../../domain/robot';
-import { RobotsConfigurationRepository } from '../../../main/application/interfaces/robotsConfigurationRepository';
+import type { RobotsConfigurationRepository } from '../../../main/application/interfaces/robotsConfigurationRepository';
+
+type RobotConfig = {
+  ipAddress: string;
+  port: number;
+};
 
 export class FileSystemRobotsConfigurationRepository implements RobotsConfigurationRepository {
+  private robots: RobotConfig[] = [];
+
   private getConfigPath(): string {
     if (app.isPackaged) {
       return path.join(process.resourcesPath, 'robots.json');
@@ -14,19 +21,19 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
     }
   }
 
-  private async readRobotsConfig(): Promise<Robot[] | null> {
+  private async readRobotsConfig(): Promise<RobotConfig[]> {
     try {
       const configPath = this.getConfigPath();
       const fileContent = await readFile(configPath, 'utf8');
-      return JSON.parse(fileContent) as Robot[] || null;
+      return JSON.parse(fileContent) as RobotConfig[] || null;
     }
     catch (error) {
       console.error('Failed to read robots config:', error);
-      return null;
+      return null
     }
   }
 
-  private async writeRobotsConfig(robots: Robot[]): Promise<void> {
+  private async writeRobotsConfig(robots: RobotConfig[]): Promise<void> {
     try {
       const configPath = this.getConfigPath();
       await writeFile(configPath, JSON.stringify(robots, null, 2), 'utf8');
@@ -37,22 +44,51 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
     }
   }
 
-  save(robot: Robot): Promise<void> {
-    throw new Error("Method not implemented.");
+  async save(robot: Robot): Promise<void> {
+    const robotConfig = robot as RobotConfig;
+    const existingIndex = this.robots.findIndex(cfg => cfg.ipAddress === robotConfig.ipAddress);
+    if (existingIndex !== -1) {
+      throw new Error('Robot with this IP address already exists.');
+    }
+    this.robots.push(robotConfig);
+    await this.writeRobotsConfig(this.robots);
   }
-  update(robot: Robot): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  async update(robot: Robot): Promise<void> {
+    const robotConfig = robot as RobotConfig;
+    const index = this.robots.findIndex(cfg => cfg.ipAddress === robotConfig.ipAddress);
+    if (index === -1) {
+      throw new Error('Robot with this IP address does not exist.');
+    }
+    this.robots[index] = robotConfig;
+    await this.writeRobotsConfig(this.robots);
   }
-  remove(id: string): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  async remove(id: string): Promise<void> {
+    const index = this.robots.findIndex(cfg => cfg.ipAddress.endsWith(`.${id}`));
+    if (index === -1) {
+      throw new Error('Robot with this IP address does not exist.');
+    }
+    this.robots.splice(index, 1);
+    await this.writeRobotsConfig(this.robots);
   }
-  loadRobots(): Promise<Robot[] | null> {
-    throw new Error("Method not implemented.");
+
+  async loadRobots(): Promise<Robot[]> {
+    const robotConfigs = await this.readRobotsConfig();
+    this.robots = robotConfigs || [];
+    return this.robots.map(config => new Robot(config.ipAddress, config.port));
   }
+
   findById(id: string): Promise<Robot | null> {
-    throw new Error("Method not implemented.");
+    const robotConfig = this.robots.find(cfg => cfg.ipAddress.endsWith(`.${id}`));
+    if (robotConfig) {
+      return Promise.resolve(new Robot(robotConfig.ipAddress, robotConfig.port));
+    }
+    return Promise.resolve(null);
   }
-  clear(): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  async clear(): Promise<void> {
+    this.robots = [];
+    await this.writeRobotsConfig([]);
   }
 }

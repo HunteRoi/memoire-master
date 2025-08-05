@@ -1,4 +1,4 @@
-import { Robot } from '../../../domain/robot';
+import type { Robot } from '../../../domain/robot';
 
 export interface RobotCommunicationService {
   connect(robot: Robot): Promise<Robot>;
