@@ -1,4 +1,4 @@
-import { RobotConnection } from "./RobotConnection";
+import { RobotConnection } from './RobotConnection';
 
 export enum RobotStatus {
   DISCONNECTED = 'disconnected',

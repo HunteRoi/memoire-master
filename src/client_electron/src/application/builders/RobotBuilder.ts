@@ -1,4 +1,4 @@
-import { Robot, RobotStatus } from "../../domain/entities/Robot";
+import { Robot, RobotStatus } from '../../domain/entities/Robot';
 
 export class RobotBuilder {
     static buildRobot(
@@ -6,7 +6,7 @@ export class RobotBuilder {
         port: number
     ): Robot {
         if (!ipAddress || !port) {
-            throw new Error('Invali robot configuration');
+            throw new Error('Invalid robot configuration');
         }
         const robot = new Robot(ipAddress, port, RobotStatus.DISCONNECTED);
         return robot;
