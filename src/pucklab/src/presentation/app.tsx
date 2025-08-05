@@ -6,6 +6,8 @@ import { AppProvider } from './providers/appProvider';
 import { ThemeProvider } from './providers/themeProvider';
 import { SplashScreen } from './pages/splashScreen';
 import { ThemeSelection } from './pages/themeSelection';
+import { AgeSelection } from './pages/ageSelection';
+import { RobotSelection } from './pages/robotSelection';
 
 
 const App: React.FC = () => {
@@ -16,9 +18,9 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<SplashScreen />} />
             <Route path="/theme-selection" element={<ThemeSelection />} />
-            {/* <Route path="/age-selection" element={<AgeSelection />} />
+            <Route path="/age-selection" element={<AgeSelection />} />
             <Route path="/robot-selection" element={<RobotSelection />} />
-            <Route path="/mode-selection" element={<ModeSelection />} />
+            {/* <Route path="/mode-selection" element={<ModeSelection />} />
             <Route path="/programming" element={<VisualProgramming />} />
             <Route path="/settings" element={<Settings />} /> */}
           </Routes>
