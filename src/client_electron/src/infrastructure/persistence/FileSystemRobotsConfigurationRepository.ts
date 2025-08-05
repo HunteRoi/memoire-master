@@ -2,20 +2,11 @@ import { Robot } from '../../domain/entities/Robot';
 import { RobotsConfigurationRepository } from '../../application/repositories/RobotsConfigurationRepository';
 import { SerializedRobot } from '../types/SerializedRobot';
 
-declare global {
-  interface Window {
-    electronAPI: {
-      readRobotsConfig: () => Promise<SerializedRobot[]>;
-      writeRobotsConfig: (robotsData: SerializedRobot[]) => Promise<void>;
-    };
-  }
-}
-
 export class FileSystemRobotsConfigurationRepository implements RobotsConfigurationRepository {
 
   async loadRobots(): Promise<Robot[]> {
     try {
-      const robotsData = await window.electronAPI.readRobotsConfig();
+      const robotsData: SerializedRobot[] = [];//await window.electronAPI.readRobotsConfig();
       return robotsData.map((data: SerializedRobot) => this.deserializeRobot(data));
     } catch (error) {
       console.error('Failed to load robots configuration:', error);
@@ -96,7 +87,7 @@ export class FileSystemRobotsConfigurationRepository implements RobotsConfigurat
   private async saveRobots(robots: Robot[]): Promise<void> {
     try {
       const serializedRobots = robots.map(robot => this.serializeRobot(robot));
-      await window.electronAPI.writeRobotsConfig(serializedRobots);
+      //await window.electronAPI.writeRobotsConfig(serializedRobots);
     } catch (error) {
       throw new Error(`Failed to save robots to storage: ${error}`);
     }
