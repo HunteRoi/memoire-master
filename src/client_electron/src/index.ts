@@ -61,7 +61,7 @@ const getConfigPath = () => {
   if (app.isPackaged) {
     return path.join(process.resourcesPath, 'robots.json');
   } else {
-    return path.join(process.cwd(), 'public', 'robots.json');
+    return path.join(process.cwd(), 'src', 'public', 'robots.json');
   }
 };
 

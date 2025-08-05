@@ -15,7 +15,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     extraResource: [
-      './public/robots.json'
+      './src/public/robots.json'
     ],
   },
   rebuildConfig: {},
