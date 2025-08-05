@@ -3,12 +3,14 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 
+import { RobotConfig } from './domain/robot';
+
 contextBridge.exposeInMainWorld('electronAPI', {
   manageRobots: {
     loadRobots: () => ipcRenderer.invoke('manageRobots:loadRobots'),
-    addRobot: (robot: any) =>
+    addRobot: (robot: RobotConfig) =>
       ipcRenderer.invoke('manageRobots:addRobot', robot),
-    updateRobot: (robot: any) =>
+    updateRobot: (robot: RobotConfig) =>
       ipcRenderer.invoke('manageRobots:updateRobot', robot),
     removeRobot: (robotId: string) =>
       ipcRenderer.invoke('manageRobots:removeRobot', robotId),
@@ -17,11 +19,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke('manageRobots:findRobotById', robotId),
   },
   robotConnection: {
-    connectToRobot: (robot: any) =>
+    connectToRobot: (robot: RobotConfig) =>
       ipcRenderer.invoke('robotConnection:connectToRobot', robot),
-    disconnectFromRobot: (robot: any) =>
+    disconnectFromRobot: (robot: RobotConfig) =>
       ipcRenderer.invoke('robotConnection:disconnectFromRobot', robot),
-    checkConnection: (robot: any) =>
+    checkConnection: (robot: RobotConfig) =>
       ipcRenderer.invoke('robotConnection:checkConnection', robot),
   },
 });

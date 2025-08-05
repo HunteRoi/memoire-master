@@ -1,56 +1,78 @@
 import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Robot } from '../domain/robot';
-import { isSuccess } from '../domain/result';
+import { Box, Button, List, ListItem, Typography } from '@mui/material';
+
+import { Robot, type RobotConfig } from '../domain/robot';
+import { isSuccess, Result } from '../domain/result';
 
 const App: React.FC = () => {
-  const [robots, setRobots] = React.useState<any[]>([]);
+  const [robots, setRobots] = React.useState<Robot[]>([]);
   const [error, setError] = React.useState<string>('');
 
-  const onClick = async () => {
-    const result = await window.electronAPI.manageRobots.addRobot(
-      new Robot('0.0.0.0', 1)
-    );
+  const updateRobotsList = (result: Result<RobotConfig[]>) => {
     if (isSuccess(result)) {
-      setRobots(result.data);
+      const robotsData = result.data.map(robotData =>
+        new Robot(robotData.ipAddress, robotData.port)
+      );
+      setRobots(robotsData);
       setError('');
     } else {
       setError(result.error);
+      console.error('Error updating robots list:', result.error);
     }
+  };
+
+  const onClick = async () => {
+    const robot = new Robot('192.168.1.0', 1);
+    const result = await window.electronAPI.manageRobots.addRobot(robot);
+    updateRobotsList(result);
   };
 
   useEffect(() => {
     async function fetchData() {
       const result = await window.electronAPI.manageRobots.loadRobots();
-      if (isSuccess(result)) {
-        setRobots(result.data);
-        setError('');
-        console.log('Robots config:', result.data);
-      } else {
-        setError(result.error);
-        console.error('Error reading robots config:', result.error);
-      }
+      updateRobotsList(result);
     }
 
     fetchData();
   }, []);
 
   return (
-    <>
-      <h1>Robots Configuration</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <ul>
-        {robots.map(robot => (
-          <li key={robot.ipAddress}>
-            <strong>{robot.ipAddress}</strong>:{robot.port}
-          </li>
-        ))}
-      </ul>
+    <Box sx={{ padding: 2 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        PuckLab Robots Management
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        Manage your robots configuration here.
+      </Typography>
 
-      <button type='button' onClick={onClick}>
+      <Button variant="contained" color="primary" onClick={onClick}>
         Add Robot
-      </button>
-    </>
+      </Button>
+
+      {error && (
+        <Typography variant="body1" color="error" sx={{ marginTop: 2 }}>
+          Error: {error}
+        </Typography>
+      )}
+
+      <Box sx={{ marginTop: 2 }}>
+        <Typography variant="h6">Current Robots:</Typography>
+        {robots.length > 0 ? (
+          <List sx={{ marginTop: 1 }}>
+            {robots.map((robot, index) => (
+              <ListItem key={index}>
+                <Typography variant="body1">
+                  {robot.ipAddress}:{robot.port} - ID : {robot.id}
+                </Typography>
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Typography variant="body1">No robots configured.</Typography>
+        )}
+      </Box>
+    </Box>
   );
 };
 

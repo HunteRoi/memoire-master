@@ -2,7 +2,7 @@ export class Robot {
   constructor(
     public readonly ipAddress: string,
     public readonly port: number
-  ) {}
+  ) { }
 
   get id(): string {
     const value = this.ipAddress.split('.');
@@ -21,3 +21,5 @@ export class Robot {
     return new Robot(this.ipAddress, port);
   }
 }
+
+export type RobotConfig = Pick<Robot, 'ipAddress' | 'port'>;

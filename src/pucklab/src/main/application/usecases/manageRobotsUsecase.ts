@@ -1,4 +1,4 @@
-import { Robot } from '../../../domain/robot';
+import { Robot, type RobotConfig } from '../../../domain/robot';
 import { Result, Success, Failure } from '../../../domain/result';
 import type { RobotsConfigurationRepository } from '../interfaces/robotsConfigurationRepository';
 
@@ -7,7 +7,7 @@ const DEFAULT_ROBOT: Robot = new Robot('192.168.1.121', 443);
 export class ManageRobotsUseCase {
   constructor(
     private robotsConfigurationRepository: RobotsConfigurationRepository
-  ) {}
+  ) { }
 
   async loadRobots(): Promise<Result<Robot[]>> {
     try {
@@ -19,7 +19,7 @@ export class ManageRobotsUseCase {
     }
   }
 
-  async addRobot(robot: Robot): Promise<Result<Robot[]>> {
+  async addRobot(robot: RobotConfig): Promise<Result<RobotConfig[]>> {
     try {
       const bot = new Robot(robot.ipAddress, robot.port);
       if (!bot || !bot.isValid()) {
@@ -31,7 +31,7 @@ export class ManageRobotsUseCase {
         throw new Error('This robot already exists');
       }
 
-      await this.robotsConfigurationRepository.save(robot);
+      await this.robotsConfigurationRepository.save(bot);
       const result = await this.loadRobots();
       return result.success ? Success(result.data) : result;
     } catch (error) {
@@ -42,7 +42,7 @@ export class ManageRobotsUseCase {
     }
   }
 
-  async updateRobot(robot: Robot): Promise<Result<Robot[]>> {
+  async updateRobot(robot: RobotConfig): Promise<Result<RobotConfig[]>> {
     try {
       const bot = new Robot(robot.ipAddress, robot.port);
       if (!bot.id) {
@@ -56,7 +56,7 @@ export class ManageRobotsUseCase {
         throw new Error('Robot not found for update');
       }
 
-      await this.robotsConfigurationRepository.update(robot);
+      await this.robotsConfigurationRepository.update(bot);
       const result = await this.loadRobots();
       return result.success ? Success(result.data) : result;
     } catch (error) {
@@ -67,7 +67,7 @@ export class ManageRobotsUseCase {
     }
   }
 
-  async removeRobot(robotId: string): Promise<Result<Robot[]>> {
+  async removeRobot(robotId: string): Promise<Result<RobotConfig[]>> {
     try {
       if (!robotId) {
         throw new Error('Robot ID is required for removal');
@@ -94,7 +94,7 @@ export class ManageRobotsUseCase {
     }
   }
 
-  async clearRobots(): Promise<Result<Robot[]>> {
+  async clearRobots(): Promise<Result<RobotConfig[]>> {
     try {
       await this.robotsConfigurationRepository.clear();
       await this.robotsConfigurationRepository.save(DEFAULT_ROBOT);
@@ -106,7 +106,7 @@ export class ManageRobotsUseCase {
     }
   }
 
-  async findRobotById(robotId: string): Promise<Result<Robot>> {
+  async findRobotById(robotId: string): Promise<Result<RobotConfig>> {
     try {
       if (!robotId) {
         throw new Error('Robot ID is required for search');

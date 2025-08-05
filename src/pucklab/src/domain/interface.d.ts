@@ -1,19 +1,19 @@
-import { Robot } from './robot';
-import { Result } from './result';
+import type { RobotConfig } from './robot';
+import type { Result } from './result';
 
 export interface ElectronAPI {
   manageRobots: {
-    loadRobots: () => Promise<Result<Robot[]>>;
-    addRobot: (robot: Robot) => Promise<Result<Robot[]>>;
-    updateRobot: (robot: Robot) => Promise<Result<Robot[]>>;
-    removeRobot: (robotId: string) => Promise<Result<Robot[]>>;
-    clearRobots: () => Promise<Result<Robot[]>>;
-    findRobotById: (robotId: string) => Promise<Result<Robot | null>>;
+    loadRobots: () => Promise<Result<RobotConfig[]>>;
+    addRobot: (robot: RobotConfig) => Promise<Result<RobotConfig[]>>;
+    updateRobot: (robot: RobotConfig) => Promise<Result<RobotConfig[]>>;
+    removeRobot: (robotId: string) => Promise<Result<RobotConfig[]>>;
+    clearRobots: () => Promise<Result<RobotConfig[]>>;
+    findRobotById: (robotId: string) => Promise<Result<RobotConfig>>;
   };
   robotConnection: {
-    connectToRobot: (robot: Robot) => Promise<Result<Robot>>;
-    disconnectFromRobot: (robot: Robot) => Promise<Result<Robot>>;
-    checkConnection: (robot: Robot) => Promise<Result<boolean>>;
+    connectToRobot: (robot: RobotConfig) => Promise<Result<RobotConfig>>;
+    disconnectFromRobot: (robot: RobotConfig) => Promise<Result<RobotConfig>>;
+    checkConnection: (robot: RobotConfig) => Promise<Result<boolean>>;
   };
 }
 

@@ -1,17 +1,18 @@
-import type { Robot } from '../../../domain/robot';
+import { Robot, type RobotConfig } from '../../../domain/robot';
 import { Result, Success, Failure } from '../../../domain/result';
 import type { RobotCommunicationService } from '../interfaces/robotCommunicationService';
 
 export class RobotConnectionUseCase {
-  constructor(private robotRepository: RobotCommunicationService) {}
+  constructor(private robotRepository: RobotCommunicationService) { }
 
-  async connectToRobot(robot: Robot): Promise<Result<Robot>> {
+  async connectToRobot(robot: RobotConfig): Promise<Result<RobotConfig>> {
     try {
-      if (!robot.isValid()) {
+      const bot = new Robot(robot.ipAddress, robot.port);
+      if (!bot || !bot.isValid()) {
         throw new Error('Invalid robot connection parameters');
       }
 
-      const connectedRobot = await this.robotRepository.connect(robot);
+      const connectedRobot = await this.robotRepository.connect(bot);
       return Success(connectedRobot);
     } catch (error) {
       return Failure(
@@ -20,13 +21,14 @@ export class RobotConnectionUseCase {
     }
   }
 
-  async disconnectFromRobot(robot: Robot): Promise<Result<Robot>> {
+  async disconnectFromRobot(robot: RobotConfig): Promise<Result<RobotConfig>> {
     try {
-      if (!this.robotRepository.isConnected(robot)) {
+      const bot = new Robot(robot.ipAddress, robot.port);
+      if (!this.robotRepository.isConnected(bot)) {
         throw new Error('Robot is not connected');
       }
 
-      const disconnectedRobot = await this.robotRepository.disconnect(robot);
+      const disconnectedRobot = await this.robotRepository.disconnect(bot);
       return Success(disconnectedRobot);
     } catch (error) {
       return Failure(
@@ -37,18 +39,19 @@ export class RobotConnectionUseCase {
     }
   }
 
-  async checkConnection(robot: Robot): Promise<Result<boolean>> {
+  async checkConnection(robot: RobotConfig): Promise<Result<boolean>> {
     try {
-      if (!robot.isValid()) {
+      const bot = new Robot(robot.ipAddress, robot.port);
+      if (!bot.isValid()) {
         return Success(false);
       }
 
-      const isConnected = await this.robotRepository.isConnected(robot);
+      const isConnected = await this.robotRepository.isConnected(bot);
       if (isConnected) {
         return Success(true);
       }
 
-      const connectedRobot = await this.robotRepository.connect(robot);
+      const connectedRobot = await this.robotRepository.connect(bot);
       if (connectedRobot) {
         await this.robotRepository.disconnect(connectedRobot);
         return Success(true);
