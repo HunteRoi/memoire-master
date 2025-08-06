@@ -5,7 +5,7 @@ import { Box, Button, Card, CardContent, FormControl, InputAdornment, TextField 
 import { useAppContext } from '../hooks/useAppContext';
 import { useEnsureData } from '../hooks/useEnsureData';
 import { Age } from '../types/Age';
-import { PageLayout } from '../components/layout/PageLayout';
+import { PageLayout } from '../components/layout/layout';
 
 export const AgeSelection: FC = () => {
   const navigate = useNavigate();
@@ -36,8 +36,17 @@ export const AgeSelection: FC = () => {
       onBack={handleBack}
       onContinue={handleContinue}
     >
-      <Card sx={{ mt: 4, width: '100%', maxWidth: 500 }}>
-        <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          minHeight: '50vh',
+          mt: 4
+        }}
+      >
+        <Card sx={{ width: '100%', maxWidth: 500, minHeight: 180 }}>
+          <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 4 }}>
           <FormControl sx={{ m: 1 }}>
             <TextField
               type="number"
@@ -111,8 +120,9 @@ export const AgeSelection: FC = () => {
               }}
             />
           </FormControl>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Box>
     </PageLayout>
   );
 };

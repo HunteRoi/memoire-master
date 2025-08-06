@@ -5,7 +5,7 @@ import { Explore, Navigation } from '@mui/icons-material';
 
 import { useAppContext } from '../hooks/useAppContext';
 import { Mode, ModeType } from '../types/Mode';
-import { PageLayout } from '../components/layout/PageLayout';
+import { PageLayout } from '../components/layout/layout';
 import { ModeCard } from '../components/modeCard';
 import { useEnsureData } from '../hooks/useEnsureData';
 
@@ -13,12 +13,12 @@ const modes: Mode[] = [
   {
     title: ModeType.EXPLORATION,
     description: 'Move the robot through an arena and scan floor tiles to find white tiles in a fully black environment.',
-    icon: <Explore />
+    icon: <Explore sx={{ fontSize: '4rem' }} />
   },
   {
     title: ModeType.NAVIGATION,
     description: 'Navigate the robot through a labyrinth and find the optimal path to reach destinations.',
-    icon: <Navigation />
+    icon: <Navigation sx={{ fontSize: '4rem' }} />
   }
 ]
 

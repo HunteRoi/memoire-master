@@ -9,7 +9,7 @@ import { Robot } from '../../domain/robot';
 import { RobotGrid } from '../components/robot/robotGrid';
 import { RobotDialog } from '../components/robot/dialog';
 import { RobotConnectionDialog } from '../components/robot/robotConnectionDialog';
-import { PageLayout } from '../components/layout/PageLayout';
+import { PageLayout } from '../components/layout/layout';
 
 export const RobotSelection: FC = () => {
   const navigate = useNavigate();
