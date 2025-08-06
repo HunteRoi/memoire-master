@@ -6,6 +6,7 @@ import { Age } from '../types/Age';
 import { ModeType } from '../types/Mode';
 import { Robot } from '../../domain/robot';
 import { isSuccess } from '../../domain/result';
+import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
 
 const initialState: AppState = {
     theme: ThemeType.CLASSIC,
@@ -15,7 +16,13 @@ const initialState: AppState = {
     robots: [],
     connectedRobots: new Set<string>(),
     isLoading: false,
-    error: null
+    error: null,
+    alert: {
+        open: false,
+        message: '',
+        severity: 'info',
+        onClose: () => {}
+    }
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -40,6 +47,18 @@ function appReducer(state: AppState, action: AppAction): AppState {
             return { ...state, isLoading: action.payload };
         case 'SET_ERROR':
             return { ...state, error: action.payload };
+        case 'SHOW_ALERT':
+            return { 
+                ...state, 
+                alert: {
+                    open: true,
+                    message: action.payload.message,
+                    severity: action.payload.severity,
+                    onClose: () => {}
+                }
+            };
+        case 'HIDE_ALERT':
+            return { ...state, alert: { ...state.alert, open: false } };
         case 'RESET_STATE':
             return initialState;
         default:
@@ -81,6 +100,12 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     const isRobotConnected = useCallback((robotId: string) => 
         state.connectedRobots.has(robotId), [state.connectedRobots]);
     
+    const showAlert = useCallback((message: string, severity: AlertSnackbarProps['severity'] = 'info') => 
+        dispatch({ type: 'SHOW_ALERT', payload: { message, severity } }), [dispatch]);
+    
+    const hideAlert = useCallback(() => 
+        dispatch({ type: 'HIDE_ALERT' }), [dispatch]);
+    
     const resetState = useCallback(() => 
         dispatch({ type: 'RESET_STATE' }), [dispatch]);
 
@@ -119,6 +144,10 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const contextValue = useMemo(() => ({
         ...state,
+        alert: {
+            ...state.alert,
+            onClose: hideAlert
+        },
         setTheme,
         setUserAge,
         setSelectedRobot,
@@ -129,10 +158,12 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         isRobotConnected,
         setLoading,
         setError,
+        showAlert,
+        hideAlert,
         resetState,
         ensureRobotsLoaded,
         ensureThemeLoaded
-    }), [state, setTheme, setUserAge, setSelectedRobot, setSelectedMode, setRobotsList, addConnectedRobot, removeConnectedRobot, isRobotConnected, setLoading, setError, resetState, ensureRobotsLoaded, ensureThemeLoaded]);
+    }), [state, setTheme, setUserAge, setSelectedRobot, setSelectedMode, setRobotsList, addConnectedRobot, removeConnectedRobot, isRobotConnected, setLoading, setError, showAlert, hideAlert, resetState, ensureRobotsLoaded, ensureThemeLoaded]);
 
     return <AppContext.Provider value={contextValue}>
         {children}

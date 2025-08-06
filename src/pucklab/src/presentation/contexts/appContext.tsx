@@ -4,6 +4,7 @@ import { ThemeType } from '../types/Theme';
 import { Age } from '../types/Age';
 import { ModeType } from '../types/Mode';
 import { Robot } from '../../domain/robot';
+import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
 
 export type AppState = {
   theme: ThemeType;
@@ -14,6 +15,7 @@ export type AppState = {
   connectedRobots: Set<string>;
   isLoading: boolean;
   error: string | null;
+  alert: AlertSnackbarProps;
 };
 
 export type AppAction =
@@ -26,6 +28,8 @@ export type AppAction =
     | { type: 'REMOVE_CONNECTED_ROBOT'; payload: string }
     | { type: 'SET_LOADING'; payload: boolean }
     | { type: 'SET_ERROR'; payload: string | null }
+    | { type: 'SHOW_ALERT'; payload: { message: string; severity: AlertSnackbarProps['severity'] } }
+    | { type: 'HIDE_ALERT' }
     | { type: 'RESET_STATE' };
 
 export type AppContextType = AppState & {
@@ -39,6 +43,8 @@ export type AppContextType = AppState & {
   isRobotConnected: (robotId: string) => boolean;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  showAlert: (message: string, severity?: AlertSnackbarProps['severity']) => void;
+  hideAlert: () => void;
   resetState: () => void;
   ensureRobotsLoaded: () => Promise<void>;
   ensureThemeLoaded: () => void;

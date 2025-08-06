@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import { Box, Button, Container, Typography } from '@mui/material';
-import { AlertSnackbar, type AlertSnackbarProps } from './alertSnackbar';
 
 interface PageLayoutProps {
   title: string;
@@ -13,7 +12,6 @@ interface PageLayoutProps {
   backText?: string;
   maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   centered?: boolean;
-  alert?: AlertSnackbarProps;
 }
 
 export const PageLayout: React.FC<PageLayoutProps> = ({
@@ -26,8 +24,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   continueText = 'Continue',
   backText = 'Back',
   maxWidth = 'md',
-  centered = true,
-  alert
+  centered = true
 }) => {
   return (
     <Box
@@ -93,7 +90,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 variant="outlined"
                 size="large"
                 onClick={onBack}
-                sx={{ minWidth: 200 }}
+                sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
               >
                 {backText}
               </Button>
@@ -104,7 +101,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 size="large"
                 onClick={onContinue}
                 disabled={continueDisabled}
-                sx={{ minWidth: 200 }}
+                sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
               >
                 {continueText}
               </Button>
@@ -112,14 +109,6 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
           </Box>
         </Box>
       </Container>
-      {alert && (
-        <AlertSnackbar
-          open={alert.open}
-          message={alert.message}
-          severity={alert.severity}
-          onClose={alert.onClose}
-        />
-      )}
     </Box>
   );
 };

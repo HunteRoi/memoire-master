@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 
 import { useAppContext } from '../hooks/useAppContext';
 import { useRobotManagement } from '../hooks/useRobotManagement';
-import { useAlert } from '../hooks/useAlert';
 import { useEnsureData } from '../hooks/useEnsureData';
 import { Robot } from '../../domain/robot';
 import { RobotGrid } from '../components/robot/robotGrid';
@@ -13,8 +12,7 @@ import { PageLayout } from '../components/layout/layout';
 
 export const RobotSelection: FC = () => {
   const navigate = useNavigate();
-  const { setError, setSelectedRobot } = useAppContext();
-  const { alert, showAlert } = useAlert();
+  const { setError, setSelectedRobot, showAlert } = useAppContext();
 
   useEnsureData();
 
@@ -125,7 +123,6 @@ export const RobotSelection: FC = () => {
       onContinue={handleContinue}
       continueDisabled={!selectedRobotData || !isRobotConnected(selectedRobot || '')}
       maxWidth="lg"
-      alert={alert}
     >
       <RobotGrid
         robots={robots}
