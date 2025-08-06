@@ -1,9 +1,10 @@
 import { ChangeEvent, FC, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { Box, Button, Card, CardContent, FormControl, InputAdornment, TextField } from '@mui/material';
 
 import { useAppContext } from '../hooks/useAppContext';
-import { Box, Button, Card, CardContent, Container, FormControl, FormHelperText, Grid, InputAdornment, inputBaseClasses, Slider, TextField, Typography } from '@mui/material';
 import { Age } from '../types/Age';
+import { PageLayout } from '../components/layout/PageLayout';
 
 export const AgeSelection: FC = () => {
   const navigate = useNavigate();
@@ -25,22 +26,13 @@ export const AgeSelection: FC = () => {
     navigate('/robot-selection');
   };
 
-  return <Container maxWidth="md">
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      minHeight="100vh"
-      py={4}
+  return (
+    <PageLayout
+      title="What's Your Age?"
+      subtitle="This helps us customize the interface just for you"
+      onBack={handleBack}
+      onContinue={handleContinue}
     >
-      <Typography variant="h1" component="h1" gutterBottom align="center">
-        What's Your Age?
-      </Typography>
-
-      <Typography variant="h3" component="p" gutterBottom align="center" color="text.secondary">
-        This helps us customize the interface just for you
-      </Typography>
-
       <Card sx={{ mt: 4, width: '100%', maxWidth: 500 }}>
         <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <FormControl sx={{ m: 1 }}>
@@ -118,25 +110,6 @@ export const AgeSelection: FC = () => {
           </FormControl>
         </CardContent>
       </Card>
-
-      <Box mt={6} display="flex" gap={2} justifyContent="center">
-        <Button
-          variant="outlined"
-          size="large"
-          onClick={handleBack}
-          sx={{ minWidth: 200 }}
-        >
-          Back
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleContinue}
-          sx={{ minWidth: 200 }}
-        >
-          Continue
-        </Button>
-      </Box>
-    </Box>
-  </Container>;
+    </PageLayout>
+  );
 };

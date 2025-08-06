@@ -43,7 +43,7 @@ export class RobotConnectionUseCase {
     try {
       const bot = new Robot(robot.ipAddress, robot.port);
       if (!bot.isValid()) {
-        return Success(false);
+        throw new Error('The robot data is not valid');
       }
 
       const isConnected = await this.robotRepository.isConnected(bot);
@@ -56,9 +56,11 @@ export class RobotConnectionUseCase {
         await this.robotRepository.disconnect(connectedRobot);
         return Success(true);
       }
-      return Success(false);
-    } catch (_error) {
-      return Success(false);
+      throw new Error('Could not connect to robot');
+    } catch (error) {
+      return Failure(error instanceof Error
+        ? error.message
+        : 'Failed to check connection with robot');
     }
   }
 }

@@ -1,8 +1,7 @@
 import { Robot, type RobotConfig } from '../../../domain/robot';
 import { Result, Success, Failure } from '../../../domain/result';
+import { DEFAULT_ROBOT } from '../../../domain/constants';
 import type { RobotsConfigurationRepository } from '../interfaces/robotsConfigurationRepository';
-
-const DEFAULT_ROBOT: Robot = new Robot('192.168.1.121', 443);
 
 export class ManageRobotsUseCase {
   constructor(
