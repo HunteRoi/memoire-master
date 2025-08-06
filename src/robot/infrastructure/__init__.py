@@ -1,0 +1,1 @@
+"""Infrastructure layer - Hardware implementations and external dependencies"""
