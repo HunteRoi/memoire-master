@@ -48,10 +48,14 @@ export const RobotCard: FC<RobotCardProps> = ({
   return (
     <Card
       sx={{
+        height: '100%',
+        minHeight: 140,
         cursor: 'pointer',
         border: selected ? 2 : 1,
         borderColor: selected ? 'primary.main' : 'divider',
         position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
         '&:hover': {
           borderColor: 'primary.main',
           elevation: 4
@@ -59,7 +63,7 @@ export const RobotCard: FC<RobotCardProps> = ({
       }}
       onClick={() => onSelect(robot)}
     >
-      <CardContent>
+      <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
           <Box display="flex" alignItems="center" gap={1}>
             <Typography variant="h6">

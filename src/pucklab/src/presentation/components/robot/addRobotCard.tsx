@@ -11,6 +11,7 @@ export const AddRobotCard: React.FC<AddRobotCardProps> = ({ onAddRobot }) => {
     <Card
       sx={{
         height: '100%',
+        minHeight: 140,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -19,12 +20,13 @@ export const AddRobotCard: React.FC<AddRobotCardProps> = ({ onAddRobot }) => {
         borderColor: 'divider',
         '&:hover': {
           borderColor: 'primary.main',
-          backgroundColor: 'action.hover'
+          backgroundColor: 'action.hover',
+          elevation: 4
         }
       }}
       onClick={onAddRobot}
     >
-      <CardContent sx={{ textAlign: 'center' }}>
+      <CardContent sx={{ textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <Fab size="medium" color="primary" sx={{ mb: 2 }}>
           <Add />
         </Fab>
