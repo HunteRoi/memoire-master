@@ -66,7 +66,7 @@ export const useRobotManagement = () => {
     // State
     robots,
     selectedRobot,
-    
+
     // Actions
     handleDeleteRobot,
     handleSaveRobot,

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { Box, Button, Card, CardContent, FormControl, InputAdornment, TextField } from '@mui/material';
 
 import { useAppContext } from '../hooks/useAppContext';
+import { useEnsureData } from '../hooks/useEnsureData';
 import { Age } from '../types/Age';
 import { PageLayout } from '../components/layout/PageLayout';
 
@@ -10,6 +11,8 @@ export const AgeSelection: FC = () => {
   const navigate = useNavigate();
   const { setUserAge } = useAppContext();
   const [age, setAge] = useState<number>(10);
+  
+  useEnsureData();
 
   const handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newAge = parseInt(event.target.value);

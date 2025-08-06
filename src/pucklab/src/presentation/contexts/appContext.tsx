@@ -34,6 +34,8 @@ export type AppContextType = AppState & {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   resetState: () => void;
+  ensureRobotsLoaded: () => Promise<void>;
+  ensureThemeLoaded: () => void;
 };
 
 export const AppContext = createContext<AppContextType | null>(null);

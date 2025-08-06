@@ -3,14 +3,26 @@ import { useNavigate } from 'react-router';
 import { Box, Card, CardActionArea, CardContent, Grid, Radio, Typography } from '@mui/material';
 
 import { useAppContext } from '../hooks/useAppContext';
+import { useEnsureData } from '../hooks/useEnsureData';
 import { themeOptions } from '../types/Theme';
 import { PageLayout } from '../components/layout/PageLayout';
 
 export const ThemeSelection: FC = () => {
   const navigate = useNavigate();
   const { theme, setTheme } = useAppContext();
+  
+  useEnsureData();
 
   const handleContinue = () => navigate('/age-selection');
+  
+  const handleThemeSelection = (selectedTheme: typeof theme) => {
+    setTheme(selectedTheme);
+    try {
+      localStorage.setItem('pucklab-theme', selectedTheme);
+    } catch (error) {
+      console.error('Failed to save theme to localStorage:', error);
+    }
+  };
 
   return (
     <PageLayout
@@ -36,7 +48,7 @@ export const ThemeSelection: FC = () => {
               }}
             >
               <CardActionArea
-                onClick={() => setTheme(option.type)}
+                onClick={() => handleThemeSelection(option.type)}
                 sx={{ height: '100%', position: 'relative' }}
               >
                 <Box
@@ -49,7 +61,7 @@ export const ThemeSelection: FC = () => {
                 >
                   <Radio
                     checked={theme === option.type}
-                    onChange={() => setTheme(option.type)}
+                    onChange={() => handleThemeSelection(option.type)}
                   />
                 </Box>
 

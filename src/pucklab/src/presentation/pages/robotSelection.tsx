@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { useAppContext } from '../hooks/useAppContext';
 import { useRobotManagement } from '../hooks/useRobotManagement';
 import { useAlert } from '../hooks/useAlert';
+import { useEnsureData } from '../hooks/useEnsureData';
 import { Robot } from '../../domain/robot';
 import { RobotGrid } from '../components/robot/robotGrid';
 import { RobotDialog } from '../components/robot/dialog';
@@ -14,6 +15,8 @@ export const RobotSelection: FC = () => {
   const navigate = useNavigate();
   const { setError, setSelectedRobot } = useAppContext();
   const { alert, showAlert } = useAlert();
+  
+  useEnsureData();
 
   const {
     robots,

@@ -1,10 +1,11 @@
-import { FC, PropsWithChildren, useMemo, useReducer, useCallback } from 'react';
+import { FC, PropsWithChildren, useMemo, useReducer, useCallback, useRef } from 'react';
 
 import { type AppAction, AppContext, type AppState } from '../contexts/appContext';
 import { ThemeType } from '../types/Theme';
 import { Age } from '../types/Age';
 import { ModeType } from '../types/Mode';
 import { Robot } from '../../domain/robot';
+import { isSuccess } from '../../domain/result';
 
 const initialState: AppState = {
     theme: ThemeType.CLASSIC,
@@ -41,6 +42,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
 export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     const [state, dispatch] = useReducer(appReducer, initialState);
+    const loadingRef = useRef({ robots: false, theme: false });
 
     const setTheme = useCallback((theme: ThemeType) => 
         dispatch({ type: 'SET_THEME', payload: theme }), [dispatch]);
@@ -66,6 +68,39 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     const resetState = useCallback(() => 
         dispatch({ type: 'RESET_STATE' }), [dispatch]);
 
+    const ensureRobotsLoaded = useCallback(async () => {
+        if (state.robots.length === 0 && !loadingRef.current.robots) {
+            loadingRef.current.robots = true;
+            try {
+                const result = await window.electronAPI.manageRobots.loadRobots();
+                if (isSuccess(result)) {
+                    const robots = result.data.map(robot => new Robot(robot.ipAddress, robot.port));
+                    setRobotsList(robots);
+                }
+            } catch (error) {
+                console.error('Failed to lazy load robots:', error);
+            } finally {
+                loadingRef.current.robots = false;
+            }
+        }
+    }, [state.robots.length, setRobotsList]);
+
+    const ensureThemeLoaded = useCallback(() => {
+        if (!loadingRef.current.theme) {
+            loadingRef.current.theme = true;
+            try {
+                const savedTheme = localStorage.getItem('pucklab-theme') as ThemeType;
+                if (savedTheme && Object.values(ThemeType).includes(savedTheme)) {
+                    setTheme(savedTheme);
+                }
+            } catch (error) {
+                console.error('Failed to load theme from localStorage:', error);
+            } finally {
+                loadingRef.current.theme = false;
+            }
+        }
+    }, [setTheme]);
+
     const contextValue = useMemo(() => ({
         ...state,
         setTheme,
@@ -75,8 +110,10 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         setRobotsList,
         setLoading,
         setError,
-        resetState
-    }), [state, setTheme, setUserAge, setSelectedRobot, setSelectedMode, setRobotsList, setLoading, setError, resetState]);
+        resetState,
+        ensureRobotsLoaded,
+        ensureThemeLoaded
+    }), [state, setTheme, setUserAge, setSelectedRobot, setSelectedMode, setRobotsList, setLoading, setError, resetState, ensureRobotsLoaded, ensureThemeLoaded]);
 
     return <AppContext.Provider value={contextValue}>
         {children}

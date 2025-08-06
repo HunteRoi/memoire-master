@@ -46,10 +46,10 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
           minHeight="100vh"
           py={4}
         >
-          <Typography 
-            variant="h1" 
-            component="h1" 
-            gutterBottom 
+          <Typography
+            variant="h1"
+            component="h1"
+            gutterBottom
             align={centered ? 'center' : 'left'}
             sx={{ mb: 2 }}
           >
@@ -57,10 +57,10 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
           </Typography>
 
           {subtitle && (
-            <Typography 
-              variant="h3" 
-              component="p" 
-              gutterBottom 
+            <Typography
+              variant="h3"
+              component="p"
+              gutterBottom
               align={centered ? 'center' : 'left'}
               color="text.secondary"
               sx={{ mb: 4 }}
@@ -69,8 +69,8 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
             </Typography>
           )}
 
-          <Box 
-            sx={{ 
+          <Box
+            sx={{
               flex: 1,
               width: '100%',
               display: 'flex',
@@ -82,9 +82,9 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
             {children}
           </Box>
 
-          <Box 
-            display="flex" 
-            gap={2} 
+          <Box
+            display="flex"
+            gap={2}
             justifyContent="center"
             sx={{ mt: 'auto' }}
           >
