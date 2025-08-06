@@ -11,6 +11,7 @@ interface RobotGridProps {
   onRobotSelect: (robot: Robot) => void;
   onRobotEdit: (robot: Robot) => void;
   onRobotDelete: (robotId: string) => void;
+  onRobotDisconnect: (robot: Robot) => void;
   onAddRobot: () => void;
 }
 
@@ -21,6 +22,7 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
   onRobotSelect,
   onRobotEdit,
   onRobotDelete,
+  onRobotDisconnect,
   onAddRobot
 }) => {
   return (
@@ -32,6 +34,7 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
             onSelect={onRobotSelect}
             onEdit={onRobotEdit}
             onDelete={onRobotDelete}
+            onDisconnect={onRobotDisconnect}
             selected={selectedRobotId === robot.id}
             connected={isRobotConnected(robot.id)}
           />

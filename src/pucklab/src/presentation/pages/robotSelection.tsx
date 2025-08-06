@@ -91,6 +91,15 @@ export const RobotSelection: FC = () => {
     setConfirmDialogOpen(false);
   };
 
+  const handleDisconnectRobot = async (robot: Robot) => {
+    const success = await handleDisconnectFromRobot(robot);
+    if (success) {
+      showAlert(`Disconnected from Robot ${robot.id}`, 'info');
+    } else {
+      showAlert(`Failed to disconnect from Robot ${robot.id}`, 'error');
+    }
+  };
+
 
   const handleBack = () => navigate('/age-selection');
   const handleContinue = async () => {
@@ -125,6 +134,7 @@ export const RobotSelection: FC = () => {
         onRobotSelect={handleRobotSelection}
         onRobotEdit={handleEditRobot}
         onRobotDelete={handleDeleteRobot}
+        onRobotDisconnect={handleDisconnectRobot}
         onAddRobot={handleAddRobot}
       />
 

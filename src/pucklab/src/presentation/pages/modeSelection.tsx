@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useNavigate } from 'react-router';
-import { Grid } from '@mui/material';
+import { Grid, Box } from '@mui/material';
 import { Explore, Navigation } from '@mui/icons-material';
 
 import { useAppContext } from '../hooks/useAppContext';
@@ -40,19 +40,29 @@ export const ModeSelection: FC = () => {
       continueText='Start Programming'
       maxWidth='lg'
     >
-      <Grid container spacing={2} mb={4}>
-        {modes.map((mode) => (
-          <Grid size={{ xs: 12, md: 6 }} key={mode.title}>
-            <ModeCard
-              mode={mode}
-              onSelect={(mode) => {
-                setSelectedMode(mode.title);
-              }}
-              selected={selectedMode === mode.title}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          minHeight: '60vh',
+          mb: 4
+        }}
+      >
+        <Grid container spacing={6} justifyContent="center" maxWidth="lg">
+          {modes.map((mode) => (
+            <Grid size={{ xs: 12, md: 6 }} key={mode.title}>
+              <ModeCard
+                mode={mode}
+                onSelect={(mode) => {
+                  setSelectedMode(mode.title);
+                }}
+                selected={selectedMode === mode.title}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </PageLayout>
   );
 };

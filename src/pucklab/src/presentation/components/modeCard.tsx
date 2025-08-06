@@ -21,29 +21,40 @@ export const ModeCard: React.FC<ModeCardProps> = ({ mode, onSelect, selected }) 
       <Card
         sx={{
           cursor: 'pointer',
-          border: selected ? 2 : 1,
+          border: selected ? 3 : 2,
           borderColor: selected ? 'primary.main' : 'divider',
+          backgroundColor: selected ? 'primary.light' : 'background.paper',
+          boxShadow: selected ? 4 : 2,
+          transition: 'all 0.3s ease',
           '&:hover': {
             borderColor: 'primary.main',
-            elevation: 4
+            boxShadow: 6,
+            transform: 'translateY(-4px)'
           }
         }}
         onClick={() => onSelect(mode)}
       >
-        <CardContent sx={{ p: 2 }}>
-          <Box display="flex" alignItems="center" gap={2}>
+        <CardContent sx={{ p: 6, minHeight: 200 }}>
+          <Box display="flex" flexDirection="column" alignItems="center" gap={4} textAlign="center">
             <Box
               sx={{
-                color: 'primary.main',
+                color: selected ? 'primary.contrastText' : 'primary.main',
                 display: 'flex',
                 alignItems: 'center',
-                fontSize: '2rem'
+                fontSize: '4rem'
               }}
             >
               {mode.icon}
             </Box>
 
-            <Typography variant="h6">
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                textTransform: 'uppercase', 
+                fontWeight: 'bold',
+                color: selected ? 'primary.contrastText' : 'text.primary'
+              }}
+            >
               {mode.title}
             </Typography>
           </Box>
