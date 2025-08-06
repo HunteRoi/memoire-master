@@ -35,7 +35,7 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
 
   async connect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);
-    
+
     // Check if already connected
     if (this.connectedRobots.has(robotKey)) {
       const existing = this.connectedRobots.get(robotKey)!;
@@ -52,29 +52,29 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
         () => {
           ws.terminate();
           reject(new Error(`Connection timeout to robot ${robot.id}`));
-        }, 
+        },
         this.connectionTimeout
       );
 
       ws.on('open', () => {
         clearTimeout(connectionTimer);
         console.log(`✅ Connected to robot ${robot.id} at ${wsUrl}`);
-        
+
         const connectedRobot: ConnectedRobot = {
           robot,
           websocket: ws,
           connected: true,
           lastPing: Date.now()
         };
-        
+
         this.connectedRobots.set(robotKey, connectedRobot);
-        
+
         this.sendMessage(ws, {
           type: 'status',
           data: { status: 'connected', client: 'pucklab' },
           timestamp: Date.now()
         });
-        
+
         resolve(robot);
       });
 
@@ -100,7 +100,7 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
   async disconnect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);
     const connectedRobot = this.connectedRobots.get(robotKey);
-    
+
     if (!connectedRobot) {
       return robot;
     }
@@ -114,7 +114,7 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
 
       connectedRobot.websocket.close(1000, 'Client disconnect');
       this.removeRobot(robotKey);
-      
+
       console.log(`👋 Disconnected from robot ${robot.id}`);
       resolve(robot);
     });
@@ -123,15 +123,15 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
   async isConnected(robot: Robot): Promise<boolean> {
     const robotKey = this.getRobotKey(robot);
     const connectedRobot = this.connectedRobots.get(robotKey);
-    
-    return connectedRobot?.connected && 
-           connectedRobot.websocket.readyState === WebSocket.OPEN || false;
+
+    return connectedRobot?.connected &&
+      connectedRobot.websocket.readyState === WebSocket.OPEN || false;
   }
 
   async sendCommand(robot: Robot, command: string): Promise<unknown> {
     const robotKey = this.getRobotKey(robot);
     const connectedRobot = this.connectedRobots.get(robotKey);
-    
+
     if (!connectedRobot || !connectedRobot.connected) {
       throw new Error(`Robot ${robot.id} is not connected`);
     }
@@ -160,7 +160,7 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
           if (response.type === 'success' || response.type === 'error') {
             clearTimeout(responseTimeout);
             connectedRobot.websocket.onmessage = originalHandler;
-            
+
             if (response.type === 'error') {
               reject(new Error(response.message || 'Robot command failed'));
             } else {
@@ -211,21 +211,21 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
 
     try {
       const response: RobotResponse = JSON.parse(data.toString());
-      
+
       switch (response.type) {
         case 'pong':
           connectedRobot.lastPing = Date.now();
           console.log(`🏓 Pong received from robot ${connectedRobot.robot.id}`);
           break;
-          
+
         case 'status':
           console.log(`📊 Status from robot ${connectedRobot.robot.id}:`, response.data);
           break;
-          
+
         case 'error':
           console.error(`❌ Error from robot ${connectedRobot.robot.id}:`, response.message);
           break;
-          
+
         default:
           console.log(`📨 Message from robot ${connectedRobot.robot.id}:`, response);
       }
@@ -240,7 +240,7 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
 
   private sendPingsToRobots(): void {
     const now = Date.now();
-    
+
     this.connectedRobots.forEach((connectedRobot, robotKey) => {
       if (connectedRobot.connected) {
         this.sendMessage(connectedRobot.websocket, {
@@ -248,7 +248,7 @@ export class WebsocketRobotCommunicationService implements RobotCommunicationSer
           data: {},
           timestamp: now
         });
-        
+
         if (now - connectedRobot.lastPing > this.pingInterval * 2) {
           console.warn(`⚠️ Robot ${connectedRobot.robot.id} ping timeout, disconnecting...`);
           setTimeout(connectedRobot.websocket.terminate.bind(connectedRobot.websocket), 0);
