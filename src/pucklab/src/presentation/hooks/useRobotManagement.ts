@@ -3,7 +3,17 @@ import { isSuccess, Result } from '../../domain/result';
 import { useAppContext } from './useAppContext';
 
 export const useRobotManagement = () => {
-  const { robots, setRobotsList, selectedRobot, setSelectedRobot, setError, setLoading } = useAppContext();
+  const { 
+    robots, 
+    setRobotsList, 
+    selectedRobot, 
+    setSelectedRobot, 
+    addConnectedRobot,
+    removeConnectedRobot,
+    isRobotConnected,
+    setError, 
+    setLoading 
+  } = useAppContext();
 
   const handleDeleteRobot = async (robotId: string) => {
     const result = await window.electronAPI.manageRobots.removeRobot(robotId);
@@ -39,11 +49,27 @@ export const useRobotManagement = () => {
     setLoading(false);
 
     if (isSuccess(result)) {
+      addConnectedRobot(robot.id);
       setSelectedRobot(robot.id);
       return true;
     } else {
       console.error('Could not connect to robot', result.error);
       setError('Could not connect to this robot');
+      return false;
+    }
+  };
+
+  const handleDisconnectFromRobot = async (robot: Robot) => {
+    const result = await window.electronAPI.robotConnection.disconnectFromRobot(robot);
+    if (isSuccess(result)) {
+      removeConnectedRobot(robot.id);
+      if (selectedRobot === robot.id) {
+        setSelectedRobot(null);
+      }
+      return true;
+    } else {
+      console.error('Could not disconnect from robot', result.error);
+      setError('Could not disconnect from this robot');
       return false;
     }
   };
@@ -66,11 +92,13 @@ export const useRobotManagement = () => {
     // State
     robots,
     selectedRobot,
+    isRobotConnected,
 
     // Actions
     handleDeleteRobot,
     handleSaveRobot,
     handleConnectToRobot,
+    handleDisconnectFromRobot,
     handleRobotConnectionTest,
   };
 };

@@ -4,9 +4,10 @@ import {
   CardContent,
   Typography,
   Box,
-  IconButton
+  IconButton,
+  Chip
 } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
+import { Delete, Edit, Wifi, WifiOff } from '@mui/icons-material';
 
 import { Robot } from '../../../domain/robot';
 import { DEFAULT_ROBOT } from '../../../domain/constants';
@@ -17,6 +18,7 @@ interface RobotCardProps {
   onEdit: (robot: Robot) => void;
   onDelete: (robotId: string) => void;
   selected: boolean;
+  connected: boolean;
 }
 
 export const RobotCard: FC<RobotCardProps> = ({
@@ -24,7 +26,8 @@ export const RobotCard: FC<RobotCardProps> = ({
   onSelect,
   onEdit,
   onDelete,
-  selected
+  selected,
+  connected
 }) => {
   const onEditClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
@@ -51,9 +54,17 @@ export const RobotCard: FC<RobotCardProps> = ({
     >
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-          <Typography variant="h6">
-            Robot {robot.id}
-          </Typography>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Typography variant="h6">
+              Robot {robot.id}
+            </Typography>
+            <Chip
+              icon={connected ? <Wifi /> : <WifiOff />}
+              label={connected ? 'Connected' : 'Disconnected'}
+              color={connected ? 'success' : 'default'}
+              size="small"
+            />
+          </Box>
           <Box>
             <IconButton size="small" onClick={onEditClick}>
               <Edit />

@@ -21,9 +21,11 @@ export const RobotSelection: FC = () => {
   const {
     robots,
     selectedRobot,
+    isRobotConnected,
     handleDeleteRobot,
     handleSaveRobot,
     handleConnectToRobot,
+    handleDisconnectFromRobot,
     handleRobotConnectionTest,
   } = useRobotManagement();
 
@@ -46,8 +48,17 @@ export const RobotSelection: FC = () => {
   };
 
   const handleRobotSelection = (robot: Robot) => {
-    setRobotToConnect(robot);
-    setConfirmDialogOpen(true);
+    const robotConnected = isRobotConnected(robot.id);
+    
+    if (robotConnected) {
+      // Robot is already connected, just select it
+      setSelectedRobot(robot.id);
+      showAlert(`Robot ${robot.id} is already connected`, 'info');
+    } else {
+      // Robot not connected, show connection dialog
+      setRobotToConnect(robot);
+      setConfirmDialogOpen(true);
+    }
   };
 
   const handleSaveRobotWithDialog = async (robot: Robot) => {
@@ -88,11 +99,11 @@ export const RobotSelection: FC = () => {
       return;
     }
 
-    const isConnected = await window.electronAPI.robotConnection.checkConnection(selectedRobotData);
-    if (isConnected) {
+    const robotConnected = isRobotConnected(selectedRobot);
+    if (robotConnected) {
       navigate('/mode-selection');
     } else {
-      setError('An error occured with the selected robot. Please try to reconnect to it.');
+      setError('The selected robot is not connected. Please connect to it first.');
       setSelectedRobot(null);
     }
   };
@@ -103,13 +114,14 @@ export const RobotSelection: FC = () => {
       subtitle="Choose a robot from your saved list or add a new one. Make sure your robot is powered on and connected to the network."
       onBack={handleBack}
       onContinue={handleContinue}
-      continueDisabled={!selectedRobotData}
+      continueDisabled={!selectedRobotData || !isRobotConnected(selectedRobot || '')}
       maxWidth="lg"
       alert={alert}
     >
       <RobotGrid
         robots={robots}
         selectedRobotId={selectedRobot}
+        isRobotConnected={isRobotConnected}
         onRobotSelect={handleRobotSelection}
         onRobotEdit={handleEditRobot}
         onRobotDelete={handleDeleteRobot}

@@ -13,6 +13,7 @@ const initialState: AppState = {
     selectedMode: null,
     selectedRobot: null,
     robots: [],
+    connectedRobots: new Set<string>(),
     isLoading: false,
     error: null
 };
@@ -29,6 +30,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
             return { ...state, selectedMode: action.payload };
         case 'SET_ROBOTS_LIST':
             return { ...state, robots: action.payload };
+        case 'ADD_CONNECTED_ROBOT':
+            return { ...state, connectedRobots: new Set([...state.connectedRobots, action.payload]) };
+        case 'REMOVE_CONNECTED_ROBOT':
+            const newConnectedRobots = new Set(state.connectedRobots);
+            newConnectedRobots.delete(action.payload);
+            return { ...state, connectedRobots: newConnectedRobots };
         case 'SET_LOADING':
             return { ...state, isLoading: action.payload };
         case 'SET_ERROR':
@@ -64,6 +71,15 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     
     const setError = useCallback((error: string | null) => 
         dispatch({ type: 'SET_ERROR', payload: error }), [dispatch]);
+    
+    const addConnectedRobot = useCallback((robotId: string) => 
+        dispatch({ type: 'ADD_CONNECTED_ROBOT', payload: robotId }), [dispatch]);
+    
+    const removeConnectedRobot = useCallback((robotId: string) => 
+        dispatch({ type: 'REMOVE_CONNECTED_ROBOT', payload: robotId }), [dispatch]);
+    
+    const isRobotConnected = useCallback((robotId: string) => 
+        state.connectedRobots.has(robotId), [state.connectedRobots]);
     
     const resetState = useCallback(() => 
         dispatch({ type: 'RESET_STATE' }), [dispatch]);
@@ -108,12 +124,15 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         setSelectedRobot,
         setSelectedMode,
         setRobotsList,
+        addConnectedRobot,
+        removeConnectedRobot,
+        isRobotConnected,
         setLoading,
         setError,
         resetState,
         ensureRobotsLoaded,
         ensureThemeLoaded
-    }), [state, setTheme, setUserAge, setSelectedRobot, setSelectedMode, setRobotsList, setLoading, setError, resetState, ensureRobotsLoaded, ensureThemeLoaded]);
+    }), [state, setTheme, setUserAge, setSelectedRobot, setSelectedMode, setRobotsList, addConnectedRobot, removeConnectedRobot, isRobotConnected, setLoading, setError, resetState, ensureRobotsLoaded, ensureThemeLoaded]);
 
     return <AppContext.Provider value={contextValue}>
         {children}
