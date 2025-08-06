@@ -8,6 +8,7 @@ import { SplashScreen } from './pages/splashScreen';
 import { ThemeSelection } from './pages/themeSelection';
 import { AgeSelection } from './pages/ageSelection';
 import { RobotSelection } from './pages/robotSelection';
+import { ModeSelection } from './pages/modeSelection';
 
 
 const App: React.FC = () => {
@@ -20,8 +21,8 @@ const App: React.FC = () => {
             <Route path="/theme-selection" element={<ThemeSelection />} />
             <Route path="/age-selection" element={<AgeSelection />} />
             <Route path="/robot-selection" element={<RobotSelection />} />
-            {/* <Route path="/mode-selection" element={<ModeSelection />} />
-            <Route path="/programming" element={<VisualProgramming />} />
+            <Route path="/mode-selection" element={<ModeSelection />} />
+            {/* <Route path="/programming" element={<VisualProgramming />} />
             <Route path="/settings" element={<Settings />} /> */}
           </Routes>
         </HashRouter>
