@@ -8,6 +8,7 @@ import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
 
 export type AppState = {
   theme: ThemeType;
+  language: string;
   userAge?: Age | null;
   selectedMode?: ModeType | null;
   selectedRobot?: string | null;
@@ -20,6 +21,7 @@ export type AppState = {
 
 export type AppAction =
     | { type: 'SET_THEME'; payload: ThemeType }
+    | { type: 'SET_LANGUAGE'; payload: string }
     | { type: 'SET_USER_AGE'; payload: Age }
     | { type: 'SET_SELECTED_ROBOT'; payload: string }
     | { type: 'SET_SELECTED_MODE'; payload: ModeType }
@@ -34,6 +36,7 @@ export type AppAction =
 
 export type AppContextType = AppState & {
   setTheme: (theme: ThemeType) => void;
+  setLanguage: (language: string) => void;
   setUserAge: (age: Age) => void;
   setSelectedMode: (mode: ModeType | null) => void;
   setSelectedRobot: (robotId: string | null) => void;
@@ -48,6 +51,7 @@ export type AppContextType = AppState & {
   resetState: () => void;
   ensureRobotsLoaded: () => Promise<void>;
   ensureThemeLoaded: () => void;
+  ensureLanguageLoaded: () => void;
 };
 
 export const AppContext = createContext<AppContextType | null>(null);

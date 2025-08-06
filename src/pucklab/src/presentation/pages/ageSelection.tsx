@@ -1,6 +1,7 @@
 import { ChangeEvent, FC, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Box, Button, Card, CardContent, FormControl, InputAdornment, TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { useAppContext } from '../hooks/useAppContext';
 import { useEnsureData } from '../hooks/useEnsureData';
@@ -9,6 +10,7 @@ import { PageLayout } from '../components/layout/layout';
 
 export const AgeSelection: FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { setUserAge } = useAppContext();
   const [age, setAge] = useState<number>(10);
 
@@ -31,8 +33,8 @@ export const AgeSelection: FC = () => {
 
   return (
     <PageLayout
-      title="What's Your Age?"
-      subtitle="This helps us customize the interface just for you"
+      title={t('age.title')}
+      subtitle={t('age.subtitle')}
       onBack={handleBack}
       onContinue={handleContinue}
     >
@@ -113,7 +115,7 @@ export const AgeSelection: FC = () => {
                   ),
                   endAdornment: (
                     <InputAdornment position="end" sx={{ fontSize: '3rem' }}>
-                      years old
+                      {t('age.yearsOld')}
                     </InputAdornment>
                   ),
                 },

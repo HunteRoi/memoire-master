@@ -6,6 +6,7 @@ import {
   Box,
   Tooltip
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { Mode } from '../types/Mode';
 
@@ -16,6 +17,11 @@ interface ModeCardProps {
 }
 
 export const ModeCard: React.FC<ModeCardProps> = ({ mode, onSelect, selected }) => {
+  const { t } = useTranslation();
+  
+  const getModeTitle = (modeTitle: string) => {
+    return modeTitle === 'EXPLORATION' ? t('mode.names.exploration') : t('mode.names.navigation');
+  };
   return (
     <Tooltip title={mode.description} arrow>
       <Card
@@ -56,7 +62,7 @@ export const ModeCard: React.FC<ModeCardProps> = ({ mode, onSelect, selected }) 
                 letterSpacing: '0.5px'
               }}
             >
-              {mode.title}
+              {getModeTitle(mode.title)}
             </Typography>
           </Box>
         </CardContent>

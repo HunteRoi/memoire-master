@@ -48,8 +48,11 @@
     "@mui/icons-material": "^7.3.0",
     "@mui/material": "^7.3.0",
     "electron-squirrel-startup": "^1.0.1",
+    "flag-icons": "^7.5.0",
+    "i18next": "^25.3.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-i18next": "^15.6.1",
     "react-router": "^7.7.1",
     "reactflow": "^11.11.4",
     "ws": "^8.18.3"

@@ -1,0 +1,89 @@
+{
+  "common": {
+    "back": "Retour",
+    "continue": "Continuer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "connect": "Connecter",
+    "disconnect": "Déconnecter",
+    "yes": "Oui",
+    "no": "Non",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "splash": {
+    "title": "PuckLab",
+    "subtitle": "Programmation Visuelle pour les Robots e-puck2",
+    "loadError": "Échec du chargement de la configuration des robots"
+  },
+  "theme": {
+    "title": "Choisissez Votre Thème",
+    "subtitle": "Sélectionnez un thème visuel qui correspond à votre style et à vos préférences",
+    "names": {
+      "classic": "Classique",
+      "dark": "Sombre",
+      "pink": "Rose",
+      "adventure": "Aventure",
+      "lego": "Lego"
+    },
+    "descriptions": {
+      "classic": "Interface propre et professionnelle avec des couleurs neutres",
+      "dark": "Thème sombre plus facile pour les yeux en faible luminosité",
+      "pink": "Thème amusant et coloré en rose",
+      "adventure": "Thème inspiré de la nature parfait pour les aventures en plein air",
+      "lego": "Thème lumineux et ludique inspiré des blocs LEGO"
+    }
+  },
+  "age": {
+    "title": "Quel Âge Avez-Vous?",
+    "subtitle": "Cela nous aide à personnaliser l'interface juste pour vous",
+    "yearsOld": "ans"
+  },
+  "robot": {
+    "title": "Sélectionnez Votre Robot",
+    "subtitle": "Choisissez un robot dans votre liste sauvegardée ou ajoutez-en un nouveau. Assurez-vous que votre robot est allumé et connecté au réseau.",
+    "addNewRobot": "Ajouter un Nouveau Robot",
+    "editRobot": "Modifier le Robot",
+    "deleteRobot": "Supprimer le Robot",
+    "connectToRobot": "Se Connecter",
+    "disconnectFromRobot": "Se Déconnecter",
+    "robotName": "Nom du Robot",
+    "ipAddress": "Adresse IP",
+    "port": "Port",
+    "testConnection": "Tester la Connexion",
+    "connectionSuccess": "Connexion réussie !",
+    "testingConnection": "Test de connexion...",
+    "connectionSuccessWithId": "Connexion réussie ! Le robot {{id}} est joignable.",
+    "connectionFailed": "Connexion échouée. Veuillez vérifier les paramètres réseau de votre robot.",
+    "connectionFailedDetails": "Connexion échouée. Veuillez vérifier l'adresse IP, le port et la connectivité réseau.",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce robot ?",
+    "robotIdWillBe": "L'ID du robot sera : {{id}}",
+    "updateRobot": "Mettre à jour le robot",
+    "addRobot": "Ajouter un robot",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté",
+    "connectToRobotName": "Se connecter à {{name}}",
+    "connectConfirm": "Êtes-vous sûr de vouloir vous connecter à {{name}} ?",
+    "connecting": "Connexion..."
+  },
+  "mode": {
+    "title": "Choisissez le Mode",
+    "subtitle": "Sélectionnez le mode pour votre robot. Cela déterminera les blocs disponibles et les comportements par défaut.",
+    "startProgramming": "Commencer la Programmation",
+    "names": {
+      "exploration": "EXPLORATION",
+      "navigation": "NAVIGATION"
+    },
+    "descriptions": {
+      "exploration": "Déplacez le robot dans une arène et scannez les tuiles du sol pour trouver les tuiles blanches dans un environnement entièrement noir.",
+      "navigation": "Naviguez le robot à travers un labyrinthe et trouvez le chemin optimal pour atteindre les destinations."
+    }
+  },
+  "programming": {
+    "title": "Programmation Visuelle",
+    "subtitle": "Glissez et déposez des blocs pour programmer votre robot"
+  }
+}

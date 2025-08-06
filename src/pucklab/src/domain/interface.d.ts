@@ -2,6 +2,9 @@ import type { RobotConfig } from './robot';
 import type { Result } from './result';
 
 export interface ElectronAPI {
+  app: {
+    isPackaged: () => Promise<boolean>;
+  };
   manageRobots: {
     loadRobots: () => Promise<Result<RobotConfig[]>>;
     addRobot: (robot: RobotConfig) => Promise<Result<RobotConfig[]>>;

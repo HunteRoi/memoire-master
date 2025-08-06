@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { useNavigate } from 'react-router';
 import { Grid } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { useAppContext } from '../hooks/useAppContext';
 import { useEnsureData } from '../hooks/useEnsureData';
@@ -10,6 +11,7 @@ import { ThemePreviewCard } from '../components/themePreviewCard';
 
 export const ThemeSelection: FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { theme, setTheme } = useAppContext();
 
   useEnsureData();
@@ -27,8 +29,8 @@ export const ThemeSelection: FC = () => {
 
   return (
     <PageLayout
-      title="Choose Your Theme"
-      subtitle="Pick a style that makes you feel comfortable"
+      title={t('theme.title')}
+      subtitle={t('theme.subtitle')}
       onContinue={handleContinue}
       maxWidth="lg"
     >

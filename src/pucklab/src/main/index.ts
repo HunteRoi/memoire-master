@@ -1,9 +1,13 @@
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 
 import { Container } from './container';
 import type { RobotConfig } from '../domain/robot';
 
 const container = Container.getInstance();
+
+ipcMain.handle('app:isPackaged', () => {
+  return app.isPackaged;
+});
 
 ipcMain.handle('manageRobots:loadRobots', async () => {
   return await container.manageRobotsUseCase.loadRobots();

@@ -1,12 +1,14 @@
 import React from 'react';
 import { Card, CardContent, Fab, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 interface AddRobotCardProps {
   onAddRobot: () => void;
 }
 
 export const AddRobotCard: React.FC<AddRobotCardProps> = ({ onAddRobot }) => {
+  const { t } = useTranslation();
   return (
     <Card
       sx={{
@@ -31,7 +33,7 @@ export const AddRobotCard: React.FC<AddRobotCardProps> = ({ onAddRobot }) => {
           <Add />
         </Fab>
         <Typography variant="h6">
-          Add New Robot
+          {t('robot.addNewRobot')}
         </Typography>
       </CardContent>
     </Card>

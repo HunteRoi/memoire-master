@@ -1,0 +1,89 @@
+{
+  "common": {
+    "back": "Terug",
+    "continue": "Doorgaan",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "connect": "Verbinden",
+    "disconnect": "Verbinding verbreken",
+    "yes": "Ja",
+    "no": "Nee",
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes"
+  },
+  "splash": {
+    "title": "PuckLab",
+    "subtitle": "Visueel Programmeren voor e-puck2 Robots",
+    "loadError": "Fout bij het laden van de robotconfiguratie"
+  },
+  "theme": {
+    "title": "Kies Uw Thema",
+    "subtitle": "Selecteer een visueel thema dat past bij uw stijl en voorkeuren",
+    "names": {
+      "classic": "Klassiek",
+      "dark": "Donker",
+      "pink": "Roze",
+      "adventure": "Avontuur",
+      "lego": "Lego"
+    },
+    "descriptions": {
+      "classic": "Schone en professionele interface met neutrale kleuren",
+      "dark": "Donker thema dat vriendelijker is voor de ogen bij weinig licht",
+      "pink": "Leuk en kleurrijk roze thema",
+      "adventure": "Door de natuur geïnspireerd thema perfect voor buitenactiviteiten",
+      "lego": "Helder en speels thema geïnspireerd door LEGO blokken"
+    }
+  },
+  "age": {
+    "title": "Wat is Uw Leeftijd?",
+    "subtitle": "Dit helpt ons de interface speciaal voor u aan te passen",
+    "yearsOld": "jaar oud"
+  },
+  "robot": {
+    "title": "Selecteer Uw Robot",
+    "subtitle": "Kies een robot uit uw opgeslagen lijst of voeg een nieuwe toe. Zorg ervoor dat uw robot is ingeschakeld en verbonden met het netwerk.",
+    "addNewRobot": "Nieuwe Robot Toevoegen",
+    "editRobot": "Robot Bewerken",
+    "deleteRobot": "Robot Verwijderen",
+    "connectToRobot": "Verbinden met Robot",
+    "disconnectFromRobot": "Verbinding met Robot Verbreken",
+    "robotName": "Robot Naam",
+    "ipAddress": "IP Adres",
+    "port": "Poort",
+    "testConnection": "Verbinding Testen",
+    "connectionSuccess": "Verbinding succesvol!",
+    "testingConnection": "Verbinding testen...",
+    "connectionSuccessWithId": "Verbinding succesvol! Robot {{id}} is bereikbaar.",
+    "connectionFailed": "Verbinding mislukt. Controleer de netwerkinstellingen van uw robot.",
+    "connectionFailedDetails": "Verbinding mislukt. Controleer het IP-adres, poort en netwerkverbinding.",
+    "deleteConfirm": "Weet u zeker dat u deze robot wilt verwijderen?",
+    "robotIdWillBe": "Robot ID wordt: {{id}}",
+    "updateRobot": "Robot bijwerken",
+    "addRobot": "Robot toevoegen",
+    "connected": "Verbonden",
+    "disconnected": "Niet verbonden",
+    "connectToRobotName": "Verbinden met {{name}}",
+    "connectConfirm": "Weet u zeker dat u verbinding wilt maken met {{name}}?",
+    "connecting": "Verbinding maken..."
+  },
+  "mode": {
+    "title": "Kies Robot Modus",
+    "subtitle": "Selecteer de modus voor uw robot. Dit bepaalt de beschikbare blokken en standaardgedragingen.",
+    "startProgramming": "Programmeren Starten",
+    "names": {
+      "exploration": "VERKENNING",
+      "navigation": "NAVIGATIE"
+    },
+    "descriptions": {
+      "exploration": "Beweeg de robot door een arena en scan vloertegels om witte tegels te vinden in een volledig zwarte omgeving.",
+      "navigation": "Navigeer de robot door een labyrint en vind het optimale pad om bestemmingen te bereiken."
+    }
+  },
+  "programming": {
+    "title": "Visueel Programmeren",
+    "subtitle": "Sleep en plaats blokken om uw robot te programmeren"
+  }
+}

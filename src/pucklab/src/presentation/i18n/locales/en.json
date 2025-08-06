@@ -1,0 +1,89 @@
+{
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "splash": {
+    "title": "PuckLab",
+    "subtitle": "Visual Programming for e-puck2 Robots",
+    "loadError": "Failed to load robots configuration"
+  },
+  "theme": {
+    "title": "Choose Your Theme",
+    "subtitle": "Select a visual theme that suits your style and preferences",
+    "names": {
+      "classic": "Classic",
+      "dark": "Dark",
+      "pink": "Pink",
+      "adventure": "Adventure",
+      "lego": "Lego"
+    },
+    "descriptions": {
+      "classic": "Clean and professional interface with neutral colors",
+      "dark": "Dark theme that's easier on the eyes in low light",
+      "pink": "Fun and colorful pink theme",
+      "adventure": "Nature-inspired theme perfect for outdoor adventures",
+      "lego": "Bright and playful theme inspired by LEGO blocks"
+    }
+  },
+  "age": {
+    "title": "What's Your Age?",
+    "subtitle": "This helps us customize the interface just for you",
+    "yearsOld": "years old"
+  },
+  "robot": {
+    "title": "Select Your Robot",
+    "subtitle": "Choose a robot from your saved list or add a new one. Make sure your robot is powered on and connected to the network.",
+    "addNewRobot": "Add New Robot",
+    "editRobot": "Edit Robot",
+    "deleteRobot": "Delete Robot",
+    "connectToRobot": "Connect to Robot",
+    "disconnectFromRobot": "Disconnect from Robot",
+    "robotName": "Robot Name",
+    "ipAddress": "IP Address",
+    "port": "Port",
+    "testConnection": "Test Connection",
+    "testingConnection": "Testing Connection...",
+    "connectionSuccess": "Connection successful!",
+    "connectionSuccessWithId": "Connection successful! Robot {{id}} is reachable.",
+    "connectionFailed": "Connection failed. Please check your robot's network settings.",
+    "connectionFailedDetails": "Connection failed. Please check the IP address, port, and network connectivity.",
+    "deleteConfirm": "Are you sure you want to delete this robot?",
+    "robotIdWillBe": "Robot ID will be: {{id}}",
+    "updateRobot": "Update Robot",
+    "addRobot": "Add Robot",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "connectToRobotName": "Connect to {{name}}",
+    "connectConfirm": "Are you sure you want to connect to {{name}}?",
+    "connecting": "Connecting..."
+  },
+  "mode": {
+    "title": "Choose Robot Mode",
+    "subtitle": "Select the mode for your robot. This will determine the available blocks and default behaviours.",
+    "startProgramming": "Start Programming",
+    "names": {
+      "exploration": "EXPLORATION",
+      "navigation": "NAVIGATION"
+    },
+    "descriptions": {
+      "exploration": "Move the robot through an arena and scan floor tiles to find white tiles in a fully black environment.",
+      "navigation": "Navigate the robot through a labyrinth and find the optimal path to reach destinations."
+    }
+  },
+  "programming": {
+    "title": "Visual Programming",
+    "subtitle": "Drag and drop blocks to program your robot"
+  }
+}

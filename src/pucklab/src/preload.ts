@@ -6,6 +6,9 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { RobotConfig } from './domain/robot';
 
 contextBridge.exposeInMainWorld('electronAPI', {
+  app: {
+    isPackaged: () => ipcRenderer.invoke('app:isPackaged'),
+  },
   manageRobots: {
     loadRobots: () => ipcRenderer.invoke('manageRobots:loadRobots'),
     addRobot: (robot: RobotConfig) =>

@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react';
 import { Box, Button, Container, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '../languageSelector';
 
 interface PageLayoutProps {
   title: string;
@@ -21,11 +23,12 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   onBack,
   onContinue,
   continueDisabled = false,
-  continueText = 'Continue',
-  backText = 'Back',
+  continueText,
+  backText,
   maxWidth = 'md',
   centered = true
 }) => {
+  const { t } = useTranslation();
   return (
     <Box
       sx={{
@@ -35,6 +38,18 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         transition: 'all 0.3s ease-in-out'
       }}
     >
+      {/* Language selector in top right */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 16,
+          right: 16,
+          zIndex: 1000
+        }}
+      >
+        <LanguageSelector />
+      </Box>
+      
       <Container maxWidth={maxWidth}>
         <Box
           display="flex"
@@ -92,7 +107,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 onClick={onBack}
                 sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
               >
-                {backText}
+                {backText || t('common.back')}
               </Button>
             )}
             {onContinue && (
@@ -103,7 +118,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 disabled={continueDisabled}
                 sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
               >
-                {continueText}
+                {continueText || t('common.continue')}
               </Button>
             )}
           </Box>

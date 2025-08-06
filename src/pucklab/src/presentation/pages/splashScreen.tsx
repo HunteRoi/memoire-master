@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import { EPuck2Robot } from '../components/EPuck2Robot';
 import { useAppContext } from '../hooks/useAppContext';
@@ -9,6 +10,7 @@ import { Robot } from '../../domain/robot';
 
 export const SplashScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { isLoading, error, setRobotsList, setLoading, setError } = useAppContext();
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export const SplashScreen: React.FC = () => {
       } catch (error) {
         console.error('Failed to load application data:', error);
         setRobotsList([]);
-        setError('Failed to load robots configuration');
+        setError(t('splash.loadError', 'Failed to load robots configuration'));
       } finally {
         setLoading(false);
         setTimeout(navigate, 5000, '/theme-selection');
@@ -74,7 +76,7 @@ export const SplashScreen: React.FC = () => {
           textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
         }}
       >
-        PuckLab
+        {t('splash.title')}
       </Typography>
 
       <Typography
@@ -85,7 +87,7 @@ export const SplashScreen: React.FC = () => {
           maxWidth: '400px'
         }}
       >
-        Visual Programming for e-puck2 Robots
+        {t('splash.subtitle')}
       </Typography>
 
       {isLoading && <Typography
@@ -95,7 +97,7 @@ export const SplashScreen: React.FC = () => {
           opacity: 0.7
         }}
       >
-        Loading...
+        {t('common.loading')}
       </Typography>}
 
       {!isLoading && error && <Typography

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Card, CardActionArea, CardContent, Radio, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { ThemeOption } from '../types/Theme';
 
@@ -14,6 +15,15 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
   isSelected,
   onSelect
 }) => {
+  const { t } = useTranslation();
+  
+  const getThemeName = (themeType: string) => {
+    return t(`theme.names.${themeType.toLowerCase()}`);
+  };
+  
+  const getThemeDescription = (themeType: string) => {
+    return t(`theme.descriptions.${themeType.toLowerCase()}`);
+  };
   return (
     <Card
       sx={{
@@ -124,7 +134,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
               fontWeight: 'bold'
             }}
           >
-            {themeOption.name}
+            {getThemeName(themeOption.type)}
           </Typography>
           <Typography 
             variant="body2" 
@@ -132,7 +142,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
               color: themeOption.theme.colors.text.secondary 
             }}
           >
-            {themeOption.description}
+            {getThemeDescription(themeOption.type)}
           </Typography>
         </CardContent>
       </CardActionArea>

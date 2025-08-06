@@ -10,6 +10,7 @@ import {
   Alert,
   CircularProgress
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { Robot } from '../../../domain/robot';
 
@@ -28,6 +29,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
   onSave,
   onTest
 }) => {
+  const { t } = useTranslation();
   const [ip, setIp] = useState('');
   const [port, setPort] = useState(443);
   const [testing, setTesting] = useState(false);
@@ -73,13 +75,13 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        {robot ? 'Edit Robot' : 'Add New Robot'}
+        {robot ? t('robot.editRobot') : t('robot.addNewRobot')}
       </DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
           margin="dense"
-          label="IP Address"
+          label={t('robot.ipAddress')}
           fullWidth
           variant="outlined"
           value={ip}
@@ -89,12 +91,12 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
         />
 
         <Alert severity="info" sx={{ mb: 2 }}>
-          Robot ID will be: {currentRobot.id}
+          {t('robot.robotIdWillBe', 'Robot ID will be: {{id}}', { id: currentRobot.id })}
         </Alert>
 
         <TextField
           margin="dense"
-          label="Port"
+          label={t('robot.port')}
           type="number"
           fullWidth
           variant="outlined"
@@ -112,30 +114,30 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
             startIcon={testing ? <CircularProgress size={16} /> : null}
             fullWidth
           >
-            {testing ? 'Testing Connection...' : 'Test Connection'}
+            {testing ? t('robot.testingConnection', 'Testing Connection...') : t('robot.testConnection')}
           </Button>
         </Box>
 
         {testResult === 'success' && (
           <Alert severity="success" sx={{ mb: 2 }}>
-            Connection successful! Robot {currentRobot.id} is reachable.
+            {t('robot.connectionSuccessWithId', 'Connection successful! Robot {{id}} is reachable.', { id: currentRobot.id })}
           </Alert>
         )}
 
         {testResult === 'error' && (
           <Alert severity="error" sx={{ mb: 2 }}>
-            Connection failed. Please check the IP address, port, and network connectivity.
+            {t('robot.connectionFailedDetails', 'Connection failed. Please check the IP address, port, and network connectivity.')}
           </Alert>
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button
           onClick={handleSave}
           disabled={testResult !== 'success'}
           variant="contained"
         >
-          {robot ? 'Update' : 'Add'} Robot
+          {robot ? t('robot.updateRobot', 'Update Robot') : t('robot.addRobot', 'Add Robot')}
         </Button>
       </DialogActions>
     </Dialog>

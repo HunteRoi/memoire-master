@@ -1,0 +1,89 @@
+{
+  "common": {
+    "back": "Zurück",
+    "continue": "Weiter",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "connect": "Verbinden",
+    "disconnect": "Verbindung trennen",
+    "yes": "Ja",
+    "no": "Nein",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolgreich"
+  },
+  "splash": {
+    "title": "PuckLab",
+    "subtitle": "Visuelle Programmierung für e-puck2 Roboter",
+    "loadError": "Fehler beim Laden der Roboterkonfiguration"
+  },
+  "theme": {
+    "title": "Wählen Sie Ihr Thema",
+    "subtitle": "Wählen Sie ein visuelles Thema, das zu Ihrem Stil und Ihren Vorlieben passt",
+    "names": {
+      "classic": "Klassisch",
+      "dark": "Dunkel",
+      "pink": "Rosa",
+      "adventure": "Abenteuer",
+      "lego": "Lego"
+    },
+    "descriptions": {
+      "classic": "Saubere und professionelle Oberfläche mit neutralen Farben",
+      "dark": "Dunkles Thema, das bei schwachem Licht angenehmer für die Augen ist",
+      "pink": "Spaßiges und farbenfrohes rosa Thema",
+      "adventure": "Von der Natur inspiriertes Thema perfekt für Outdoor-Abenteuer",
+      "lego": "Helles und verspieltes Thema, inspiriert von LEGO-Blöcken"
+    }
+  },
+  "age": {
+    "title": "Wie alt sind Sie?",
+    "subtitle": "Dies hilft uns, die Benutzeroberfläche speziell für Sie anzupassen",
+    "yearsOld": "Jahre alt"
+  },
+  "robot": {
+    "title": "Wählen Sie Ihren Roboter",
+    "subtitle": "Wählen Sie einen Roboter aus Ihrer gespeicherten Liste oder fügen Sie einen neuen hinzu. Stellen Sie sicher, dass Ihr Roboter eingeschaltet und mit dem Netzwerk verbunden ist.",
+    "addNewRobot": "Neuen Roboter hinzufügen",
+    "editRobot": "Roboter bearbeiten",
+    "deleteRobot": "Roboter löschen",
+    "connectToRobot": "Mit Roboter verbinden",
+    "disconnectFromRobot": "Verbindung zum Roboter trennen",
+    "robotName": "Roboter Name",
+    "ipAddress": "IP-Adresse",
+    "port": "Port",
+    "testConnection": "Verbindung testen",
+    "connectionSuccess": "Verbindung erfolgreich!",
+    "testingConnection": "Verbindung testen...",
+    "connectionSuccessWithId": "Verbindung erfolgreich! Roboter {{id}} ist erreichbar.",
+    "connectionFailed": "Verbindung fehlgeschlagen. Bitte überprüfen Sie die Netzwerkeinstellungen Ihres Roboters.",
+    "connectionFailedDetails": "Verbindung fehlgeschlagen. Bitte überprüfen Sie die IP-Adresse, den Port und die Netzwerkverbindung.",
+    "deleteConfirm": "Sind Sie sicher, dass Sie diesen Roboter löschen möchten?",
+    "robotIdWillBe": "Roboter-ID wird sein: {{id}}",
+    "updateRobot": "Roboter aktualisieren",
+    "addRobot": "Roboter hinzufügen",
+    "connected": "Verbunden",
+    "disconnected": "Getrennt",
+    "connectToRobotName": "Mit {{name}} verbinden",
+    "connectConfirm": "Sind Sie sicher, dass Sie sich mit {{name}} verbinden möchten?",
+    "connecting": "Verbinde..."
+  },
+  "mode": {
+    "title": "Wählen Sie den Roboter-Modus",
+    "subtitle": "Wählen Sie den Modus für Ihren Roboter. Dies bestimmt die verfügbaren Blöcke und Standardverhalten.",
+    "startProgramming": "Programmierung starten",
+    "names": {
+      "exploration": "ERKUNDUNG",
+      "navigation": "NAVIGATION"
+    },
+    "descriptions": {
+      "exploration": "Bewegen Sie den Roboter durch eine Arena und scannen Sie Bodenkacheln, um weiße Kacheln in einer vollständig schwarzen Umgebung zu finden.",
+      "navigation": "Navigieren Sie den Roboter durch ein Labyrinth und finden Sie den optimalen Pfad zu den Zielen."
+    }
+  },
+  "programming": {
+    "title": "Visuelle Programmierung",
+    "subtitle": "Ziehen und lassen Sie Blöcke fallen, um Ihren Roboter zu programmieren"
+  }
+}

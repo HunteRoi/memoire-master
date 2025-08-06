@@ -8,6 +8,7 @@ import {
   Chip
 } from '@mui/material';
 import { Delete, Edit, Wifi, WifiOff, LinkOff } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 import { Robot } from '../../../domain/robot';
 import { DEFAULT_ROBOT } from '../../../domain/constants';
@@ -17,7 +18,7 @@ interface RobotCardProps {
   onSelect: (robot: Robot) => void;
   onEdit: (robot: Robot) => void;
   onDelete: (robotId: string) => void;
-  onDisconnect?: (robot: Robot) => void;
+  onDisconnect: (robot: Robot) => void;
   selected: boolean;
   connected: boolean;
 }
@@ -31,6 +32,7 @@ export const RobotCard: FC<RobotCardProps> = ({
   selected,
   connected
 }) => {
+  const { t } = useTranslation();
   const onEditClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
     onEdit(robot);
@@ -42,7 +44,7 @@ export const RobotCard: FC<RobotCardProps> = ({
 
   const onDisconnectClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
-    onDisconnect?.(robot);
+    onDisconnect(robot);
   };
 
   return (
@@ -71,7 +73,7 @@ export const RobotCard: FC<RobotCardProps> = ({
             </Typography>
             <Chip
               icon={connected ? <Wifi /> : <WifiOff />}
-              label={connected ? 'Connected' : 'Disconnected'}
+              label={connected ? t('robot.connected') : t('robot.disconnected')}
               color={connected ? 'success' : 'default'}
               size="small"
             />

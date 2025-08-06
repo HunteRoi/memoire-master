@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { useAppContext } from '../hooks/useAppContext';
 import { useRobotManagement } from '../hooks/useRobotManagement';
 import { useEnsureData } from '../hooks/useEnsureData';
+import { useTranslation } from 'react-i18next';
 import { Robot } from '../../domain/robot';
 import { RobotGrid } from '../components/robot/robotGrid';
 import { RobotDialog } from '../components/robot/dialog';
@@ -12,6 +13,7 @@ import { PageLayout } from '../components/layout/layout';
 
 export const RobotSelection: FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { setError, setSelectedRobot, showAlert } = useAppContext();
 
   useEnsureData();
@@ -47,7 +49,7 @@ export const RobotSelection: FC = () => {
 
   const handleRobotSelection = (robot: Robot) => {
     const robotConnected = isRobotConnected(robot.id);
-    
+
     if (robotConnected) {
       // Robot is already connected, just select it
       setSelectedRobot(robot.id);
@@ -117,8 +119,8 @@ export const RobotSelection: FC = () => {
 
   return (
     <PageLayout
-      title="Select Your Robot"
-      subtitle="Choose a robot from your saved list or add a new one. Make sure your robot is powered on and connected to the network."
+      title={t('robot.title')}
+      subtitle={t('robot.subtitle')}
       onBack={handleBack}
       onContinue={handleContinue}
       continueDisabled={!selectedRobotData || !isRobotConnected(selectedRobot || '')}
@@ -135,21 +137,21 @@ export const RobotSelection: FC = () => {
         onAddRobot={handleAddRobot}
       />
 
-      <RobotDialog
+      {robotToEdit && <RobotDialog
         open={formDialogOpen}
         robot={robotToEdit}
         onClose={() => setFormDialogOpen(false)}
         onSave={handleSaveRobotWithDialog}
         onTest={handleRobotConnectionTest}
-      />
+      />}
 
-      <RobotConnectionDialog
+      {robotToConnect && <RobotConnectionDialog
         open={confirmDialogOpen}
         robot={robotToConnect}
         onConfirm={handleConnectConfirmation}
         onCancel={handleCancelConfirmation}
         loading={connecting}
-      />
+      />}
     </PageLayout>
   );
 };

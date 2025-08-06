@@ -10,6 +10,7 @@ import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
 
 const initialState: AppState = {
     theme: ThemeType.CLASSIC,
+    language: 'en',
     userAge: null,
     selectedMode: null,
     selectedRobot: null,
@@ -29,6 +30,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
     switch (action.type) {
         case 'SET_THEME':
             return { ...state, theme: action.payload };
+        case 'SET_LANGUAGE':
+            return { ...state, language: action.payload };
         case 'SET_USER_AGE':
             return { ...state, userAge: action.payload };
         case 'SET_SELECTED_ROBOT':
@@ -72,6 +75,9 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const setTheme = useCallback((theme: ThemeType) => 
         dispatch({ type: 'SET_THEME', payload: theme }), [dispatch]);
+    
+    const setLanguage = useCallback((language: string) => 
+        dispatch({ type: 'SET_LANGUAGE', payload: language }), [dispatch]);
     
     const setUserAge = useCallback((age: Age) => 
         dispatch({ type: 'SET_USER_AGE', payload: age }), [dispatch]);
@@ -142,6 +148,17 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         }
     }, [setTheme]);
 
+    const ensureLanguageLoaded = useCallback(() => {
+        try {
+            const savedLanguage = localStorage.getItem('pucklab-language');
+            if (savedLanguage && ['en', 'fr', 'nl', 'de'].includes(savedLanguage)) {
+                setLanguage(savedLanguage);
+            }
+        } catch (error) {
+            console.error('Failed to load language from localStorage:', error);
+        }
+    }, [setLanguage]);
+
     const contextValue = useMemo(() => ({
         ...state,
         alert: {
@@ -149,6 +166,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
             onClose: hideAlert
         },
         setTheme,
+        setLanguage,
         setUserAge,
         setSelectedRobot,
         setSelectedMode,
@@ -162,8 +180,9 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         hideAlert,
         resetState,
         ensureRobotsLoaded,
-        ensureThemeLoaded
-    }), [state, setTheme, setUserAge, setSelectedRobot, setSelectedMode, setRobotsList, addConnectedRobot, removeConnectedRobot, isRobotConnected, setLoading, setError, showAlert, hideAlert, resetState, ensureRobotsLoaded, ensureThemeLoaded]);
+        ensureThemeLoaded,
+        ensureLanguageLoaded
+    }), [state, setTheme, setLanguage, setUserAge, setSelectedRobot, setSelectedMode, setRobotsList, addConnectedRobot, removeConnectedRobot, isRobotConnected, setLoading, setError, showAlert, hideAlert, resetState, ensureRobotsLoaded, ensureThemeLoaded, ensureLanguageLoaded]);
 
     return <AppContext.Provider value={contextValue}>
         {children}

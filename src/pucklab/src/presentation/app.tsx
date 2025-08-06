@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Routes, Route } from 'react-router';
+import './i18n';
 
 import { AppProvider } from './providers/appProvider';
 import { ThemeProvider } from './providers/themeProvider';
@@ -12,10 +13,20 @@ import { AgeSelection } from './pages/ageSelection';
 import { RobotSelection } from './pages/robotSelection';
 import { ModeSelection } from './pages/modeSelection';
 import { VisualProgramming } from './pages/visualProgramming';
+import { useTranslation } from 'react-i18next';
+import { useEnsureData } from './hooks/useEnsureData';
 
 
 const AppRoutes: React.FC = () => {
-  const { alert } = useAppContext();
+  const { alert, language } = useAppContext();
+  const { i18n } = useTranslation();
+  
+  // Ensure data is loaded globally
+  useEnsureData();
+
+  useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language, i18n]);
 
   return (
     <>
