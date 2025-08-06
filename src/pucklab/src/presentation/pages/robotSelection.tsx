@@ -53,7 +53,7 @@ export const RobotSelection: FC = () => {
     if (robotConnected) {
       // Robot is already connected, just select it
       setSelectedRobot(robot.id);
-      showAlert(`Robot ${robot.id} is already connected`, 'info');
+      showAlert(t('alerts.robotAlreadyConnected', { robotId: robot.id }), 'info');
     } else {
       // Robot not connected, show connection dialog
       setRobotToConnect(robot);
@@ -80,9 +80,9 @@ export const RobotSelection: FC = () => {
     setRobotToConnect(null);
 
     if (success) {
-      showAlert(`Successfully connected to Robot ${robotToConnect.id}`, 'success');
+      showAlert(t('alerts.robotConnectedSuccess', { robotId: robotToConnect.id }), 'success');
     } else {
-      showAlert(`Failed to connect to Robot ${robotToConnect.id}. Please check the robot and network.`, 'error');
+      showAlert(t('alerts.robotConnectionFailed', { robotId: robotToConnect.id }), 'error');
     }
   };
 
@@ -94,9 +94,9 @@ export const RobotSelection: FC = () => {
   const handleDisconnectRobot = async (robot: Robot) => {
     const success = await handleDisconnectFromRobot(robot);
     if (success) {
-      showAlert(`Disconnected from Robot ${robot.id}`, 'info');
+      showAlert(t('alerts.robotDisconnectedSuccess', { robotId: robot.id }), 'info');
     } else {
-      showAlert(`Failed to disconnect from Robot ${robot.id}`, 'error');
+      showAlert(t('alerts.robotDisconnectionFailed', { robotId: robot.id }), 'error');
     }
   };
 

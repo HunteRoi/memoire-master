@@ -85,5 +85,12 @@
   "programming": {
     "title": "Programmation Visuelle",
     "subtitle": "Glissez et déposez des blocs pour programmer votre robot"
+  },
+  "alerts": {
+    "robotAlreadyConnected": "Le robot {{robotId}} est déjà connecté",
+    "robotConnectedSuccess": "Connexion réussie au robot {{robotId}}",
+    "robotConnectionFailed": "Échec de la connexion au robot {{robotId}}. Vérifiez le robot et le réseau.",
+    "robotDisconnectedSuccess": "Déconnecté du robot {{robotId}}",
+    "robotDisconnectionFailed": "Échec de la déconnexion du robot {{robotId}}"
   }
 }

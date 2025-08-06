@@ -85,5 +85,12 @@
   "programming": {
     "title": "Visueel Programmeren",
     "subtitle": "Sleep en plaats blokken om uw robot te programmeren"
+  },
+  "alerts": {
+    "robotAlreadyConnected": "Robot {{robotId}} is al verbonden",
+    "robotConnectedSuccess": "Succesvol verbonden met robot {{robotId}}",
+    "robotConnectionFailed": "Verbinding met robot {{robotId}} mislukt. Controleer de robot en het netwerk.",
+    "robotDisconnectedSuccess": "Verbinding met robot {{robotId}} verbroken",
+    "robotDisconnectionFailed": "Verbreken van verbinding met robot {{robotId}} mislukt"
   }
 }

@@ -85,5 +85,12 @@
   "programming": {
     "title": "Visuelle Programmierung",
     "subtitle": "Ziehen und lassen Sie Blöcke fallen, um Ihren Roboter zu programmieren"
+  },
+  "alerts": {
+    "robotAlreadyConnected": "Roboter {{robotId}} ist bereits verbunden",
+    "robotConnectedSuccess": "Erfolgreich mit Roboter {{robotId}} verbunden",
+    "robotConnectionFailed": "Verbindung zu Roboter {{robotId}} fehlgeschlagen. Überprüfen Sie den Roboter und das Netzwerk.",
+    "robotDisconnectedSuccess": "Von Roboter {{robotId}} getrennt",
+    "robotDisconnectionFailed": "Trennung von Roboter {{robotId}} fehlgeschlagen"
   }
 }

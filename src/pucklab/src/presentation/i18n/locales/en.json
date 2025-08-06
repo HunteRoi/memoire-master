@@ -85,5 +85,12 @@
   "programming": {
     "title": "Visual Programming",
     "subtitle": "Drag and drop blocks to program your robot"
+  },
+  "alerts": {
+    "robotAlreadyConnected": "Robot {{robotId}} is already connected",
+    "robotConnectedSuccess": "Successfully connected to Robot {{robotId}}",
+    "robotConnectionFailed": "Failed to connect to Robot {{robotId}}. Please check the robot and network.",
+    "robotDisconnectedSuccess": "Disconnected from Robot {{robotId}}",
+    "robotDisconnectionFailed": "Failed to disconnect from Robot {{robotId}}"
   }
 }
