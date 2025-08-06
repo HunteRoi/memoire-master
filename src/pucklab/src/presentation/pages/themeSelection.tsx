@@ -10,11 +10,11 @@ import { PageLayout } from '../components/layout/PageLayout';
 export const ThemeSelection: FC = () => {
   const navigate = useNavigate();
   const { theme, setTheme } = useAppContext();
-  
+
   useEnsureData();
 
   const handleContinue = () => navigate('/age-selection');
-  
+
   const handleThemeSelection = (selectedTheme: typeof theme) => {
     setTheme(selectedTheme);
     try {

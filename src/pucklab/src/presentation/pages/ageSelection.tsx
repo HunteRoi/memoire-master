@@ -11,7 +11,7 @@ export const AgeSelection: FC = () => {
   const navigate = useNavigate();
   const { setUserAge } = useAppContext();
   const [age, setAge] = useState<number>(10);
-  
+
   useEnsureData();
 
   const handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {

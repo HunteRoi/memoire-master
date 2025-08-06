@@ -15,7 +15,7 @@ export const RobotSelection: FC = () => {
   const navigate = useNavigate();
   const { setError, setSelectedRobot } = useAppContext();
   const { alert, showAlert } = useAlert();
-  
+
   useEnsureData();
 
   const {
@@ -60,14 +60,14 @@ export const RobotSelection: FC = () => {
 
   const handleConnectConfirmation = async () => {
     if (!robotToConnect) return;
-    
+
     setConnecting(true);
     const success = await handleConnectToRobot(robotToConnect);
     setConnecting(false);
-    
+
     setConfirmDialogOpen(false);
     setRobotToConnect(null);
-    
+
     if (success) {
       showAlert(`Successfully connected to Robot ${robotToConnect.id}`, 'success');
     } else {
