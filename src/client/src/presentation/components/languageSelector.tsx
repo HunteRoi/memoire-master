@@ -62,13 +62,23 @@ export const LanguageSelector: React.FC = () => {
   return (
     <Box>
       <Button
-        variant='outlined'
+        variant='contained'
         startIcon={<Language />}
         onClick={handleClick}
         sx={{
           textTransform: 'none',
           minWidth: 120,
           justifyContent: 'flex-start',
+          backgroundColor: 'background.paper',
+          color: 'text.secondary',
+          boxShadow: 2,
+          border: 'none',
+          '&:hover': {
+            backgroundColor: 'action.hover',
+            color: 'text.primary',
+            boxShadow: 3,
+          },
+          transition: 'all 0.2s ease-in-out',
         }}
       >
         <Typography variant='body2'>{currentLanguage.name}</Typography>

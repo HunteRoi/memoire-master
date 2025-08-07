@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { LanguageSelector } from '../languageSelector';
 
 interface PageLayoutProps {
   title: string;
@@ -38,18 +37,6 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         transition: 'all 0.3s ease-in-out',
       }}
     >
-      {/* Language selector in top right */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 16,
-          right: 16,
-          zIndex: 1000,
-        }}
-      >
-        <LanguageSelector />
-      </Box>
-
       <Container maxWidth={maxWidth}>
         <Box
           display='flex'

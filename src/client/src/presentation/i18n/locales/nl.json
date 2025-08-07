@@ -92,5 +92,30 @@
     "robotConnectionFailed": "Verbinding met robot {{robotId}} mislukt. Controleer de robot en het netwerk.",
     "robotDisconnectedSuccess": "Verbinding met robot {{robotId}} verbroken",
     "robotDisconnectionFailed": "Verbreken van verbinding met robot {{robotId}} mislukt"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "tabs": {
+      "customization": "Aanpassing",
+      "robots": "Robots"
+    },
+    "sections": {
+      "themeSelection": {
+        "title": "Thema Selectie",
+        "description": "Kies uw voorkeur kleurenthema voor de applicatie."
+      },
+      "ageConfiguration": {
+        "title": "Leeftijd Configuratie", 
+        "description": "Stel uw leeftijd in om de interface complexiteit aan te passen."
+      },
+      "robotManagement": {
+        "title": "Robot Beheer",
+        "description": "Beheer uw robotverbindingen en voeg nieuwe robots toe."
+      },
+      "robotMode": {
+        "title": "Robot Modus",
+        "description": "Kies de bedrijfsmodus voor uw robot."
+      }
+    }
   }
 }

@@ -92,5 +92,30 @@
     "robotConnectionFailed": "Failed to connect to Robot {{robotId}}. Please check the robot and network.",
     "robotDisconnectedSuccess": "Disconnected from Robot {{robotId}}",
     "robotDisconnectionFailed": "Failed to disconnect from Robot {{robotId}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "customization": "Customization",
+      "robots": "Robots"
+    },
+    "sections": {
+      "themeSelection": {
+        "title": "Theme Selection",
+        "description": "Choose your preferred color theme for the application."
+      },
+      "ageConfiguration": {
+        "title": "Age Configuration", 
+        "description": "Set your age to customize the interface complexity."
+      },
+      "robotManagement": {
+        "title": "Robot Management",
+        "description": "Manage your robot connections and add new robots."
+      },
+      "robotMode": {
+        "title": "Robot Mode",
+        "description": "Choose the operating mode for your robot."
+      }
+    }
   }
 }

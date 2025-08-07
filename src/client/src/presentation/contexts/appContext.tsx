@@ -9,7 +9,7 @@ import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
 export type AppState = {
   theme: ThemeType;
   language: string;
-  userAge?: Age | null;
+  userAge: Age;
   selectedMode?: ModeType | null;
   selectedRobot?: string | null;
   robots: Robot[];

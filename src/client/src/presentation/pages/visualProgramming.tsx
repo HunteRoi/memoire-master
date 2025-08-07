@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useNavigate } from 'react-router';
-import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { Settings } from '@mui/icons-material';
 
 import { useAppContext } from '../hooks/useAppContext';
@@ -13,14 +13,28 @@ export const VisualProgramming: FC = () => {
   useEnsureData();
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <AppBar position='static' color='default' elevation={1}>
-        <Toolbar>
-          <IconButton onClick={() => navigate('/settings')}>
-            <Settings />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      {/* Floating Settings Button */}
+      <IconButton
+        onClick={() => navigate('/settings')}
+        sx={{
+          position: 'fixed',
+          top: 16,
+          left: 16,
+          zIndex: 999,
+          backgroundColor: 'background.paper',
+          color: 'text.secondary',
+          boxShadow: 2,
+          '&:hover': {
+            backgroundColor: 'action.hover',
+            color: 'text.primary',
+            boxShadow: 3,
+          },
+          transition: 'all 0.2s ease-in-out',
+        }}
+      >
+        <Settings />
+      </IconButton>
 
       <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}></Box>
     </Box>

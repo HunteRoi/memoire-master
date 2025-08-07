@@ -92,5 +92,30 @@
     "robotConnectionFailed": "Échec de la connexion au robot {{robotId}}. Vérifiez le robot et le réseau.",
     "robotDisconnectedSuccess": "Déconnecté du robot {{robotId}}",
     "robotDisconnectionFailed": "Échec de la déconnexion du robot {{robotId}}"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "tabs": {
+      "customization": "Personnalisation",
+      "robots": "Robots"
+    },
+    "sections": {
+      "themeSelection": {
+        "title": "Sélection de Thème",
+        "description": "Choisissez votre thème de couleur préféré pour l'application."
+      },
+      "ageConfiguration": {
+        "title": "Configuration de l'Âge", 
+        "description": "Définissez votre âge pour personnaliser la complexité de l'interface."
+      },
+      "robotManagement": {
+        "title": "Gestion des Robots",
+        "description": "Gérez vos connexions de robots et ajoutez de nouveaux robots."
+      },
+      "robotMode": {
+        "title": "Mode Robot",
+        "description": "Choisissez le mode de fonctionnement pour votre robot."
+      }
+    }
   }
 }

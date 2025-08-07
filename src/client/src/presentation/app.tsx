@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Routes, Route } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { Box } from '@mui/material';
 
 import './i18n';
 import { AppProvider } from './providers/appProvider';
@@ -9,6 +10,7 @@ import { ThemeProvider } from './providers/themeProvider';
 import { useEnsureData } from './hooks/useEnsureData';
 import { useAppContext } from './hooks/useAppContext';
 import { AlertSnackbar } from './components/layout/alertSnackbar';
+import { LanguageSelector } from './components/languageSelector';
 import { SplashScreen } from './pages/splashScreen';
 import { ThemeSelection } from './pages/themeSelection';
 import { AgeSelection } from './pages/ageSelection';
@@ -29,6 +31,18 @@ const AppRoutes: React.FC = () => {
 
   return (
     <>
+      {/* Language selector in top right - always visible */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 16,
+          right: 16,
+          zIndex: 1000,
+        }}
+      >
+        <LanguageSelector />
+      </Box>
+
       <HashRouter>
         <Routes>
           <Route path='/' element={<SplashScreen />} />

@@ -22,7 +22,7 @@ import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
 const initialState: AppState = {
   theme: ThemeType.CLASSIC,
   language: 'en',
-  userAge: null,
+  userAge: new Age(10),
   selectedMode: null,
   selectedRobot: null,
   robots: [],
