@@ -89,7 +89,7 @@ export const Settings: FC = () => {
                 <ThemeSelectionContent />
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent>
                 <Typography variant='h6' gutterBottom>
@@ -117,7 +117,7 @@ export const Settings: FC = () => {
                 <RobotSelectionContent />
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent>
                 <Typography variant='h6' gutterBottom>

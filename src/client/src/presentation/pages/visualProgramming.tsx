@@ -14,7 +14,6 @@ export const VisualProgramming: FC = () => {
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-      {/* Floating Settings Button */}
       <IconButton
         onClick={() => navigate('/settings')}
         sx={{
