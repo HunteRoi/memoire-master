@@ -11,8 +11,7 @@ type RobotConfig = {
 };
 
 export class FileSystemRobotsConfigurationRepository
-  implements RobotsConfigurationRepository
-{
+  implements RobotsConfigurationRepository {
   private robots: RobotConfig[] = [];
 
   private getConfigPath(): string {
@@ -23,7 +22,7 @@ export class FileSystemRobotsConfigurationRepository
     }
   }
 
-  private async readRobotsConfig(): Promise<RobotConfig[]> {
+  private async readRobotsConfig(): Promise<RobotConfig[] | null> {
     try {
       const configPath = this.getConfigPath();
       const fileContent = await readFile(configPath, 'utf8');

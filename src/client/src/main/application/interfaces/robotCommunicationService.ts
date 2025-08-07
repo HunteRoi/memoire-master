@@ -5,7 +5,7 @@ export interface RobotFeedback {
   timestamp: number;
   type: 'info' | 'success' | 'warning' | 'error';
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 export type RobotFeedbackCallback = (feedback: RobotFeedback) => void;

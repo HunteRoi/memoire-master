@@ -9,11 +9,12 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+
 import { Robot } from '../../../domain/robot';
 
 interface RobotConnectionDialogProps {
   open: boolean;
-  robot: Robot | null;
+  robot: Robot;
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;

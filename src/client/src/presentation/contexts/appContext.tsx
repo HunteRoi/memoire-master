@@ -10,8 +10,8 @@ export type AppState = {
   theme: ThemeType;
   language: string;
   userAge: Age;
-  selectedMode?: ModeType | null;
-  selectedRobot?: string | null;
+  selectedMode: ModeType;
+  selectedRobot: string;
   robots: Robot[];
   connectedRobots: Set<string>;
   isLoading: boolean;
@@ -41,8 +41,8 @@ export type AppContextType = AppState & {
   setTheme: (theme: ThemeType) => void;
   setLanguage: (language: string) => void;
   setUserAge: (age: Age) => void;
-  setSelectedMode: (mode: ModeType | null) => void;
-  setSelectedRobot: (robotId: string | null) => void;
+  setSelectedMode: (mode: ModeType) => void;
+  setSelectedRobot: (robotId: string) => void;
   setRobotsList: (robots: Robot[]) => void;
   addConnectedRobot: (robotId: string) => void;
   removeConnectedRobot: (robotId: string) => void;

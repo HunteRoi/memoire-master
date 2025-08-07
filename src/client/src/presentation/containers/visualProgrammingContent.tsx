@@ -40,7 +40,7 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { selectedRobot, isRobotConnected, robots, showAlert } = useAppContext();
-  
+
   // State management
   const [showConsole, setShowConsole] = useState(false);
   const [scriptNodes, setScriptNodes] = useState<Node[]>([]);
@@ -64,7 +64,7 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
     () => robots.find(robot => robot.id === selectedRobot),
     [robots, selectedRobot]
   );
-  
+
   const hasConnectedRobot = selectedRobot && isRobotConnected(selectedRobot);
   const canExecuteScript = hasConnectedRobot && scriptNodes.length > 0;
   const scriptHeight = isSimpleMode ? (showConsole ? '60%' : '100%') : '67%';
@@ -110,6 +110,7 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
     event.preventDefault();
   }, []);
 
+
   const onConnect = useCallback(
     (connection: Connection) => {
       const newEdge: Edge = {
@@ -145,7 +146,7 @@ import time
 def execute_block(block_type, block_name):
     """Execute a single block based on its type"""
     print(f"Executing: {block_name}")
-    
+
     if block_type == 'move_forward':
         robot.move_forward()
     elif block_type == 'move_backward':
@@ -175,7 +176,7 @@ def execute_block(block_type, block_name):
 def main():
     """Main execution function"""
     print("Starting script execution...")
-    
+
     # Execute all blocks independently
     `;
 

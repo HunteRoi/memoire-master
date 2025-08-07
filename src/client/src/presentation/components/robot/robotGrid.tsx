@@ -6,7 +6,7 @@ import { AddRobotCard } from './addRobotCard';
 
 interface RobotGridProps {
   robots: Robot[];
-  selectedRobotId: string | null;
+  selectedRobotId: string | null | undefined;
   isRobotConnected: (robotId: string) => boolean;
   onRobotSelect: (robot: Robot) => void;
   onRobotEdit: (robot: Robot) => void;

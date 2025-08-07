@@ -151,7 +151,7 @@ export function registerRobotIpcHandlers(): void {
           timestamp: Date.now(),
           type: 'error',
           message: `Command failed: ${command} - ${error}`,
-          data: { error: error.toString() },
+          data: { error: error instanceof Error ? error.message : error },
         };
 
         container.robotConnectionUseCase.sendFeedback(feedback);

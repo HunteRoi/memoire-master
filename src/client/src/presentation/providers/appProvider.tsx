@@ -18,14 +18,15 @@ import { ModeType } from '../types/Mode';
 import { Robot } from '../../domain/robot';
 import { isSuccess } from '../../domain/result';
 import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
+import { DEFAULT_ROBOT } from '../../domain/constants';
 
 const initialState: AppState = {
   theme: ThemeType.CLASSIC,
   language: 'en',
   userAge: new Age(10),
-  selectedMode: null,
-  selectedRobot: null,
-  robots: [],
+  selectedMode: ModeType.EXPLORATION,
+  selectedRobot: DEFAULT_ROBOT.id,
+  robots: [DEFAULT_ROBOT],
   connectedRobots: new Set<string>(),
   isLoading: false,
   error: null,
@@ -103,7 +104,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 
   const setSelectedRobot = useCallback(
-    (robotId: string | null) =>
+    (robotId: string) =>
       dispatch({ type: 'SET_SELECTED_ROBOT', payload: robotId }),
     [dispatch]
   );
