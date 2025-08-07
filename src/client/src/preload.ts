@@ -29,4 +29,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     checkConnection: (robot: RobotConfig) =>
       ipcRenderer.invoke('robotConnection:checkConnection', robot),
   },
+  pythonCodeViewer: {
+    openWindow: (code: string, title?: string) =>
+      ipcRenderer.invoke('pythonCodeViewer:openWindow', code, title),
+    updateCode: (code: string) =>
+      ipcRenderer.invoke('pythonCodeViewer:updateCode', code),
+    closeWindow: () =>
+      ipcRenderer.invoke('pythonCodeViewer:closeWindow'),
+  },
 });

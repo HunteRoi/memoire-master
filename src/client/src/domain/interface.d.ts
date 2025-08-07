@@ -18,6 +18,11 @@ export interface ElectronAPI {
     disconnectFromRobot: (robot: RobotConfig) => Promise<Result<RobotConfig>>;
     checkConnection: (robot: RobotConfig) => Promise<Result<boolean>>;
   };
+  pythonCodeViewer: {
+    openWindow: (code: string, title?: string) => Promise<boolean>;
+    updateCode: (code: string) => Promise<boolean>;
+    closeWindow: () => Promise<boolean>;
+  };
 }
 
 declare global {

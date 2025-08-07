@@ -1,0 +1,130 @@
+body {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  margin: 0;
+  padding: 20px;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  line-height: 1.5;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #404040;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.readonly-badge {
+  background-color: #f39c12;
+  color: #1e1e1e;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.close-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: #c0392b;
+}
+
+.code-container {
+  background-color: #2d2d30;
+  padding: 20px;
+  border-radius: 8px;
+  overflow: auto;
+  max-height: calc(100vh - 120px);
+  border: 1px solid #404040;
+  position: relative;
+}
+
+.code-content {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 14px;
+}
+
+.line-numbers {
+  counter-reset: line;
+}
+
+.line-numbers .line:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 3em;
+  padding-right: 1em;
+  margin-right: 1em;
+  color: #858585;
+  border-right: 1px solid #404040;
+  text-align: right;
+}
+
+.line {
+  min-height: 1.5em;
+}
+
+.empty-state {
+  text-align: center;
+  color: #858585;
+  font-style: italic;
+  padding: 40px;
+}
+
+.update-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #27ae60;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.update-indicator.show {
+  opacity: 1;
+}
+
+/* Python syntax highlighting */
+.keyword {
+  color: #569cd6;
+}
+
+.string {
+  color: #ce9178;
+}
+
+.comment {
+  color: #6a9955;
+}
+
+.number {
+  color: #b5cea8;
+}
+
+.function {
+  color: #dcdcaa;
+}

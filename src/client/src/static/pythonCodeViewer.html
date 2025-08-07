@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generated Python Code</title>
+  <link rel="stylesheet" href="./pythonCodeViewer.css">
+</head>
+<body>
+  <div class="header">
+    <div class="title">Generated Python Code</div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="readonly-badge">Read Only</span>
+      <button class="close-btn" onclick="closeWindow()">Close</button>
+    </div>
+  </div>
+  
+  <div class="code-container">
+    <div class="update-indicator" id="updateIndicator">Updated</div>
+    <pre class="code-content line-numbers" id="codeContent">
+      <div class="empty-state">No blocks in script yet. Add some blocks to see the generated Python code.</div>
+    </pre>
+  </div>
+
+  <script>
+    // Listen for code updates from the main process
+    window.addEventListener('codeUpdate', (event) => {
+      updateCode(event.detail);
+    });
+
+    function updateCode(code) {
+      const codeContent = document.getElementById('codeContent');
+      const updateIndicator = document.getElementById('updateIndicator');
+      
+      if (!code || code.trim() === '') {
+        codeContent.innerHTML = '<div class="empty-state">No blocks in script yet. Add some blocks to see the generated Python code.</div>';
+      } else {
+        // Split code into lines and add line numbers
+        const lines = code.split('\n');
+        const linesHtml = lines.map(line => {
+          // Basic syntax highlighting
+          let highlightedLine = line
+            .replace(/(import|def|class|if|else|elif|for|while|try|except|finally|with|return|print)(\s)/g, '<span class="keyword">$1</span>$2')
+            .replace(/(["'])((?:\\.|[^"'\\])*?)\1/g, '<span class="string">$1$2$1</span>')
+            .replace(/(#.*$)/gm, '<span class="comment">$1</span>')
+            .replace(/\b(\d+\.?\d*)\b/g, '<span class="number">$1</span>');
+          
+          return `<div class="line">${highlightedLine || ' '}</div>`;
+        }).join('');
+        
+        codeContent.innerHTML = linesHtml;
+      }
+      
+      // Show update indicator briefly
+      updateIndicator.classList.add('show');
+      setTimeout(() => {
+        updateIndicator.classList.remove('show');
+      }, 1500);
+    }
+
+    function closeWindow() {
+      window.close();
+    }
+
+    // Initialize with empty state - code will be sent via custom event
+    document.addEventListener('DOMContentLoaded', () => {
+      // Window is ready to receive code updates
+      console.log('Python code viewer ready');
+    });
+  </script>
+</body>
+</html>
