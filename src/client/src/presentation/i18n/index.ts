@@ -16,20 +16,22 @@ export const languages = [
 // We'll initialize with debug disabled, and enable it after checking isPackaged
 let isDebugEnabled = false;
 
-i18n.use(initReactI18next).init({
-  resources: {
-    en: { translation: en },
-    fr: { translation: fr },
-    nl: { translation: nl },
-    de: { translation: de },
-  },
-  lng: 'en', // default language
-  fallbackLng: 'en',
-  interpolation: {
-    escapeValue: false, // React already does escaping
-  },
-  debug: isDebugEnabled,
-});
+i18n
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: { translation: en },
+      fr: { translation: fr },
+      nl: { translation: nl },
+      de: { translation: de },
+    },
+    lng: 'en', // default language
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false, // React already does escaping
+    },
+    debug: isDebugEnabled,
+  });
 
 // Check if we're in development mode and enable debug if so
 window.electronAPI.app

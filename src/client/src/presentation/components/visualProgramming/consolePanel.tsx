@@ -1,8 +1,7 @@
-import React, { FC, useState, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { Box, Typography, Paper, Button, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../../hooks/useAppContext';
 
 interface RobotFeedback {
   robotId: string;
@@ -12,26 +11,40 @@ interface RobotFeedback {
   data?: any;
 }
 
+interface ConsoleMessage {
+  timestamp: number;
+  type: string;
+  message: string;
+}
+
+interface RobotData {
+  id: string;
+  ipAddress: string;
+  port: number;
+}
+
 interface ConsolePanelProps {
   isSimpleMode: boolean;
   isVisible: boolean;
+  selectedRobotData?: RobotData | null;
+  hasConnectedRobot: boolean;
+  consoleMessages: ConsoleMessage[];
   onToggle: () => void;
+  onFeedback: (feedback: RobotFeedback) => void;
+  onAddMessage: (type: string, message: string) => void;
 }
 
 export const ConsolePanel: FC<ConsolePanelProps> = ({
   isSimpleMode,
   isVisible,
+  selectedRobotData,
+  hasConnectedRobot,
+  consoleMessages,
   onToggle,
+  onFeedback,
+  onAddMessage,
 }) => {
   const { t } = useTranslation();
-  const { selectedRobot, isRobotConnected } = useAppContext();
-  const [consoleMessages, setConsoleMessages] = useState<
-    Array<{
-      timestamp: number;
-      type: string;
-      message: string;
-    }>
-  >([]);
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -45,58 +58,34 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
 
   // Set up robot feedback subscription
   useEffect(() => {
-    if (!selectedRobot || !isRobotConnected(selectedRobot)) {
-      setConsoleMessages([
-        {
-          timestamp: Date.now(),
-          type: 'info',
-          message: t('visualProgramming.console.messages.robotInitialized'),
-        },
-      ]);
+    if (!hasConnectedRobot || !selectedRobotData) {
+      onAddMessage('info', t('visualProgramming.console.messages.robotInitialized'));
       return;
     }
 
-    // Subscribe to robot feedback
-    const handleFeedback = (feedback: RobotFeedback) => {
-      setConsoleMessages(prev => [
-        ...prev,
-        {
-          timestamp: feedback.timestamp,
-          type: feedback.type,
-          message: feedback.message,
-        },
-      ]);
-    };
-
     // Set up feedback listener
-    window.electronAPI.robotConnection.onFeedback(handleFeedback);
+    window.electronAPI.robotConnection.onFeedback(onFeedback);
 
     // Subscribe to feedback for the selected robot
     window.electronAPI.robotConnection.subscribeToFeedback({
-      ipAddress: selectedRobot.ipAddress,
-      port: selectedRobot.port,
+      ipAddress: selectedRobotData.ipAddress,
+      port: selectedRobotData.port,
     });
 
     // Add initial connection message
-    setConsoleMessages([
-      {
-        timestamp: Date.now(),
-        type: 'info',
-        message: t('visualProgramming.console.messages.connecting'),
-      },
-    ]);
+    onAddMessage('info', t('visualProgramming.console.messages.connecting'));
 
     // Cleanup function
     return () => {
-      if (selectedRobot) {
+      if (selectedRobotData) {
         window.electronAPI.robotConnection.unsubscribeFromFeedback({
-          ipAddress: selectedRobot.ipAddress,
-          port: selectedRobot.port,
+          ipAddress: selectedRobotData.ipAddress,
+          port: selectedRobotData.port,
         });
       }
       window.electronAPI.robotConnection.removeFeedbackListener();
     };
-  }, [selectedRobot, isRobotConnected, t]);
+  }, [hasConnectedRobot, selectedRobotData, onFeedback, onAddMessage, t]);
 
   const formatTimestamp = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString();
@@ -132,6 +121,11 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
         {t('visualProgramming.console.showConsole')}
       </Button>
     );
+  }
+
+  // Don't render console in advanced mode if not visible
+  if (!isSimpleMode && !isVisible) {
+    return null;
   }
 
   return (

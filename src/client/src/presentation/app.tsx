@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Routes, Route, useNavigate } from 'react-router';
+import { HashRouter, Routes, Route } from 'react-router';
 import { useTranslation } from 'react-i18next';
+
 import './i18n';
+
 import { AppProvider } from './providers/appProvider';
 import { ThemeProvider } from './providers/themeProvider';
 import { useEnsureData } from './hooks/useEnsureData';

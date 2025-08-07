@@ -4,6 +4,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 import { RobotConfig } from './domain/robot';
+import type { RobotFeedback } from './main/application/interfaces/robotCommunicationService';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   app: {
@@ -34,7 +35,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke('robotFeedback:unsubscribe', robotConfig),
     sendCommand: (robotConfig: RobotConfig, command: string) =>
       ipcRenderer.invoke('robotFeedback:sendCommand', robotConfig, command),
-    onFeedback: (callback: (feedback: any) => void) =>
+    onFeedback: (callback: (feedback: RobotFeedback) => void) =>
       ipcRenderer.on('robotFeedback:message', (_, feedback) =>
         callback(feedback)
       ),
