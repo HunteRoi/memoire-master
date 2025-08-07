@@ -3,8 +3,8 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 
-import { RobotConfig } from './domain/robot';
-import type { RobotFeedback } from './main/application/interfaces/robotCommunicationService';
+import type { RobotConfig } from './domain/robot';
+import type { RobotFeedback } from './domain/RobotFeedback';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   app: {

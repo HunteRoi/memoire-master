@@ -1,32 +1,16 @@
-import { FC, useEffect, useRef } from 'react';
-import { Box, Typography, Paper, Button, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Box, Button, IconButton, Paper, Typography } from '@mui/material';
+import { type FC, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface RobotFeedback {
-  robotId: string;
-  timestamp: number;
-  type: 'info' | 'success' | 'warning' | 'error';
-  message: string;
-  data?: any;
-}
-
-interface ConsoleMessage {
-  timestamp: number;
-  type: string;
-  message: string;
-}
-
-interface RobotData {
-  id: string;
-  ipAddress: string;
-  port: number;
-}
+import type { Robot } from '../../../domain/robot';
+import type { RobotFeedback } from '../../../domain/RobotFeedback';
+import type { ConsoleMessage } from '../../models/Console';
 
 interface ConsolePanelProps {
   isSimpleMode: boolean;
   isVisible: boolean;
-  selectedRobotData?: RobotData | null;
+  selectedRobotData?: Robot | null;
   hasConnectedRobot: boolean;
   consoleMessages: ConsoleMessage[];
   onToggle: () => void;
@@ -48,18 +32,21 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     consoleEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [consoleMessages]);
+  }, [scrollToBottom]);
 
   // Set up robot feedback subscription
   useEffect(() => {
     if (!hasConnectedRobot || !selectedRobotData) {
-      onAddMessage('info', t('visualProgramming.console.messages.robotInitialized'));
+      onAddMessage(
+        'info',
+        t('visualProgramming.console.messages.robotInitialized')
+      );
       return;
     }
 
@@ -177,9 +164,9 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
           fontFamily: 'monospace',
         }}
       >
-        {consoleMessages.map((message, index) => (
+        {consoleMessages.map(message => (
           <Box
-            key={index}
+            key={message.timestamp}
             sx={{
               display: 'flex',
               alignItems: 'flex-start',

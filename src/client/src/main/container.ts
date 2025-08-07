@@ -1,10 +1,11 @@
 import { app } from 'electron';
-import { RobotCommunicationService } from './application/interfaces/robotCommunicationService';
-import { RobotsConfigurationRepository } from './application/interfaces/robotsConfigurationRepository';
-import { WebsocketRobotCommunicationService } from './infrastructure/communication/websocketRobotCommunicationService';
-import { MockRobotCommunicationService } from './infrastructure/communication/mockRobotCommunicationService';
+
+import type { RobotCommunicationService } from './application/interfaces/robotCommunicationService';
+import type { RobotsConfigurationRepository } from './application/interfaces/robotsConfigurationRepository';
 import { ManageRobotsUseCase } from './application/usecases/manageRobotsUsecase';
 import { RobotConnectionUseCase } from './application/usecases/robotConnectionUsecase';
+import { MockRobotCommunicationService } from './infrastructure/communication/mockRobotCommunicationService';
+import { WebsocketRobotCommunicationService } from './infrastructure/communication/websocketRobotCommunicationService';
 import { FileSystemRobotsConfigurationRepository } from './infrastructure/persistence/fileSystemRobotsConfigurationRepository';
 
 export class Container {

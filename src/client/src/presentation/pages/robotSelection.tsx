@@ -1,12 +1,11 @@
-import { FC, useMemo } from 'react';
-import { useNavigate } from 'react-router';
+import { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useAppContext } from '../hooks/useAppContext';
-import { useRobotManagement } from '../hooks/useRobotManagement';
-import { Robot } from '../../domain/robot';
+import { useNavigate } from 'react-router';
+import type { Robot } from '../../domain/robot';
 import { PageLayout } from '../components/layout/layout';
 import { RobotSelectionContent } from '../containers/robotSelectionContent';
+import { useAppContext } from '../hooks/useAppContext';
+import { useRobotManagement } from '../hooks/useRobotManagement';
 
 export const RobotSelection: FC = () => {
   const navigate = useNavigate();

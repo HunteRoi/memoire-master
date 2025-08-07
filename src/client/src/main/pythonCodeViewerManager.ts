@@ -1,5 +1,5 @@
-import { ipcMain, BrowserWindow } from 'electron';
-import * as path from 'path';
+import * as path from 'node:path';
+import { BrowserWindow, ipcMain } from 'electron';
 
 /**
  * Manages the Python Code Viewer window and its IPC handlers

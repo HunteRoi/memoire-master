@@ -1,17 +1,16 @@
-import { FC, MouseEventHandler } from 'react';
+import { Delete, Edit, LinkOff, Wifi, WifiOff } from '@mui/icons-material';
 import {
+  Box,
   Card,
   CardContent,
-  Typography,
-  Box,
-  IconButton,
   Chip,
+  IconButton,
+  Typography,
 } from '@mui/material';
-import { Delete, Edit, Wifi, WifiOff, LinkOff } from '@mui/icons-material';
+import type { FC, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { Robot } from '../../../domain/robot';
 import { DEFAULT_ROBOT } from '../../../domain/constants';
+import type { Robot } from '../../../domain/robot';
 
 interface RobotCardProps {
   robot: Robot;

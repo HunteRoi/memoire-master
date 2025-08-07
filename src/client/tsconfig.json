@@ -14,8 +14,11 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "jsx": "react-jsx",
-    "typeRoots": ["node_modules/@types", "src/presentation/types"]
+    "paths": {
+      "*": ["node_modules/*"]
+    },
+    "typeRoots": ["node_modules/@types", "src/presentation/@types"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist"]
 }

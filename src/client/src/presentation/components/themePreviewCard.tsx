@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Card,
@@ -7,9 +6,10 @@ import {
   Radio,
   Typography,
 } from '@mui/material';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ThemeOption } from '../types/Theme';
+import type { ThemeOption } from '../models/Theme';
 
 interface ThemePreviewCardProps {
   themeOption: ThemeOption;
@@ -31,6 +31,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
   const getThemeDescription = (themeType: string) => {
     return t(`theme.descriptions.${themeType.toLowerCase()}`);
   };
+
   return (
     <Card
       sx={{

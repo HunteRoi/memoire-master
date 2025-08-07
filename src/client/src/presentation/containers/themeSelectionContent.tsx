@@ -1,9 +1,8 @@
-import { FC } from 'react';
 import { Grid } from '@mui/material';
-
-import { useAppContext } from '../hooks/useAppContext';
-import { themeOptions } from '../types/Theme';
+import type { FC } from 'react';
 import { ThemePreviewCard } from '../components/themePreviewCard';
+import { useAppContext } from '../hooks/useAppContext';
+import { themeOptions } from '../models/Theme';
 
 export const ThemeSelectionContent: FC = () => {
   const { theme, setTheme } = useAppContext();

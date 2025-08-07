@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   CircularProgress,
@@ -8,9 +7,10 @@ import {
   DialogTitle,
   Typography,
 } from '@mui/material';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Robot } from '../../../domain/robot';
+import type { Robot } from '../../../domain/robot';
 
 interface RobotConnectionDialogProps {
   open: boolean;

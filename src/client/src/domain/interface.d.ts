@@ -1,6 +1,6 @@
 import type { RobotConfig } from './robot';
 import type { Result } from './result';
-import type { RobotFeedback } from '../main/application/interfaces/robotCommunicationService';
+import type { RobotFeedback } from './RobotFeedback';
 
 export interface ElectronAPI {
   app: {
@@ -20,7 +20,10 @@ export interface ElectronAPI {
     checkConnection: (robot: RobotConfig) => Promise<Result<boolean>>;
     subscribeToFeedback: (robotConfig: RobotConfig) => Promise<boolean>;
     unsubscribeFromFeedback: (robotConfig: RobotConfig) => Promise<boolean>;
-    sendCommand: (robotConfig: RobotConfig, command: string) => Promise<unknown>;
+    sendCommand: (
+      robotConfig: RobotConfig,
+      command: string
+    ) => Promise<unknown>;
     onFeedback: (callback: (feedback: RobotFeedback) => void) => void;
     removeFeedbackListener: () => void;
   };

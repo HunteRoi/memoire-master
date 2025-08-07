@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 export const EPuck2Robot: React.FC = () => (
   <svg
@@ -7,6 +7,8 @@ export const EPuck2Robot: React.FC = () => (
     viewBox='0 0 200 200'
     fill='none'
     xmlns='http://www.w3.org/2000/svg'
+    role='img'
+    aria-label='e-puck2 robot illustration'
   >
     {/* Main body circle */}
     <circle

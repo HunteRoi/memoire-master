@@ -1,24 +1,23 @@
 import {
-  FC,
-  PropsWithChildren,
+  type FC,
+  type PropsWithChildren,
+  useCallback,
   useMemo,
   useReducer,
-  useCallback,
   useRef,
 } from 'react';
-
+import { DEFAULT_ROBOT } from '../../domain/constants';
+import { isSuccess } from '../../domain/result';
+import { Robot } from '../../domain/robot';
+import type { AlertSnackbarProps } from '../components/layout/alertSnackbar';
 import {
   type AppAction,
   AppContext,
   type AppState,
 } from '../contexts/appContext';
-import { ThemeType } from '../types/Theme';
-import { Age } from '../types/Age';
-import { ModeType } from '../types/Mode';
-import { Robot } from '../../domain/robot';
-import { isSuccess } from '../../domain/result';
-import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
-import { DEFAULT_ROBOT } from '../../domain/constants';
+import { Age } from '../models/Age';
+import { ModeType } from '../models/Mode';
+import { ThemeType } from '../models/Theme';
 
 const initialState: AppState = {
   theme: ThemeType.CLASSIC,
@@ -57,10 +56,11 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         connectedRobots: new Set([...state.connectedRobots, action.payload]),
       };
-    case 'REMOVE_CONNECTED_ROBOT':
+    case 'REMOVE_CONNECTED_ROBOT': {
       const newConnectedRobots = new Set(state.connectedRobots);
       newConnectedRobots.delete(action.payload);
       return { ...state, connectedRobots: newConnectedRobots };
+    }
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'SET_ERROR':
@@ -90,56 +90,56 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const setTheme = useCallback(
     (theme: ThemeType) => dispatch({ type: 'SET_THEME', payload: theme }),
-    [dispatch]
+    []
   );
 
   const setLanguage = useCallback(
     (language: string) => dispatch({ type: 'SET_LANGUAGE', payload: language }),
-    [dispatch]
+    []
   );
 
   const setUserAge = useCallback(
     (age: Age) => dispatch({ type: 'SET_USER_AGE', payload: age }),
-    [dispatch]
+    []
   );
 
   const setSelectedRobot = useCallback(
-    (robotId: string) =>
+    (robotId: string | null) =>
       dispatch({ type: 'SET_SELECTED_ROBOT', payload: robotId }),
-    [dispatch]
+    []
   );
 
   const setSelectedMode = useCallback(
     (mode: ModeType) => dispatch({ type: 'SET_SELECTED_MODE', payload: mode }),
-    [dispatch]
+    []
   );
 
   const setRobotsList = useCallback(
     (robots: Robot[]) => dispatch({ type: 'SET_ROBOTS_LIST', payload: robots }),
-    [dispatch]
+    []
   );
 
   const setLoading = useCallback(
     (isLoading: boolean) =>
       dispatch({ type: 'SET_LOADING', payload: isLoading }),
-    [dispatch]
+    []
   );
 
   const setError = useCallback(
     (error: string | null) => dispatch({ type: 'SET_ERROR', payload: error }),
-    [dispatch]
+    []
   );
 
   const addConnectedRobot = useCallback(
     (robotId: string) =>
       dispatch({ type: 'ADD_CONNECTED_ROBOT', payload: robotId }),
-    [dispatch]
+    []
   );
 
   const removeConnectedRobot = useCallback(
     (robotId: string) =>
       dispatch({ type: 'REMOVE_CONNECTED_ROBOT', payload: robotId }),
-    [dispatch]
+    []
   );
 
   const isRobotConnected = useCallback(
@@ -150,22 +150,17 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const showAlert = useCallback(
     (message: string, severity: AlertSnackbarProps['severity'] = 'info') =>
       dispatch({ type: 'SHOW_ALERT', payload: { message, severity } }),
-    [dispatch]
+    []
   );
 
-  const hideAlert = useCallback(
-    () => dispatch({ type: 'HIDE_ALERT' }),
-    [dispatch]
-  );
+  const hideAlert = useCallback(() => dispatch({ type: 'HIDE_ALERT' }), []);
 
-  const resetState = useCallback(
-    () => dispatch({ type: 'RESET_STATE' }),
-    [dispatch]
-  );
+  const resetState = useCallback(() => dispatch({ type: 'RESET_STATE' }), []);
 
   const ensureRobotsLoaded = useCallback(async () => {
     if (state.robots.length === 0 && !loadingRef.current.robots) {
       loadingRef.current.robots = true;
+      setLoading(true);
       try {
         const result = await window.electronAPI.manageRobots.loadRobots();
         if (isSuccess(result)) {
@@ -178,9 +173,10 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         console.error('Failed to lazy load robots:', error);
       } finally {
         loadingRef.current.robots = false;
+        setLoading(false);
       }
     }
-  }, [state.robots.length, setRobotsList]);
+  }, [state.robots.length, setRobotsList, setLoading]);
 
   const ensureThemeLoaded = useCallback(() => {
     if (!loadingRef.current.theme) {

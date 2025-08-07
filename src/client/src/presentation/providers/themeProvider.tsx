@@ -1,12 +1,17 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { CssBaseline, type Theme as MuiTheme } from '@mui/material';
 import {
-  ThemeProvider as MUIThemeProvider,
   createTheme,
+  ThemeProvider as MUIThemeProvider,
 } from '@mui/material/styles';
-import { CssBaseline, Theme as MuiTheme } from '@mui/material';
-
-import { Theme, ThemeType } from '../types/Theme';
+import type React from 'react';
+import {
+  type PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useAppContext } from '../hooks/useAppContext';
+import { Theme, ThemeType } from '../models/Theme';
 
 const createMuiTheme = (appTheme: Theme) => {
   return createTheme({
@@ -164,12 +169,15 @@ const createMuiTheme = (appTheme: Theme) => {
 
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const { theme } = useAppContext();
-  const toMuiTheme = () => createMuiTheme(Theme.fromType(theme));
-  const [muiTheme, setMuiTheme] = useState<MuiTheme>(toMuiTheme());
+  const toMuiTheme = useCallback(
+    (type: ThemeType) => createMuiTheme(Theme.fromType(type)),
+    []
+  );
+  const [muiTheme, setMuiTheme] = useState<MuiTheme>(toMuiTheme(theme));
 
   useEffect(() => {
-    setMuiTheme(toMuiTheme());
-  }, [theme]);
+    setMuiTheme(toMuiTheme(theme));
+  }, [toMuiTheme, theme]);
 
   return (
     <MUIThemeProvider theme={muiTheme}>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { Card, CardContent, Typography, Box, Tooltip } from '@mui/material';
+import { Box, Card, CardContent, Tooltip, Typography } from '@mui/material';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Mode, ModeType } from '../types/Mode';
+import { type Mode, ModeType } from '../models/Mode';
 
 interface ModeCardProps {
   mode: Mode;

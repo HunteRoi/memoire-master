@@ -1,17 +1,16 @@
 import { createContext } from 'react';
-
-import { ThemeType } from '../types/Theme';
-import { Age } from '../types/Age';
-import { ModeType } from '../types/Mode';
-import { Robot } from '../../domain/robot';
-import { AlertSnackbarProps } from '../components/layout/alertSnackbar';
+import type { Robot } from '../../domain/robot';
+import type { AlertSnackbarProps } from '../components/layout/alertSnackbar';
+import type { Age } from '../models/Age';
+import type { ModeType } from '../models/Mode';
+import type { ThemeType } from '../models/Theme';
 
 export type AppState = {
   theme: ThemeType;
   language: string;
   userAge: Age;
   selectedMode: ModeType;
-  selectedRobot: string;
+  selectedRobot: string | null;
   robots: Robot[];
   connectedRobots: Set<string>;
   isLoading: boolean;
@@ -42,7 +41,7 @@ export type AppContextType = AppState & {
   setLanguage: (language: string) => void;
   setUserAge: (age: Age) => void;
   setSelectedMode: (mode: ModeType) => void;
-  setSelectedRobot: (robotId: string) => void;
+  setSelectedRobot: (robotId: string | null) => void;
   setRobotsList: (robots: Robot[]) => void;
   addConnectedRobot: (robotId: string) => void;
   removeConnectedRobot: (robotId: string) => void;

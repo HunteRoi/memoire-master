@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Box,
   Alert,
+  Box,
+  Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
 } from '@mui/material';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Robot } from '../../../domain/robot';
@@ -49,7 +50,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
       setPort(443);
     }
     setTestResult(null);
-  }, [robot, open]);
+  }, [robot]);
 
   useEffect(() => {
     const timeoutId = setTimeout(setCurrentRobot, 300, new Robot(ip, port));

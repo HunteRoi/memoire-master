@@ -1,5 +1,5 @@
-import { Robot, RobotConfig } from '../../domain/robot';
-import { isSuccess, Result } from '../../domain/result';
+import { isSuccess, type Result } from '../../domain/result';
+import { Robot, type RobotConfig } from '../../domain/robot';
 import { useAppContext } from './useAppContext';
 
 export const useRobotManagement = () => {

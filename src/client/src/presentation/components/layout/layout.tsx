@@ -1,15 +1,16 @@
-import React, { ReactNode, useEffect } from 'react';
 import { Box, Button, Container, Typography } from '@mui/material';
+import type React from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface PageLayoutProps {
   title: string;
-  subtitle?: string;
+  subtitle?: string | null;
   children: ReactNode;
   onBack?: () => void;
   onContinue?: () => void;
   continueDisabled?: boolean;
-  continueText?: string;
+  continueText?: string | null;
   backText?: string;
   maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   centered?: boolean;

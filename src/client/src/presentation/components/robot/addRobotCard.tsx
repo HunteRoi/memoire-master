@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, CardContent, Fab, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
+import { Card, CardContent, Fab, Typography } from '@mui/material';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface AddRobotCardProps {

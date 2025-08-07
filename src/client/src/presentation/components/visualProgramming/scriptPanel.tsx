@@ -1,15 +1,16 @@
-import React, { FC, useCallback } from 'react';
-import { Box, Typography, Paper, IconButton } from '@mui/material';
-import { Code, Settings, PlayArrow, Pause, Stop } from '@mui/icons-material';
+import { Code, Pause, PlayArrow, Settings, Stop } from '@mui/icons-material';
+import { Box, IconButton, Paper, Typography } from '@mui/material';
+import type { DragEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactFlow, {
   Background,
-  Controls,
-  MiniMap,
-  Node,
-  Edge,
+  type Connection,
   ConnectionMode,
-  Position,
+  Controls,
+  type Edge,
+  type Node,
+  type OnEdgesChange,
+  type OnNodesChange,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -23,11 +24,11 @@ interface ScriptPanelProps {
   onSettings: () => void;
   onPlayPause: () => void;
   onStop: () => void;
-  onDrop: (event: React.DragEvent) => void;
-  onDragOver: (event: React.DragEvent) => void;
-  onConnect: (connection: any) => void;
-  onNodesChangeInternal: (changes: any[]) => void;
-  onEdgesChange: (changes: any[]) => void;
+  onDrop: (event: DragEvent) => void;
+  onDragOver: (event: DragEvent) => void;
+  onConnect: (connection: Connection) => void;
+  onNodesChangeInternal: OnNodesChange;
+  onEdgesChange: OnEdgesChange;
   onViewPythonCode: () => void;
   edges: Edge[];
 }
@@ -192,9 +193,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
               size={isSimpleMode ? 'medium' : 'small'}
               sx={{
                 backgroundColor:
-                  executionState !== 'idle'
-                    ? 'error.main'
-                    : 'background.paper',
+                  executionState !== 'idle' ? 'error.main' : 'background.paper',
                 color:
                   executionState !== 'idle'
                     ? 'error.contrastText'
@@ -252,7 +251,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
           >
             <Background />
             <Controls />
-            <MiniMap />
           </ReactFlow>
         </Box>
       </Paper>

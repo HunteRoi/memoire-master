@@ -1,11 +1,11 @@
-import React from 'react';
-import { Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import { Language } from '@mui/icons-material';
+import { Box, Button, Menu, MenuItem, Typography } from '@mui/material';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import 'flag-icons/css/flag-icons.min.css';
 
-import { languages } from '../i18n';
 import { useAppContext } from '../hooks/useAppContext';
+import { languages } from '../i18n';
 
 export const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();

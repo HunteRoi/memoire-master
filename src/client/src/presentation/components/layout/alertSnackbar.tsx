@@ -1,5 +1,5 @@
-import React from 'react';
 import { Alert, Snackbar } from '@mui/material';
+import type React from 'react';
 
 export interface AlertSnackbarProps {
   open: boolean;

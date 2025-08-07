@@ -1,10 +1,9 @@
-import { FC } from 'react';
-import { useNavigate } from 'react-router';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useAppContext } from '../hooks/useAppContext';
+import { useNavigate } from 'react-router';
 import { PageLayout } from '../components/layout/layout';
 import { AgeSelectionContent } from '../containers/ageSelectionContent';
+import { useAppContext } from '../hooks/useAppContext';
 
 export const AgeSelection: FC = () => {
   const navigate = useNavigate();

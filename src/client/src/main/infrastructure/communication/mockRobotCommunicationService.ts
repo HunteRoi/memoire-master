@@ -1,9 +1,6 @@
 import type { Robot } from '../../../domain/robot';
-import type {
-  RobotCommunicationService,
-  RobotFeedback,
-  RobotFeedbackCallback,
-} from '../../application/interfaces/robotCommunicationService';
+import type { RobotFeedback, RobotFeedbackCallback } from '../../../domain/RobotFeedback';
+import type { RobotCommunicationService } from '../../application/interfaces/robotCommunicationService';
 
 /**
  * Mock implementation of RobotCommunicationService for development mode.
@@ -254,7 +251,7 @@ export class MockRobotCommunicationService
     return robotKey.replace(':', '_').replace('.', '_');
   }
 
-  private generateRandomSensorData(): any {
+  private generateRandomSensorData(): unknown {
     return {
       proximity: Array.from({ length: 8 }, () =>
         Math.floor(Math.random() * 1000)

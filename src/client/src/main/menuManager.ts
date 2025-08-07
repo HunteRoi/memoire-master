@@ -1,9 +1,8 @@
 import {
-  Menu,
-  MenuItem,
-  BrowserWindow,
-  MenuItemConstructorOptions,
   app,
+  type BrowserWindow,
+  Menu,
+  type MenuItemConstructorOptions,
 } from 'electron';
 
 /**
@@ -11,10 +10,6 @@ import {
  */
 export class MenuManager {
   private mainWindow: BrowserWindow | null = null;
-
-  constructor() {
-    // Empty constructor
-  }
 
   /**
    * Set the main window reference for menu actions

@@ -1,8 +1,7 @@
-import { FC } from 'react';
 import { Box } from '@mui/material';
-
-import { useAppContext } from '../hooks/useAppContext';
+import type { FC } from 'react';
 import { VisualProgrammingContent } from '../containers/visualProgrammingContent';
+import { useAppContext } from '../hooks/useAppContext';
 
 export const VisualProgramming: FC = () => {
   const { userAge } = useAppContext();

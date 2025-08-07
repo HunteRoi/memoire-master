@@ -1,6 +1,6 @@
-import { FC } from 'react';
-import { useNavigate } from 'react-router';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 
 import { PageLayout } from '../components/layout/layout';
 import { ModeSelectionContent } from '../containers/modeSelectionContent';

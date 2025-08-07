@@ -1,9 +1,8 @@
 import { app, BrowserWindow } from 'electron';
-
+import { registerAppIpcHandlers } from './appIpcHandlers';
 // Import modular components
 import { MenuManager } from './menuManager';
 import { PythonCodeViewerManager } from './pythonCodeViewerManager';
-import { registerAppIpcHandlers } from './appIpcHandlers';
 import { registerRobotIpcHandlers } from './robotIpcHandlers';
 
 // Initialize managers

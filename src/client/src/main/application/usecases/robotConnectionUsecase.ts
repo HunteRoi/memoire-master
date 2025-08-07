@@ -1,10 +1,7 @@
+import { Failure, type Result, Success } from '../../../domain/result';
 import { Robot, type RobotConfig } from '../../../domain/robot';
-import { Result, Success, Failure } from '../../../domain/result';
-import type {
-  RobotCommunicationService,
-  RobotFeedback,
-  RobotFeedbackCallback,
-} from '../interfaces/robotCommunicationService';
+import type { RobotFeedback, RobotFeedbackCallback } from '../../../domain/RobotFeedback';
+import type { RobotCommunicationService } from '../interfaces/robotCommunicationService';
 
 export class RobotConnectionUseCase {
   constructor(private robotRepository: RobotCommunicationService) {}

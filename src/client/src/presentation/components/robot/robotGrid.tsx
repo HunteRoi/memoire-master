@@ -1,8 +1,8 @@
-import React from 'react';
 import { Grid } from '@mui/material';
-import { Robot } from '../../../domain/robot';
-import { RobotCard } from './card';
+import type React from 'react';
+import type { Robot } from '../../../domain/robot';
 import { AddRobotCard } from './addRobotCard';
+import { RobotCard } from './card';
 
 interface RobotGridProps {
   robots: Robot[];

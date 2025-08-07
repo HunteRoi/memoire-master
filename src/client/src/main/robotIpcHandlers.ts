@@ -1,10 +1,9 @@
-import { ipcMain, BrowserWindow } from 'electron';
-
-import { Container } from './container';
-import type { RobotConfig } from '../domain/robot';
-import type { RobotFeedback } from './application/interfaces/robotCommunicationService';
-import { Robot } from '../domain/robot';
+import { BrowserWindow, ipcMain } from 'electron';
 import { isSuccess } from '../domain/result';
+import type { RobotConfig } from '../domain/robot';
+import { Robot } from '../domain/robot';
+import type { RobotFeedback } from '../domain/RobotFeedback';
+import { Container } from './container';
 
 /**
  * Registers IPC handlers for robot management and connection operations
@@ -65,7 +64,7 @@ export function registerRobotIpcHandlers(): void {
   // Robot Feedback Handlers
   ipcMain.handle(
     'robotFeedback:subscribe',
-    async (event, robotConfig: RobotConfig) => {
+    async (_event, robotConfig: RobotConfig) => {
       const robotKey = `${robotConfig.ipAddress}:${robotConfig.port}`;
 
       // Create feedback callback that sends data to renderer

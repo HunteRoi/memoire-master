@@ -1,10 +1,17 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+// import Backend from 'i18next-fs-backend';
+// import LanguageDetector from 'i18next-browser-languagedetector';
+
+import de from './locales/de.json';
 import en from './locales/en.json';
 import fr from './locales/fr.json';
 import nl from './locales/nl.json';
-import de from './locales/de.json';
+
+// const backend = new Backend({
+//   loadPath: './locales/{{lng}}.json'
+// });
 
 export const languages = [
   { code: 'en', name: 'English' },
@@ -18,7 +25,10 @@ let isDebugEnabled = false;
 
 i18n
   .use(initReactI18next)
+  // .use(backend)
+  // .use(LanguageDetector)
   .init({
+    // supportedLngs: languages.map(lng => lng.code),
     resources: {
       en: { translation: en },
       fr: { translation: fr },

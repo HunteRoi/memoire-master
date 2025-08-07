@@ -1,16 +1,16 @@
-import React, { FC } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-} from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Paper,
+  Typography,
+} from '@mui/material';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getTranslatedBlockCategories, Block } from '../../types/BlockTypes';
+import type { BlockCategory, Block } from '../../models/BlockTypes';
 
 interface BlocksPanelProps {
   isSimpleMode: boolean;
@@ -18,7 +18,7 @@ interface BlocksPanelProps {
 
 export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode }) => {
   const { t } = useTranslation();
-  const blockCategories = getTranslatedBlockCategories(t);
+  const blockCategories: BlockCategory[] = [];
 
   return (
     <Paper

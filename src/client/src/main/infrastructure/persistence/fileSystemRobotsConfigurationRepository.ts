@@ -1,6 +1,6 @@
-import { app } from 'electron';
-import path from 'node:path';
 import { readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { app } from 'electron';
 
 import { Robot } from '../../../domain/robot';
 import type { RobotsConfigurationRepository } from '../../application/interfaces/robotsConfigurationRepository';
@@ -11,7 +11,8 @@ type RobotConfig = {
 };
 
 export class FileSystemRobotsConfigurationRepository
-  implements RobotsConfigurationRepository {
+  implements RobotsConfigurationRepository
+{
   private robots: RobotConfig[] = [];
 
   private getConfigPath(): string {

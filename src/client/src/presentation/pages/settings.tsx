@@ -1,6 +1,4 @@
-import { FC, useState } from 'react';
-import { useNavigate } from 'react-router';
-import { useTranslation } from 'react-i18next';
+import { ArrowBack, SmartToy, Tune } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -10,13 +8,15 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import { ArrowBack, Tune, SmartToy } from '@mui/icons-material';
+import { type FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 
 import { TabPanel } from '../components/tabPanel';
-import { ThemeSelectionContent } from '../containers/themeSelectionContent';
 import { AgeSelectionContent } from '../containers/ageSelectionContent';
-import { RobotSelectionContent } from '../containers/robotSelectionContent';
 import { ModeSelectionContent } from '../containers/modeSelectionContent';
+import { RobotSelectionContent } from '../containers/robotSelectionContent';
+import { ThemeSelectionContent } from '../containers/themeSelectionContent';
 
 export const Settings: FC = () => {
   const navigate = useNavigate();

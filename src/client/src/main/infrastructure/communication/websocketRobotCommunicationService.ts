@@ -1,51 +1,24 @@
 import WebSocket from 'ws';
 
 import type { Robot } from '../../../domain/robot';
-import type {
-  RobotCommunicationService,
-  RobotFeedback,
-  RobotFeedbackCallback,
-} from '../../application/interfaces/robotCommunicationService';
-
-interface ConnectedRobot {
-  robot: Robot;
-  websocket: WebSocket;
-  connected: boolean;
-  lastPing: number;
-  feedbackCallback?: RobotFeedbackCallback;
-}
-
-interface RobotMessage {
-  type: 'command' | 'ping' | 'status';
-  data: any;
-  timestamp: number;
-}
-
-interface RobotResponse {
-  type: 'success' | 'error' | 'status' | 'pong';
-  data?: any;
-  message?: string;
-  timestamp: number;
-}
+import type { RobotFeedback, RobotFeedbackCallback } from '../../../domain/RobotFeedback';
+import type { ConnectedRobot, RobotMessage, RobotResponse } from '../../../domain/RobotCommunication';
+import type { RobotCommunicationService } from '../../application/interfaces/robotCommunicationService';
 
 export class WebsocketRobotCommunicationService
-  implements RobotCommunicationService
-{
+  implements RobotCommunicationService {
   private connectedRobots: Map<string, ConnectedRobot> = new Map();
   private readonly connectionTimeout = 10000; // 10 seconds
   private readonly pingInterval = 30000; // 30 seconds
-  private pingTimer?: NodeJS.Timeout;
+  private pingTimer: NodeJS.Timeout;
 
-  constructor() {
-    this.startPingTimer();
-  }
 
   async connect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);
 
     // Check if already connected
     if (this.connectedRobots.has(robotKey)) {
-      const existing = this.connectedRobots.get(robotKey)!;
+      const existing = this.connectedRobots.get(robotKey);
       if (existing.connected) {
         return robot;
       }
@@ -72,6 +45,11 @@ export class WebsocketRobotCommunicationService
         };
 
         this.connectedRobots.set(robotKey, connectedRobot);
+
+        // Start ping timer if this is the first connected robot
+        if (this.connectedRobots.size === 1) {
+          this.startPingTimer();
+        }
 
         this.sendMessage(ws, {
           type: 'status',
@@ -176,25 +154,13 @@ export class WebsocketRobotCommunicationService
               resolve(response.data);
             }
           }
-        } catch (error) {
+        } catch (_error) {
           if (originalHandler) originalHandler(event);
         }
       };
 
       this.sendMessage(connectedRobot.websocket, message);
     });
-  }
-
-  private async disconnectAll(): Promise<void> {
-    if (this.pingTimer) {
-      clearInterval(this.pingTimer);
-    }
-
-    await Promise.all(
-      Array.from(this.connectedRobots.values()).map(connectedRobot =>
-        this.disconnect(connectedRobot.robot)
-      )
-    );
   }
 
   private getRobotKey(robot: Robot): string {
@@ -206,6 +172,11 @@ export class WebsocketRobotCommunicationService
     if (connectedRobot) {
       connectedRobot.connected = false;
       this.connectedRobots.delete(robotKey);
+
+      // Stop ping timer if no robots are connected
+      if (this.connectedRobots.size === 0) {
+        this.stopPingTimer();
+      }
     }
   }
 
@@ -220,6 +191,29 @@ export class WebsocketRobotCommunicationService
       this.sendPingsToRobots.bind(this),
       this.pingInterval
     );
+  }
+
+  private stopPingTimer(): void {
+    if (this.pingTimer) {
+      clearInterval(this.pingTimer);
+    }
+  }
+
+  /**
+   * Cleanup method to be called when the service is destroyed
+   * Clears the ping timer and disconnects all robots
+   */
+  public cleanup(): void {
+    this.stopPingTimer();
+
+    // Disconnect all robots
+    this.connectedRobots.forEach((connectedRobot) => {
+      if (connectedRobot.websocket.readyState === WebSocket.OPEN) {
+        connectedRobot.websocket.close();
+      }
+    });
+
+    this.connectedRobots.clear();
   }
 
   private sendPingsToRobots(): void {

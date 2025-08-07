@@ -1,4 +1,4 @@
-import { ipcMain, app } from 'electron';
+import { app, ipcMain } from 'electron';
 
 /**
  * Registers general application IPC handlers

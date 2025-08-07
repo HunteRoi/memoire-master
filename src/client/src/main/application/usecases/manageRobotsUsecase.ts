@@ -1,6 +1,6 @@
-import { Robot, type RobotConfig } from '../../../domain/robot';
-import { Result, Success, Failure } from '../../../domain/result';
 import { DEFAULT_ROBOT } from '../../../domain/constants';
+import { Failure, type Result, Success } from '../../../domain/result';
+import { Robot, type RobotConfig } from '../../../domain/robot';
 import type { RobotsConfigurationRepository } from '../interfaces/robotsConfigurationRepository';
 
 export class ManageRobotsUseCase {

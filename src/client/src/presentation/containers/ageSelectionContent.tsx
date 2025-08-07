@@ -1,4 +1,3 @@
-import { ChangeEvent, FC, useState } from 'react';
 import {
   Box,
   Button,
@@ -8,10 +7,11 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
+import { type ChangeEvent, type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppContext } from '../hooks/useAppContext';
-import { Age } from '../types/Age';
+import { Age } from '../models/Age';
 
 export const AgeSelectionContent: FC = () => {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ export const AgeSelectionContent: FC = () => {
 
   const handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newAge = parseInt(event.target.value);
-    if (!isNaN(newAge) && newAge >= 1) {
+    if (!Number.isNaN(newAge) && newAge >= 1) {
       setAge(newAge);
       setUserAge(new Age(newAge));
     }

@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import { Box, Typography, Paper, Button } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
+import type { FC } from 'react';
 
 interface PythonCodeViewerProps {
   code: string;

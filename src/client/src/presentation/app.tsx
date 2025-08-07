@@ -1,22 +1,23 @@
-import React, { useEffect } from 'react';
+import type React from 'react';
+import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Routes, Route } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { HashRouter, Route, Routes } from 'react-router';
 
 import './i18n';
 
-import { AppProvider } from './providers/appProvider';
-import { ThemeProvider } from './providers/themeProvider';
-import { useEnsureData } from './hooks/useEnsureData';
-import { useAppContext } from './hooks/useAppContext';
 import { AlertSnackbar } from './components/layout/alertSnackbar';
+import { useAppContext } from './hooks/useAppContext';
+import { useEnsureData } from './hooks/useEnsureData';
+import { AgeSelection } from './pages/ageSelection';
+import { ModeSelection } from './pages/modeSelection';
+import { RobotSelection } from './pages/robotSelection';
+import { Settings } from './pages/settings';
 import { SplashScreen } from './pages/splashScreen';
 import { ThemeSelection } from './pages/themeSelection';
-import { AgeSelection } from './pages/ageSelection';
-import { RobotSelection } from './pages/robotSelection';
-import { ModeSelection } from './pages/modeSelection';
 import { VisualProgramming } from './pages/visualProgramming';
-import { Settings } from './pages/settings';
+import { AppProvider } from './providers/appProvider';
+import { ThemeProvider } from './providers/themeProvider';
 
 const AppRoutes: React.FC = () => {
   const { alert, language, setLanguage } = useAppContext();

@@ -1,44 +1,22 @@
-import React, { useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
-import { useNavigate } from 'react-router';
+import type React from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import { useNavigate } from 'react-router';
 import { EPuck2Robot } from '../components/EPuck2Robot';
 import { useAppContext } from '../hooks/useAppContext';
-import { isSuccess } from '../../domain/result';
-import { Robot } from '../../domain/robot';
 
 export const SplashScreen: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { isLoading, error, setRobotsList, setLoading, setError } =
-    useAppContext();
+  const { isLoading, error } = useAppContext();
 
   useEffect(() => {
-    const loadApplicationData = async () => {
-      try {
-        setLoading(true);
-        const result = await window.electronAPI.manageRobots.loadRobots();
-        if (isSuccess(result)) {
-          const robots = result.data.map(
-            robot => new Robot(robot.ipAddress, robot.port)
-          );
-          setRobotsList(robots);
-        } else {
-          throw new Error(result.error);
-        }
-      } catch (error) {
-        console.error('Failed to load application data:', error);
-        setRobotsList([]);
-        setError(t('splash.loadError', 'Failed to load robots configuration'));
-      } finally {
-        setLoading(false);
-        setTimeout(navigate, 5000, '/theme-selection');
-      }
-    };
-
-    loadApplicationData();
-  }, [setRobotsList, setLoading, setError]);
+    // Navigate when data loading is complete
+    if (!isLoading && !error) {
+      navigate('/theme-selection');
+    }
+  }, [isLoading, error, navigate]);
 
   return (
     <Box

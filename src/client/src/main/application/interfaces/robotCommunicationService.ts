@@ -1,14 +1,5 @@
 import type { Robot } from '../../../domain/robot';
-
-export interface RobotFeedback {
-  robotId: string;
-  timestamp: number;
-  type: 'info' | 'success' | 'warning' | 'error';
-  message: string;
-  data?: unknown;
-}
-
-export type RobotFeedbackCallback = (feedback: RobotFeedback) => void;
+import type { RobotFeedback, RobotFeedbackCallback } from '../../../domain/RobotFeedback';
 
 export interface RobotCommunicationService {
   connect(robot: Robot): Promise<Robot>;

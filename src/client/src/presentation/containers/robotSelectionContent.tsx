@@ -1,16 +1,15 @@
-import { FC, useMemo, useState } from 'react';
+import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useAppContext } from '../hooks/useAppContext';
-import { useRobotManagement } from '../hooks/useRobotManagement';
-import { Robot } from '../../domain/robot';
-import { RobotGrid } from '../components/robot/robotGrid';
+import type { Robot } from '../../domain/robot';
 import { RobotDialog } from '../components/robot/dialog';
 import { RobotConnectionDialog } from '../components/robot/robotConnectionDialog';
+import { RobotGrid } from '../components/robot/robotGrid';
+import { useAppContext } from '../hooks/useAppContext';
+import { useRobotManagement } from '../hooks/useRobotManagement';
 
 export const RobotSelectionContent: FC = () => {
   const { t } = useTranslation();
-  const { setError, setSelectedRobot, showAlert } = useAppContext();
+  const { setSelectedRobot, showAlert } = useAppContext();
 
   const {
     robots,
@@ -28,11 +27,6 @@ export const RobotSelectionContent: FC = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [robotToConnect, setRobotToConnect] = useState<Robot | null>(null);
   const [connecting, setConnecting] = useState(false);
-
-  const selectedRobotData = useMemo<Robot | undefined>(
-    () => robots.find(bot => bot.id === selectedRobot),
-    [robots, selectedRobot]
-  );
 
   const handleAddRobot = () => {
     setRobotToEdit(null);

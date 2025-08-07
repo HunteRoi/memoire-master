@@ -1,14 +1,22 @@
-import { FC, useState, useCallback, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import { Box } from '@mui/material';
-import { ReactFlowProvider, useNodesState, useEdgesState, addEdge, Node, Edge, Connection, Position } from 'reactflow';
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import { useNavigate } from 'react-router';
+import {
+  addEdge,
+  type Connection,
+  type Edge,
+  type Node,
+  Position,
+  ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+} from 'reactflow';
+import { BlocksPanel } from '../components/visualProgramming/blocksPanel';
+import { ConsolePanel } from '../components/visualProgramming/consolePanel';
+import { ScriptPanel } from '../components/visualProgramming/scriptPanel';
 import { useAppContext } from '../hooks/useAppContext';
 import { useEnsureData } from '../hooks/useEnsureData';
-import { BlocksPanel } from '../components/visualProgramming/blocksPanel';
-import { ScriptPanel } from '../components/visualProgramming/scriptPanel';
-import { ConsolePanel } from '../components/visualProgramming/consolePanel';
 
 enum ScriptExecutionState {
   IDLE = 'idle',
@@ -16,19 +24,8 @@ enum ScriptExecutionState {
   PAUSED = 'paused',
 }
 
-interface RobotFeedback {
-  robotId: string;
-  timestamp: number;
-  type: 'info' | 'success' | 'warning' | 'error';
-  message: string;
-  data?: any;
-}
-
-interface ConsoleMessage {
-  timestamp: number;
-  type: string;
-  message: string;
-}
+import type { RobotFeedback } from '../../domain/RobotFeedback';
+import type { ConsoleMessage } from '../models/Console';
 
 interface VisualProgrammingContentProps {
   isSimpleMode: boolean;
@@ -39,7 +36,8 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { selectedRobot, isRobotConnected, robots, showAlert } = useAppContext();
+  const { selectedRobot, isRobotConnected, robots, showAlert } =
+    useAppContext();
 
   // State management
   const [showConsole, setShowConsole] = useState(false);
@@ -65,7 +63,7 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
     [robots, selectedRobot]
   );
 
-  const hasConnectedRobot = selectedRobot && isRobotConnected(selectedRobot);
+  const hasConnectedRobot = !!selectedRobot && isRobotConnected(selectedRobot);
   const canExecuteScript = hasConnectedRobot && scriptNodes.length > 0;
   const scriptHeight = isSimpleMode ? (showConsole ? '60%' : '100%') : '67%';
 
@@ -109,7 +107,6 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
   }, []);
-
 
   const onConnect = useCallback(
     (connection: Connection) => {
