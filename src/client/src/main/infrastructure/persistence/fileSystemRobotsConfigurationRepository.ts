@@ -11,7 +11,8 @@ type RobotConfig = {
 };
 
 export class FileSystemRobotsConfigurationRepository
-  implements RobotsConfigurationRepository {
+  implements RobotsConfigurationRepository
+{
   private robots: RobotConfig[] = [];
 
   private getConfigPath(): string {

@@ -16,7 +16,7 @@ export const ThemeSelection: FC = () => {
       title={t('theme.title')}
       subtitle={t('theme.subtitle')}
       onContinue={handleContinue}
-      maxWidth="lg"
+      maxWidth='lg'
     >
       <ThemeSelectionContent />
     </PageLayout>

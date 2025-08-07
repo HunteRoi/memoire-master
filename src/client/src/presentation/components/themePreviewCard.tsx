@@ -1,5 +1,12 @@
 import React from 'react';
-import { Box, Card, CardActionArea, CardContent, Radio, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  Radio,
+  Typography,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { ThemeOption } from '../types/Theme';
@@ -13,14 +20,14 @@ interface ThemePreviewCardProps {
 export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
   themeOption,
   isSelected,
-  onSelect
+  onSelect,
 }) => {
   const { t } = useTranslation();
-  
+
   const getThemeName = (themeType: string) => {
     return t(`theme.names.${themeType.toLowerCase()}`);
   };
-  
+
   const getThemeDescription = (themeType: string) => {
     return t(`theme.descriptions.${themeType.toLowerCase()}`);
   };
@@ -35,7 +42,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: 6,
-        }
+        },
       }}
     >
       <CardActionArea
@@ -48,7 +55,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             position: 'absolute',
             top: 8,
             right: 8,
-            zIndex: 1
+            zIndex: 1,
           }}
         >
           <Radio
@@ -68,7 +75,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
-            gap: 2
+            gap: 2,
           }}
         >
           {/* Color Swatches */}
@@ -80,7 +87,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
                 borderRadius: '50%',
                 backgroundColor: themeOption.theme.colors.primary.main,
                 border: '2px solid white',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
               }}
             />
             <Box
@@ -90,7 +97,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
                 borderRadius: '50%',
                 backgroundColor: themeOption.theme.colors.secondary.main,
                 border: '2px solid white',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
               }}
             />
             <Box
@@ -100,14 +107,14 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
                 borderRadius: '50%',
                 backgroundColor: themeOption.theme.colors.accent,
                 border: '2px solid white',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
               }}
             />
           </Box>
-          
+
           {/* Typography Preview */}
           <Typography
-            variant="h4"
+            variant='h4'
             sx={{
               color: themeOption.theme.colors.primary.main,
               fontWeight: 'bold',
@@ -118,28 +125,28 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
         </Box>
 
         {/* Theme Details */}
-        <CardContent 
-          sx={{ 
+        <CardContent
+          sx={{
             backgroundColor: themeOption.theme.colors.background.paper,
             color: themeOption.theme.colors.text.primary,
-            borderTop: `4px solid ${themeOption.theme.colors.primary.main}`
+            borderTop: `4px solid ${themeOption.theme.colors.primary.main}`,
           }}
         >
-          <Typography 
-            variant="h6" 
-            component="h2" 
-            gutterBottom 
-            sx={{ 
+          <Typography
+            variant='h6'
+            component='h2'
+            gutterBottom
+            sx={{
               color: themeOption.theme.colors.primary.main,
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }}
           >
             {getThemeName(themeOption.type)}
           </Typography>
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              color: themeOption.theme.colors.text.secondary 
+          <Typography
+            variant='body2'
+            sx={{
+              color: themeOption.theme.colors.text.secondary,
             }}
           >
             {getThemeDescription(themeOption.type)}

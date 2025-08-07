@@ -13,13 +13,12 @@ export const RobotSelection: FC = () => {
   const { t } = useTranslation();
   const { setError, setSelectedRobot } = useAppContext();
 
-  const {
-    robots,
-    selectedRobot,
-    isRobotConnected,
-  } = useRobotManagement();
+  const { robots, selectedRobot, isRobotConnected } = useRobotManagement();
 
-  const selectedRobotData = useMemo<Robot | undefined>(() => robots.find(bot => bot.id === selectedRobot), [robots, selectedRobot]);
+  const selectedRobotData = useMemo<Robot | undefined>(
+    () => robots.find(bot => bot.id === selectedRobot),
+    [robots, selectedRobot]
+  );
 
   const handleBack = () => navigate('/age-selection');
   const handleContinue = async () => {
@@ -32,7 +31,9 @@ export const RobotSelection: FC = () => {
     if (robotConnected) {
       navigate('/mode-selection');
     } else {
-      setError('The selected robot is not connected. Please connect to it first.');
+      setError(
+        'The selected robot is not connected. Please connect to it first.'
+      );
       setSelectedRobot(null);
     }
   };
@@ -43,8 +44,10 @@ export const RobotSelection: FC = () => {
       subtitle={t('robot.subtitle')}
       onBack={handleBack}
       onContinue={handleContinue}
-      continueDisabled={!selectedRobotData || !isRobotConnected(selectedRobot || '')}
-      maxWidth="lg"
+      continueDisabled={
+        !selectedRobotData || !isRobotConnected(selectedRobot || '')
+      }
+      maxWidth='lg'
     >
       <RobotSelectionContent />
     </PageLayout>

@@ -6,7 +6,7 @@ import type { RobotsConfigurationRepository } from '../interfaces/robotsConfigur
 export class ManageRobotsUseCase {
   constructor(
     private robotsConfigurationRepository: RobotsConfigurationRepository
-  ) { }
+  ) {}
 
   async loadRobots(): Promise<Result<Robot[]>> {
     try {

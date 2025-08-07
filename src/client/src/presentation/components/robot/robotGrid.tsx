@@ -23,11 +23,11 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
   onRobotEdit,
   onRobotDelete,
   onRobotDisconnect,
-  onAddRobot
+  onAddRobot,
 }) => {
   return (
     <Grid container spacing={2} sx={{ mb: 3, width: '100%' }}>
-      {robots.map((robot) => (
+      {robots.map(robot => (
         <Grid size={{ xs: 12, md: 6, lg: 4 }} key={robot.id}>
           <RobotCard
             robot={robot}

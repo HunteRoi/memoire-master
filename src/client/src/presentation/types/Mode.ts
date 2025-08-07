@@ -6,5 +6,5 @@ export type Mode = {
 
 export enum ModeType {
   EXPLORATION = 'exploration',
-  NAVIGATION = 'navigation'
+  NAVIGATION = 'navigation',
 }

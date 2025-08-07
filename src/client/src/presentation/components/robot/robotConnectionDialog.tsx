@@ -1,5 +1,13 @@
 import React from 'react';
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Robot } from '../../../domain/robot';
 
@@ -16,17 +24,23 @@ export const RobotConnectionDialog: React.FC<RobotConnectionDialogProps> = ({
   robot,
   onConfirm,
   onCancel,
-  loading = false
+  loading = false,
 }) => {
   const { t } = useTranslation();
   return (
-    <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onCancel} maxWidth='sm' fullWidth>
       <DialogTitle>
-        {t('robot.connectToRobotName', 'Connect to {{name}}', { name: robot.name })}
+        {t('robot.connectToRobotName', 'Connect to {{name}}', {
+          name: robot.name,
+        })}
       </DialogTitle>
       <DialogContent>
-        <Typography variant="body1">
-          {t('robot.connectConfirm', 'Are you sure you want to connect to {{name}}?', { name: robot.name })}
+        <Typography variant='body1'>
+          {t(
+            'robot.connectConfirm',
+            'Are you sure you want to connect to {{name}}?',
+            { name: robot.name }
+          )}
         </Typography>
       </DialogContent>
       <DialogActions>
@@ -35,11 +49,13 @@ export const RobotConnectionDialog: React.FC<RobotConnectionDialogProps> = ({
         </Button>
         <Button
           onClick={onConfirm}
-          variant="contained"
+          variant='contained'
           disabled={loading}
           startIcon={loading ? <CircularProgress size={16} /> : null}
         >
-          {loading ? t('robot.connecting', 'Connecting...') : t('common.connect')}
+          {loading
+            ? t('robot.connecting', 'Connecting...')
+            : t('common.connect')}
         </Button>
       </DialogActions>
     </Dialog>

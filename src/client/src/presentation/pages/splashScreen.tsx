@@ -11,7 +11,8 @@ import { Robot } from '../../domain/robot';
 export const SplashScreen: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { isLoading, error, setRobotsList, setLoading, setError } = useAppContext();
+  const { isLoading, error, setRobotsList, setLoading, setError } =
+    useAppContext();
 
   useEffect(() => {
     const loadApplicationData = async () => {
@@ -19,10 +20,12 @@ export const SplashScreen: React.FC = () => {
         setLoading(true);
         const result = await window.electronAPI.manageRobots.loadRobots();
         if (isSuccess(result)) {
-            const robots = result.data.map(robot => new Robot(robot.ipAddress, robot.port));
-            setRobotsList(robots);
+          const robots = result.data.map(
+            robot => new Robot(robot.ipAddress, robot.port)
+          );
+          setRobotsList(robots);
         } else {
-            throw new Error(result.error);
+          throw new Error(result.error);
         }
       } catch (error) {
         console.error('Failed to load application data:', error);
@@ -47,7 +50,7 @@ export const SplashScreen: React.FC = () => {
         justifyContent: 'center',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
-        textAlign: 'center'
+        textAlign: 'center',
       }}
     >
       <Box
@@ -59,56 +62,60 @@ export const SplashScreen: React.FC = () => {
             },
             '50%': {
               transform: 'translateY(-10px)',
-            }
-          }
+            },
+          },
         }}
       >
         <EPuck2Robot />
       </Box>
 
       <Typography
-        variant="h1"
-        component="h1"
+        variant='h1'
+        component='h1'
         sx={{
           mt: 4,
           mb: 2,
           fontWeight: 'bold',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
         }}
       >
         {t('splash.title')}
       </Typography>
 
       <Typography
-        variant="h6"
+        variant='h6'
         sx={{
           mb: 4,
           opacity: 0.9,
-          maxWidth: '400px'
+          maxWidth: '400px',
         }}
       >
         {t('splash.subtitle')}
       </Typography>
 
-      {isLoading && <Typography
-        variant="body2"
-        sx={{
-          mt: 2,
-          opacity: 0.7
-        }}
-      >
-        {t('common.loading')}
-      </Typography>}
-
-      {!isLoading && error && <Typography
-        variant="body2"
-        sx={{
+      {isLoading && (
+        <Typography
+          variant='body2'
+          sx={{
             mt: 2,
-            color: 'red'
-        }}
-      >
-        {error}
-      </Typography>}
+            opacity: 0.7,
+          }}
+        >
+          {t('common.loading')}
+        </Typography>
+      )}
+
+      {!isLoading && error && (
+        <Typography
+          variant='body2'
+          sx={{
+            mt: 2,
+            color: 'red',
+          }}
+        >
+          {error}
+        </Typography>
+      )}
     </Box>
   );
 };

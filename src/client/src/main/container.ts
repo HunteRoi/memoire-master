@@ -19,14 +19,14 @@ export class Container {
   private constructor() {
     // Initialize infrastructure layer
     const isDevelopment = !app.isPackaged;
-    
-    this._robotCommunicationService = isDevelopment 
-      ? new MockRobotCommunicationService() 
+
+    this._robotCommunicationService = isDevelopment
+      ? new MockRobotCommunicationService()
       : new WebsocketRobotCommunicationService();
-      
+
     this._robotsConfigurationRepository =
       new FileSystemRobotsConfigurationRepository();
-      
+
     this._manageRobotsUseCase = new ManageRobotsUseCase(
       this._robotsConfigurationRepository
     );
@@ -34,8 +34,12 @@ export class Container {
       this._robotCommunicationService
     );
 
-    console.log(`🔧 Container initialized in ${isDevelopment ? 'DEVELOPMENT' : 'PRODUCTION'} mode`);
-    console.log(`🤖 Using ${isDevelopment ? 'Mock' : 'WebSocket'} robot communication service`);
+    console.log(
+      `🔧 Container initialized in ${isDevelopment ? 'DEVELOPMENT' : 'PRODUCTION'} mode`
+    );
+    console.log(
+      `🤖 Using ${isDevelopment ? 'Mock' : 'WebSocket'} robot communication service`
+    );
   }
 
   public static getInstance(): Container {

@@ -23,18 +23,25 @@ export const AddRobotCard: React.FC<AddRobotCardProps> = ({ onAddRobot }) => {
         '&:hover': {
           borderColor: 'primary.main',
           backgroundColor: 'action.hover',
-          elevation: 4
-        }
+          elevation: 4,
+        },
       }}
       onClick={onAddRobot}
     >
-      <CardContent sx={{ textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <Fab size="medium" color="primary" sx={{ mb: 2 }}>
+      <CardContent
+        sx={{
+          textAlign: 'center',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Fab size='medium' color='primary' sx={{ mb: 2 }}>
           <Add />
         </Fab>
-        <Typography variant="h6">
-          {t('robot.addNewRobot')}
-        </Typography>
+        <Typography variant='h6'>{t('robot.addNewRobot')}</Typography>
       </CardContent>
     </Card>
   );

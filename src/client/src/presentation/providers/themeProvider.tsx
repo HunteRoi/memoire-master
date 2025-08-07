@@ -1,5 +1,8 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { ThemeProvider as MUIThemeProvider, createTheme } from '@mui/material/styles';
+import {
+  ThemeProvider as MUIThemeProvider,
+  createTheme,
+} from '@mui/material/styles';
 import { CssBaseline, Theme as MuiTheme } from '@mui/material';
 
 import { Theme, ThemeType } from '../types/Theme';
@@ -86,6 +89,72 @@ const createMuiTheme = (appTheme: Theme) => {
           },
           elevation2: {
             backgroundColor: appTheme.colors.surface.primary,
+          },
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          root: {
+            backgroundColor: appTheme.colors.background.paper,
+            borderBottom: `1px solid ${appTheme.colors.surface.primary}`,
+          },
+          indicator: {
+            backgroundColor: appTheme.colors.primary.main,
+            height: 3,
+            borderRadius: '3px 3px 0 0',
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+            fontWeight: 500,
+            fontSize: '0.875rem',
+            color: appTheme.colors.text.secondary,
+            minHeight: 48,
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              backgroundColor: appTheme.colors.surface.primary,
+              color: appTheme.colors.text.primary,
+            },
+            '&.Mui-selected': {
+              color: appTheme.colors.primary.main,
+              fontWeight: 600,
+            },
+            '&.Mui-focusVisible': {
+              backgroundColor: appTheme.colors.surface.primary,
+            },
+          },
+        },
+      },
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            backgroundColor: appTheme.colors.background.paper,
+            color: appTheme.colors.text.primary,
+            boxShadow: `0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)`,
+            borderBottom: `1px solid ${appTheme.colors.surface.primary}`,
+          },
+        },
+      },
+      MuiToolbar: {
+        styleOverrides: {
+          root: {
+            backgroundColor: appTheme.colors.background.paper,
+            color: appTheme.colors.text.primary,
+            padding: '0 16px',
+            minHeight: '56px !important',
+            '& .MuiIconButton-root': {
+              color: appTheme.colors.text.secondary,
+              '&:hover': {
+                backgroundColor: appTheme.colors.surface.primary,
+                color: appTheme.colors.text.primary,
+              },
+            },
+            '& .MuiTypography-root': {
+              color: appTheme.colors.text.primary,
+            },
           },
         },
       },

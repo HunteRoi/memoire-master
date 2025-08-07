@@ -8,13 +8,13 @@ import { useEnsureData } from '../hooks/useEnsureData';
 
 export const VisualProgramming: FC = () => {
   const navigate = useNavigate();
-  const { } = useAppContext();
+  const {} = useAppContext();
 
   useEnsureData();
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <AppBar position="static" color="default" elevation={1}>
+      <AppBar position='static' color='default' elevation={1}>
         <Toolbar>
           <IconButton onClick={() => navigate('/settings')}>
             <Settings />
@@ -22,8 +22,7 @@ export const VisualProgramming: FC = () => {
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
-      </Box>
+      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}></Box>
     </Box>
   );
 };

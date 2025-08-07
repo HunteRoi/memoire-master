@@ -3,22 +3,24 @@ import { isSuccess, Result } from '../../domain/result';
 import { useAppContext } from './useAppContext';
 
 export const useRobotManagement = () => {
-  const { 
-    robots, 
-    setRobotsList, 
-    selectedRobot, 
-    setSelectedRobot, 
+  const {
+    robots,
+    setRobotsList,
+    selectedRobot,
+    setSelectedRobot,
     addConnectedRobot,
     removeConnectedRobot,
     isRobotConnected,
-    setError, 
-    setLoading 
+    setError,
+    setLoading,
   } = useAppContext();
 
   const handleDeleteRobot = async (robotId: string) => {
     const result = await window.electronAPI.manageRobots.removeRobot(robotId);
     if (isSuccess(result)) {
-      setRobotsList(result.data.map(robot => new Robot(robot.ipAddress, robot.port)));
+      setRobotsList(
+        result.data.map(robot => new Robot(robot.ipAddress, robot.port))
+      );
     } else {
       console.error(result.error);
       setError('Failed to delete the robot');
@@ -34,7 +36,9 @@ export const useRobotManagement = () => {
     }
 
     if (isSuccess(result)) {
-      setRobotsList(result.data.map(robot => new Robot(robot.ipAddress, robot.port)));
+      setRobotsList(
+        result.data.map(robot => new Robot(robot.ipAddress, robot.port))
+      );
       return true;
     } else {
       console.error('Failed to save robot:', result.error);
@@ -45,7 +49,8 @@ export const useRobotManagement = () => {
 
   const handleConnectToRobot = async (robot: Robot) => {
     setLoading(true);
-    const result = await window.electronAPI.robotConnection.connectToRobot(robot);
+    const result =
+      await window.electronAPI.robotConnection.connectToRobot(robot);
     setLoading(false);
 
     if (isSuccess(result)) {
@@ -60,7 +65,8 @@ export const useRobotManagement = () => {
   };
 
   const handleDisconnectFromRobot = async (robot: Robot) => {
-    const result = await window.electronAPI.robotConnection.disconnectFromRobot(robot);
+    const result =
+      await window.electronAPI.robotConnection.disconnectFromRobot(robot);
     if (isSuccess(result)) {
       removeConnectedRobot(robot.id);
       if (selectedRobot === robot.id) {
@@ -76,9 +82,12 @@ export const useRobotManagement = () => {
 
   const handleRobotConnectionTest = async (robot: Robot): Promise<boolean> => {
     try {
-      const result = await window.electronAPI.robotConnection.connectToRobot(robot);
+      const result =
+        await window.electronAPI.robotConnection.connectToRobot(robot);
       if (isSuccess(result)) {
-        await window.electronAPI.robotConnection.disconnectFromRobot(result.data);
+        await window.electronAPI.robotConnection.disconnectFromRobot(
+          result.data
+        );
         return true;
       }
       return false;

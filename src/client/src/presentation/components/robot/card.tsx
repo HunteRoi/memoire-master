@@ -5,7 +5,7 @@ import {
   Typography,
   Box,
   IconButton,
-  Chip
+  Chip,
 } from '@mui/material';
 import { Delete, Edit, Wifi, WifiOff, LinkOff } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
@@ -30,19 +30,19 @@ export const RobotCard: FC<RobotCardProps> = ({
   onDelete,
   onDisconnect,
   selected,
-  connected
+  connected,
 }) => {
   const { t } = useTranslation();
-  const onEditClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+  const onEditClick: MouseEventHandler<HTMLButtonElement> = event => {
     event.stopPropagation();
     onEdit(robot);
   };
-  const onDeleteClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+  const onDeleteClick: MouseEventHandler<HTMLButtonElement> = event => {
     event.stopPropagation();
     onDelete(robot.id);
   };
 
-  const onDisconnectClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+  const onDisconnectClick: MouseEventHandler<HTMLButtonElement> = event => {
     event.stopPropagation();
     onDisconnect(robot);
   };
@@ -60,42 +60,56 @@ export const RobotCard: FC<RobotCardProps> = ({
         flexDirection: 'column',
         '&:hover': {
           borderColor: 'primary.main',
-          elevation: 4
-        }
+          elevation: 4,
+        },
       }}
       onClick={() => onSelect(robot)}
     >
-      <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-          <Box display="flex" alignItems="center" gap={1}>
-            <Typography variant="h6">
-              Robot {robot.id}
-            </Typography>
+      <CardContent
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box
+          display='flex'
+          justifyContent='space-between'
+          alignItems='flex-start'
+          mb={2}
+        >
+          <Box display='flex' alignItems='center' gap={1}>
+            <Typography variant='h6'>Robot {robot.id}</Typography>
             <Chip
               icon={connected ? <Wifi /> : <WifiOff />}
               label={connected ? t('robot.connected') : t('robot.disconnected')}
               color={connected ? 'success' : 'default'}
-              size="small"
+              size='small'
             />
           </Box>
           <Box>
             {connected && onDisconnect && (
-              <IconButton size="small" onClick={onDisconnectClick} color="warning">
+              <IconButton
+                size='small'
+                onClick={onDisconnectClick}
+                color='warning'
+              >
                 <LinkOff />
               </IconButton>
             )}
-            <IconButton size="small" onClick={onEditClick}>
+            <IconButton size='small' onClick={onEditClick}>
               <Edit />
             </IconButton>
             {robot.id !== DEFAULT_ROBOT.id && (
-              <IconButton size="small" onClick={onDeleteClick}>
+              <IconButton size='small' onClick={onDeleteClick}>
                 <Delete />
               </IconButton>
             )}
           </Box>
         </Box>
 
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Typography variant='body2' color='text.secondary' gutterBottom>
           IP: {robot.ipAddress}:{robot.port}
         </Typography>
       </CardContent>

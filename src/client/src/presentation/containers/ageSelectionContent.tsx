@@ -1,5 +1,13 @@
 import { ChangeEvent, FC, useState } from 'react';
-import { Box, Button, Card, CardContent, FormControl, InputAdornment, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  FormControl,
+  InputAdornment,
+  TextField,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { useAppContext } from '../hooks/useAppContext';
@@ -37,84 +45,98 @@ export const AgeSelectionContent: FC = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '200px',
-        mt: 2
+        mt: 2,
       }}
     >
       <Card sx={{ width: '100%', maxWidth: 500, minHeight: 180 }}>
-        <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 4 }}>
-        <FormControl sx={{ m: 1 }}>
-          <TextField
-            type="number"
-            value={age}
-            onChange={handleTextFieldChange}
-            variant="standard"
-            sx={{
-              '& .MuiInput-underline:before': {
-                borderBottom: 'none',
-              },
-              '& .MuiInput-underline:after': {
-                borderBottom: 'none',
-              },
-              '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                borderBottom: 'none',
-              },
-              '& .MuiInputBase-input': {
-                fontSize: '4rem',
-                textAlign: 'center',
-                '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
-                  WebkitAppearance: 'none',
-                  margin: 0,
+        <CardContent
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            p: 4,
+          }}
+        >
+          <FormControl sx={{ m: 1 }}>
+            <TextField
+              type='number'
+              value={age}
+              onChange={handleTextFieldChange}
+              variant='standard'
+              sx={{
+                '& .MuiInput-underline:before': {
+                  borderBottom: 'none',
                 },
-                '&[type=number]': {
-                  MozAppearance: 'textfield',
+                '& .MuiInput-underline:after': {
+                  borderBottom: 'none',
                 },
-              },
-            }}
-            slotProps={{
-              htmlInput: {
-                min: 1,
-                max: 99
-              },
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                      <Button
-                        size="small"
-                        onClick={handleArrowUpClick}
+                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                  borderBottom: 'none',
+                },
+                '& .MuiInputBase-input': {
+                  fontSize: '4rem',
+                  textAlign: 'center',
+                  '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button':
+                    {
+                      WebkitAppearance: 'none',
+                      margin: 0,
+                    },
+                  '&[type=number]': {
+                    MozAppearance: 'textfield',
+                  },
+                },
+              }}
+              slotProps={{
+                htmlInput: {
+                  min: 1,
+                  max: 99,
+                },
+                input: {
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <Box
                         sx={{
-                          minWidth: '30px',
-                          height: '30px',
-                          fontSize: '16px',
-                          padding: 0,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 0.5,
                         }}
                       >
-                        ▲
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={handleArrowDownClick}
-                        sx={{
-                          minWidth: '30px',
-                          height: '30px',
-                          fontSize: '16px',
-                          padding: 0,
-                        }}
-                      >
-                        ▼
-                      </Button>
-                    </Box>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end" sx={{ fontSize: '3rem' }}>
-                    {t('age.yearsOld')}
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-        </FormControl>
+                        <Button
+                          size='small'
+                          onClick={handleArrowUpClick}
+                          sx={{
+                            minWidth: '30px',
+                            height: '30px',
+                            fontSize: '16px',
+                            padding: 0,
+                          }}
+                        >
+                          ▲
+                        </Button>
+                        <Button
+                          size='small'
+                          onClick={handleArrowDownClick}
+                          sx={{
+                            minWidth: '30px',
+                            height: '30px',
+                            fontSize: '16px',
+                            padding: 0,
+                          }}
+                        >
+                          ▼
+                        </Button>
+                      </Box>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position='end' sx={{ fontSize: '3rem' }}>
+                      {t('age.yearsOld')}
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+          </FormControl>
         </CardContent>
       </Card>
     </Box>

@@ -29,7 +29,10 @@ export const RobotSelectionContent: FC = () => {
   const [robotToConnect, setRobotToConnect] = useState<Robot | null>(null);
   const [connecting, setConnecting] = useState(false);
 
-  const selectedRobotData = useMemo<Robot | undefined>(() => robots.find(bot => bot.id === selectedRobot), [robots, selectedRobot]);
+  const selectedRobotData = useMemo<Robot | undefined>(
+    () => robots.find(bot => bot.id === selectedRobot),
+    [robots, selectedRobot]
+  );
 
   const handleAddRobot = () => {
     setRobotToEdit(null);
@@ -46,7 +49,10 @@ export const RobotSelectionContent: FC = () => {
 
     if (robotConnected) {
       setSelectedRobot(robot.id);
-      showAlert(t('alerts.robotAlreadyConnected', { robotId: robot.id }), 'info');
+      showAlert(
+        t('alerts.robotAlreadyConnected', { robotId: robot.id }),
+        'info'
+      );
     } else {
       setRobotToConnect(robot);
       setConfirmDialogOpen(true);
@@ -72,9 +78,15 @@ export const RobotSelectionContent: FC = () => {
     setRobotToConnect(null);
 
     if (success) {
-      showAlert(t('alerts.robotConnectedSuccess', { robotId: robotToConnect.id }), 'success');
+      showAlert(
+        t('alerts.robotConnectedSuccess', { robotId: robotToConnect.id }),
+        'success'
+      );
     } else {
-      showAlert(t('alerts.robotConnectionFailed', { robotId: robotToConnect.id }), 'error');
+      showAlert(
+        t('alerts.robotConnectionFailed', { robotId: robotToConnect.id }),
+        'error'
+      );
     }
   };
 
@@ -86,9 +98,15 @@ export const RobotSelectionContent: FC = () => {
   const handleDisconnectRobot = async (robot: Robot) => {
     const success = await handleDisconnectFromRobot(robot);
     if (success) {
-      showAlert(t('alerts.robotDisconnectedSuccess', { robotId: robot.id }), 'info');
+      showAlert(
+        t('alerts.robotDisconnectedSuccess', { robotId: robot.id }),
+        'info'
+      );
     } else {
-      showAlert(t('alerts.robotDisconnectionFailed', { robotId: robot.id }), 'error');
+      showAlert(
+        t('alerts.robotDisconnectionFailed', { robotId: robot.id }),
+        'error'
+      );
     }
   };
 
@@ -105,21 +123,25 @@ export const RobotSelectionContent: FC = () => {
         onAddRobot={handleAddRobot}
       />
 
-      {robotToEdit && <RobotDialog
-        open={formDialogOpen}
-        robot={robotToEdit}
-        onClose={() => setFormDialogOpen(false)}
-        onSave={handleSaveRobotWithDialog}
-        onTest={handleRobotConnectionTest}
-      />}
+      {robotToEdit && (
+        <RobotDialog
+          open={formDialogOpen}
+          robot={robotToEdit}
+          onClose={() => setFormDialogOpen(false)}
+          onSave={handleSaveRobotWithDialog}
+          onTest={handleRobotConnectionTest}
+        />
+      )}
 
-      {robotToConnect && <RobotConnectionDialog
-        open={confirmDialogOpen}
-        robot={robotToConnect}
-        onConfirm={handleConnectConfirmation}
-        onCancel={handleCancelConfirmation}
-        loading={connecting}
-      />}
+      {robotToConnect && (
+        <RobotConnectionDialog
+          open={confirmDialogOpen}
+          robot={robotToConnect}
+          onConfirm={handleConnectConfirmation}
+          onCancel={handleCancelConfirmation}
+          loading={connecting}
+        />
+      )}
     </>
   );
 };

@@ -1,12 +1,12 @@
 export type Result<T> =
   | {
-    readonly success: true;
-    readonly data: T;
-  }
+      readonly success: true;
+      readonly data: T;
+    }
   | {
-    readonly success: false;
-    readonly error: string;
-  };
+      readonly success: false;
+      readonly error: string;
+    };
 
 export const Success = <T>(data: T): Result<T> => ({
   success: true,
@@ -18,4 +18,6 @@ export const Failure = <T>(error: string): Result<T> => ({
   error,
 });
 
-export const isSuccess = <T>(result: Result<T>): result is Extract<Result<T>, { success: true }> => result.success;
+export const isSuccess = <T>(
+  result: Result<T>
+): result is Extract<Result<T>, { success: true }> => result.success;

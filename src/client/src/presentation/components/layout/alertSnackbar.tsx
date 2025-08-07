@@ -12,7 +12,7 @@ export const AlertSnackbar: React.FC<AlertSnackbarProps> = ({
   open,
   onClose,
   message,
-  severity
+  severity,
 }) => {
   return (
     <Snackbar

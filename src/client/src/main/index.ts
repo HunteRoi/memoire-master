@@ -33,9 +33,12 @@ ipcMain.handle('manageRobots:findRobotById', async (_, robotId: string) => {
   return await container.manageRobotsUseCase.findRobotById(robotId);
 });
 
-ipcMain.handle('robotConnection:connectToRobot', async (_, robot: RobotConfig) => {
-  return await container.robotConnectionUseCase.connectToRobot(robot);
-});
+ipcMain.handle(
+  'robotConnection:connectToRobot',
+  async (_, robot: RobotConfig) => {
+    return await container.robotConnectionUseCase.connectToRobot(robot);
+  }
+);
 
 ipcMain.handle(
   'robotConnection:disconnectFromRobot',
@@ -44,6 +47,9 @@ ipcMain.handle(
   }
 );
 
-ipcMain.handle('robotConnection:checkConnection', async (_, robot: RobotConfig) => {
-  return await container.robotConnectionUseCase.checkConnection(robot);
-});
+ipcMain.handle(
+  'robotConnection:checkConnection',
+  async (_, robot: RobotConfig) => {
+    return await container.robotConnectionUseCase.checkConnection(robot);
+  }
+);

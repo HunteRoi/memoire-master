@@ -20,19 +20,22 @@ export type AppState = {
 };
 
 export type AppAction =
-    | { type: 'SET_THEME'; payload: ThemeType }
-    | { type: 'SET_LANGUAGE'; payload: string }
-    | { type: 'SET_USER_AGE'; payload: Age }
-    | { type: 'SET_SELECTED_ROBOT'; payload: string }
-    | { type: 'SET_SELECTED_MODE'; payload: ModeType }
-    | { type: 'SET_ROBOTS_LIST'; payload: Robot[] }
-    | { type: 'ADD_CONNECTED_ROBOT'; payload: string }
-    | { type: 'REMOVE_CONNECTED_ROBOT'; payload: string }
-    | { type: 'SET_LOADING'; payload: boolean }
-    | { type: 'SET_ERROR'; payload: string | null }
-    | { type: 'SHOW_ALERT'; payload: { message: string; severity: AlertSnackbarProps['severity'] } }
-    | { type: 'HIDE_ALERT' }
-    | { type: 'RESET_STATE' };
+  | { type: 'SET_THEME'; payload: ThemeType }
+  | { type: 'SET_LANGUAGE'; payload: string }
+  | { type: 'SET_USER_AGE'; payload: Age }
+  | { type: 'SET_SELECTED_ROBOT'; payload: string }
+  | { type: 'SET_SELECTED_MODE'; payload: ModeType }
+  | { type: 'SET_ROBOTS_LIST'; payload: Robot[] }
+  | { type: 'ADD_CONNECTED_ROBOT'; payload: string }
+  | { type: 'REMOVE_CONNECTED_ROBOT'; payload: string }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | {
+      type: 'SHOW_ALERT';
+      payload: { message: string; severity: AlertSnackbarProps['severity'] };
+    }
+  | { type: 'HIDE_ALERT' }
+  | { type: 'RESET_STATE' };
 
 export type AppContextType = AppState & {
   setTheme: (theme: ThemeType) => void;
@@ -46,7 +49,10 @@ export type AppContextType = AppState & {
   isRobotConnected: (robotId: string) => boolean;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  showAlert: (message: string, severity?: AlertSnackbarProps['severity']) => void;
+  showAlert: (
+    message: string,
+    severity?: AlertSnackbarProps['severity']
+  ) => void;
   hideAlert: () => void;
   resetState: () => void;
   ensureRobotsLoaded: () => Promise<void>;

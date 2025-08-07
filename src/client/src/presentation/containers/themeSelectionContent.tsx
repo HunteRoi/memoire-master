@@ -19,7 +19,7 @@ export const ThemeSelectionContent: FC = () => {
 
   return (
     <Grid container spacing={3} sx={{ mt: 4, maxWidth: 1000 }}>
-      {themeOptions.map((option) => (
+      {themeOptions.map(option => (
         <Grid size={{ xs: 12, sm: 6, md: 4 }} key={option.type}>
           <ThemePreviewCard
             themeOption={option}

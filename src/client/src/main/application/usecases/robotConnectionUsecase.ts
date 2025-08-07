@@ -3,7 +3,7 @@ import { Result, Success, Failure } from '../../../domain/result';
 import type { RobotCommunicationService } from '../interfaces/robotCommunicationService';
 
 export class RobotConnectionUseCase {
-  constructor(private robotRepository: RobotCommunicationService) { }
+  constructor(private robotRepository: RobotCommunicationService) {}
 
   async connectToRobot(robot: RobotConfig): Promise<Result<RobotConfig>> {
     try {
@@ -58,9 +58,11 @@ export class RobotConnectionUseCase {
       }
       throw new Error('Could not connect to robot');
     } catch (error) {
-      return Failure(error instanceof Error
-        ? error.message
-        : 'Failed to check connection with robot');
+      return Failure(
+        error instanceof Error
+          ? error.message
+          : 'Failed to check connection with robot'
+      );
     }
   }
 }

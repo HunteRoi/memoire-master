@@ -26,7 +26,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   continueText,
   backText,
   maxWidth = 'md',
-  centered = true
+  centered = true,
 }) => {
   const { t } = useTranslation();
   return (
@@ -35,7 +35,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         backgroundColor: 'background.default',
         color: 'text.primary',
         minHeight: '100vh',
-        transition: 'all 0.3s ease-in-out'
+        transition: 'all 0.3s ease-in-out',
       }}
     >
       {/* Language selector in top right */}
@@ -44,7 +44,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
           position: 'fixed',
           top: 16,
           right: 16,
-          zIndex: 1000
+          zIndex: 1000,
         }}
       >
         <LanguageSelector />
@@ -52,15 +52,15 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
 
       <Container maxWidth={maxWidth}>
         <Box
-          display="flex"
-          flexDirection="column"
+          display='flex'
+          flexDirection='column'
           alignItems={centered ? 'center' : 'flex-start'}
-          minHeight="100vh"
+          minHeight='100vh'
           py={4}
         >
           <Typography
-            variant="h1"
-            component="h1"
+            variant='h1'
+            component='h1'
             gutterBottom
             align={centered ? 'center' : 'left'}
             sx={{ mb: 2 }}
@@ -70,11 +70,11 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
 
           {subtitle && (
             <Typography
-              variant="h3"
-              component="p"
+              variant='h3'
+              component='p'
               gutterBottom
               align={centered ? 'center' : 'left'}
-              color="text.secondary"
+              color='text.secondary'
               sx={{ mb: 4 }}
             >
               {subtitle}
@@ -88,22 +88,22 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
               display: 'flex',
               flexDirection: 'column',
               alignItems: centered ? 'center' : 'flex-start',
-              mb: 4
+              mb: 4,
             }}
           >
             {children}
           </Box>
 
           <Box
-            display="flex"
+            display='flex'
             gap={2}
-            justifyContent="center"
+            justifyContent='center'
             sx={{ mt: 'auto' }}
           >
             {onBack && (
               <Button
-                variant="outlined"
-                size="large"
+                variant='outlined'
+                size='large'
                 onClick={onBack}
                 sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
               >
@@ -112,8 +112,8 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
             )}
             {onContinue && (
               <Button
-                variant="contained"
-                size="large"
+                variant='contained'
+                size='large'
                 onClick={onContinue}
                 disabled={continueDisabled}
                 sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
