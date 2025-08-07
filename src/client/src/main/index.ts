@@ -18,7 +18,7 @@ let mainWindow: BrowserWindow | null = null;
 function initializeIpcHandlers(): void {
   registerAppIpcHandlers();
   registerRobotIpcHandlers();
-  
+
   // Initialize Python Code Viewer manager (registers its own IPC handlers)
   new PythonCodeViewerManager();
 }

@@ -105,7 +105,7 @@
         "description": "Choisissez votre thème de couleur préféré pour l'application."
       },
       "ageConfiguration": {
-        "title": "Configuration de l'Âge", 
+        "title": "Configuration de l'Âge",
         "description": "Définissez votre âge pour personnaliser la complexité de l'interface."
       },
       "robotManagement": {
@@ -116,6 +116,61 @@
         "title": "Mode Robot",
         "description": "Choisissez le mode de fonctionnement pour votre robot."
       }
+    }
+  },
+  "visualProgramming": {
+    "title": "Programmation Visuelle",
+    "blocks": {
+      "title": "Blocs",
+      "categories": {
+        "movement": "Mouvement",
+        "sensors": "Capteurs",
+        "control": "Contrôle"
+      },
+      "names": {
+        "move_forward": "Avancer",
+        "move_backward": "Reculer",
+        "turn_left": "Tourner à gauche",
+        "turn_right": "Tourner à droite",
+        "distance_sensor": "Capteur de distance",
+        "light_sensor": "Capteur de lumière",
+        "camera": "Caméra",
+        "if_condition": "Condition si",
+        "while_loop": "Boucle tant que",
+        "wait": "Attendre"
+      }
+    },
+    "script": {
+      "title": "Script",
+      "status": {
+        "running": "En cours",
+        "paused": "En pause",
+        "idle": "Inactif"
+      }
+    },
+    "console": {
+      "title": "Console",
+      "showConsole": "Afficher la console",
+      "messages": {
+        "robotInitialized": "Robot initialisé avec succès",
+        "connecting": "Connexion au robot...",
+        "connectionEstablished": "Connexion établie",
+        "readyForCommands": "Prêt pour les commandes"
+      }
+    },
+    "alerts": {
+      "noRobotConnected": "Aucun robot connecté. Veuillez d'abord connecter un robot.",
+      "noBlocksInScript": "Aucun bloc dans le script. Veuillez d'abord ajouter des blocs.",
+      "scriptStarted": "Exécution du script démarrée",
+      "scriptResumed": "Exécution du script reprise",
+      "scriptPaused": "Exécution du script mise en pause",
+      "scriptStopped": "Exécution du script arrêtée"
+    },
+    "pythonViewer": {
+      "title": "Code Python généré",
+      "generatedComment": "Script Python généré",
+      "basedOnComment": "Basé sur les blocs visuels de la zone de script",
+      "completedComment": "Exécution du script terminée"
     }
   }
 }

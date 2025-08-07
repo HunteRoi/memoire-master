@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
@@ -28,6 +28,35 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   centered = true,
 }) => {
   const { t } = useTranslation();
+
+  // Add keyboard event listeners for Enter and Backspace keys
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Handle Enter key (main keyboard and numpad) for continue button
+      if (
+        (event.key === 'Enter' || event.key === 'NumpadEnter') &&
+        onContinue &&
+        !continueDisabled
+      ) {
+        event.preventDefault();
+        onContinue();
+      }
+      // Handle Backspace key for back button
+      else if (event.key === 'Backspace' && onBack) {
+        event.preventDefault();
+        onBack();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup function to remove event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onBack, onContinue, continueDisabled]);
+
   return (
     <Box
       sx={{

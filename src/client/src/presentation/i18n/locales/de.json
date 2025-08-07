@@ -105,7 +105,7 @@
         "description": "Wählen Sie Ihr bevorzugtes Farbthema für die Anwendung."
       },
       "ageConfiguration": {
-        "title": "Alters Konfiguration", 
+        "title": "Alters Konfiguration",
         "description": "Legen Sie Ihr Alter fest, um die Komplexität der Benutzeroberfläche anzupassen."
       },
       "robotManagement": {
@@ -116,6 +116,61 @@
         "title": "Roboter Modus",
         "description": "Wählen Sie den Betriebsmodus für Ihren Roboter."
       }
+    }
+  },
+  "visualProgramming": {
+    "title": "Visuelle Programmierung",
+    "blocks": {
+      "title": "Blöcke",
+      "categories": {
+        "movement": "Bewegung",
+        "sensors": "Sensoren",
+        "control": "Steuerung"
+      },
+      "names": {
+        "move_forward": "Vorwärts bewegen",
+        "move_backward": "Rückwärts bewegen",
+        "turn_left": "Links drehen",
+        "turn_right": "Rechts drehen",
+        "distance_sensor": "Entfernungssensor",
+        "light_sensor": "Lichtsensor",
+        "camera": "Kamera",
+        "if_condition": "Wenn Bedingung",
+        "while_loop": "Während Schleife",
+        "wait": "Warten"
+      }
+    },
+    "script": {
+      "title": "Skript",
+      "status": {
+        "running": "Läuft",
+        "paused": "Pausiert",
+        "idle": "Inaktiv"
+      }
+    },
+    "console": {
+      "title": "Konsole",
+      "showConsole": "Konsole anzeigen",
+      "messages": {
+        "robotInitialized": "Roboter erfolgreich initialisiert",
+        "connecting": "Verbindung zum Roboter...",
+        "connectionEstablished": "Verbindung hergestellt",
+        "readyForCommands": "Bereit für Befehle"
+      }
+    },
+    "alerts": {
+      "noRobotConnected": "Kein Roboter verbunden. Bitte verbinden Sie zuerst einen Roboter.",
+      "noBlocksInScript": "Keine Blöcke im Skript. Bitte fügen Sie zuerst Blöcke hinzu.",
+      "scriptStarted": "Skriptausführung gestartet",
+      "scriptResumed": "Skriptausführung fortgesetzt",
+      "scriptPaused": "Skriptausführung pausiert",
+      "scriptStopped": "Skriptausführung gestoppt"
+    },
+    "pythonViewer": {
+      "title": "Generierter Python Code",
+      "generatedComment": "Generiertes Python Skript",
+      "basedOnComment": "Basierend auf visuellen Blöcken im Skriptbereich",
+      "completedComment": "Skriptausführung abgeschlossen"
     }
   }
 }

@@ -1,4 +1,10 @@
-import { Menu, MenuItem, BrowserWindow, MenuItemConstructorOptions, app } from 'electron';
+import {
+  Menu,
+  MenuItem,
+  BrowserWindow,
+  MenuItemConstructorOptions,
+  app,
+} from 'electron';
 
 /**
  * Manages the application's native menu system
@@ -33,7 +39,7 @@ export class MenuManager {
               this.mainWindow?.webContents.executeJavaScript(`
                 window.location.hash = '/settings';
               `);
-            }
+            },
           },
           { type: 'separator' as const },
           {
@@ -41,9 +47,9 @@ export class MenuManager {
             accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
             click: () => {
               app.quit();
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       {
         label: 'Edit',
@@ -54,8 +60,8 @@ export class MenuManager {
           { role: 'cut' as const },
           { role: 'copy' as const },
           { role: 'paste' as const },
-          { role: 'selectAll' as const }
-        ]
+          { role: 'selectAll' as const },
+        ],
       },
       {
         label: 'View',
@@ -82,7 +88,7 @@ export class MenuManager {
                   this.mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'en' }));
                   `);
-                }
+                },
               },
               {
                 label: 'Français',
@@ -92,7 +98,7 @@ export class MenuManager {
                   this.mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'fr' }));
                   `);
-                }
+                },
               },
               {
                 label: 'Nederlands',
@@ -102,7 +108,7 @@ export class MenuManager {
                   this.mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'nl' }));
                   `);
-                }
+                },
               },
               {
                 label: 'Deutsch',
@@ -112,18 +118,15 @@ export class MenuManager {
                   this.mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'de' }));
                   `);
-                }
-              }
-            ]
-          }
-        ]
+                },
+              },
+            ],
+          },
+        ],
       },
       {
         label: 'Window',
-        submenu: [
-          { role: 'minimize' as const },
-          { role: 'close' as const }
-        ]
+        submenu: [{ role: 'minimize' as const }, { role: 'close' as const }],
       },
       {
         label: 'Help',
@@ -132,10 +135,10 @@ export class MenuManager {
             label: 'About',
             click: () => {
               // TODO: Show about dialog
-            }
-          }
-        ]
-      }
+            },
+          },
+        ],
+      },
     ];
 
     const menu = Menu.buildFromTemplate(template);

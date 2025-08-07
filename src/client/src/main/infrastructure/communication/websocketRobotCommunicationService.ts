@@ -1,13 +1,18 @@
 import WebSocket from 'ws';
 
 import type { Robot } from '../../../domain/robot';
-import type { RobotCommunicationService } from '../../application/interfaces/robotCommunicationService';
+import type {
+  RobotCommunicationService,
+  RobotFeedback,
+  RobotFeedbackCallback,
+} from '../../application/interfaces/robotCommunicationService';
 
 interface ConnectedRobot {
   robot: Robot;
   websocket: WebSocket;
   connected: boolean;
   lastPing: number;
+  feedbackCallback?: RobotFeedbackCallback;
 }
 
 interface RobotMessage {
@@ -78,7 +83,7 @@ export class WebsocketRobotCommunicationService
       });
 
       ws.on('message', (data: WebSocket.Data) => {
-        this.handleRobotMessage(robotKey, data);
+        this.handleRobotMessageWithFeedback(robotKey, data);
       });
 
       ws.on('error', error => {
@@ -210,47 +215,6 @@ export class WebsocketRobotCommunicationService
     }
   }
 
-  private handleRobotMessage(robotKey: string, data: WebSocket.Data): void {
-    const connectedRobot = this.connectedRobots.get(robotKey);
-    if (!connectedRobot) return;
-
-    try {
-      const response: RobotResponse = JSON.parse(data.toString());
-
-      switch (response.type) {
-        case 'pong':
-          connectedRobot.lastPing = Date.now();
-          console.log(`🏓 Pong received from robot ${connectedRobot.robot.id}`);
-          break;
-
-        case 'status':
-          console.log(
-            `📊 Status from robot ${connectedRobot.robot.id}:`,
-            response.data
-          );
-          break;
-
-        case 'error':
-          console.error(
-            `❌ Error from robot ${connectedRobot.robot.id}:`,
-            response.message
-          );
-          break;
-
-        default:
-          console.log(
-            `📨 Message from robot ${connectedRobot.robot.id}:`,
-            response
-          );
-      }
-    } catch (error) {
-      console.error(
-        `Failed to parse message from robot ${connectedRobot.robot.id}:`,
-        error
-      );
-    }
-  }
-
   private startPingTimer(): void {
     this.pingTimer = setInterval(
       this.sendPingsToRobots.bind(this),
@@ -281,5 +245,125 @@ export class WebsocketRobotCommunicationService
         }
       }
     });
+  }
+
+  // Feedback methods implementation
+  subscribeToFeedback(robot: Robot, callback: RobotFeedbackCallback): void {
+    const robotKey = this.getRobotKey(robot);
+    const connectedRobot = this.connectedRobots.get(robotKey);
+
+    if (connectedRobot) {
+      connectedRobot.feedbackCallback = callback;
+      console.log(
+        `📻 [WebSocket] Subscribed to feedback for robot ${robot.id}`
+      );
+
+      // Send initial connection feedback
+      callback({
+        robotId: robot.id,
+        timestamp: Date.now(),
+        type: 'success',
+        message: 'Real-time feedback connection established',
+      });
+    } else {
+      console.warn(
+        `📻 [WebSocket] Robot ${robot.id} not connected, cannot subscribe to feedback`
+      );
+    }
+  }
+
+  unsubscribeFromFeedback(robot: Robot): void {
+    const robotKey = this.getRobotKey(robot);
+    const connectedRobot = this.connectedRobots.get(robotKey);
+
+    if (connectedRobot) {
+      connectedRobot.feedbackCallback = undefined;
+      console.log(
+        `📻 [WebSocket] Unsubscribed from feedback for robot ${robot.id}`
+      );
+    }
+  }
+
+  sendFeedback(feedback: RobotFeedback): void {
+    // Find the robot by ID and send feedback if callback exists
+    for (const connectedRobot of this.connectedRobots.values()) {
+      if (
+        connectedRobot.robot.id === feedback.robotId &&
+        connectedRobot.feedbackCallback
+      ) {
+        connectedRobot.feedbackCallback(feedback);
+        break;
+      }
+    }
+  }
+
+  // Enhanced message handling with feedback
+  private handleRobotMessageWithFeedback(
+    robotKey: string,
+    data: WebSocket.Data
+  ): void {
+    const connectedRobot = this.connectedRobots.get(robotKey);
+    if (!connectedRobot) return;
+
+    try {
+      const response: RobotResponse = JSON.parse(data.toString());
+
+      // Send feedback for all message types
+      const feedback: RobotFeedback = {
+        robotId: connectedRobot.robot.id,
+        timestamp: Date.now(),
+        type: response.type === 'error' ? 'error' : 'info',
+        message: this.formatRobotMessage(response),
+        data: response.data,
+      };
+
+      if (connectedRobot.feedbackCallback) {
+        connectedRobot.feedbackCallback(feedback);
+      }
+
+      // Original message handling logic
+      switch (response.type) {
+        case 'pong':
+          connectedRobot.lastPing = Date.now();
+          break;
+        case 'status':
+        case 'error':
+          // Feedback already sent above
+          break;
+        default:
+          // Handle other message types
+          break;
+      }
+    } catch (error) {
+      console.error(
+        `Failed to parse message from robot ${connectedRobot.robot.id}:`,
+        error
+      );
+
+      if (connectedRobot.feedbackCallback) {
+        connectedRobot.feedbackCallback({
+          robotId: connectedRobot.robot.id,
+          timestamp: Date.now(),
+          type: 'error',
+          message: `Failed to parse robot message: ${error}`,
+          data: { rawData: data.toString() },
+        });
+      }
+    }
+  }
+
+  private formatRobotMessage(response: RobotResponse): string {
+    switch (response.type) {
+      case 'pong':
+        return 'Robot responding to ping';
+      case 'status':
+        return `Robot status: ${JSON.stringify(response.data)}`;
+      case 'error':
+        return `Robot error: ${response.message || 'Unknown error'}`;
+      case 'success':
+        return `Robot command completed successfully`;
+      default:
+        return `Robot message: ${response.type}`;
+    }
   }
 }

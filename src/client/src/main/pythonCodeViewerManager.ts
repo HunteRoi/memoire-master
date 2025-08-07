@@ -16,9 +16,12 @@ export class PythonCodeViewerManager {
    * Register all IPC handlers for Python Code Viewer operations
    */
   private registerIpcHandlers(): void {
-    ipcMain.handle('pythonCodeViewer:openWindow', async (_, code: string, title?: string) => {
-      return await this.openWindow(code, title);
-    });
+    ipcMain.handle(
+      'pythonCodeViewer:openWindow',
+      async (_, code: string, title?: string) => {
+        return await this.openWindow(code, title);
+      }
+    );
 
     ipcMain.handle('pythonCodeViewer:updateCode', async (_, code: string) => {
       return await this.updateCode(code);
@@ -37,7 +40,10 @@ export class PythonCodeViewerManager {
     this.currentPythonCode = code;
 
     // If window already exists, just update the code and focus
-    if (this.pythonCodeViewerWindow && !this.pythonCodeViewerWindow.isDestroyed()) {
+    if (
+      this.pythonCodeViewerWindow &&
+      !this.pythonCodeViewerWindow.isDestroyed()
+    ) {
       this.pythonCodeViewerWindow.webContents.executeJavaScript(`
         window.dispatchEvent(new CustomEvent('codeUpdate', { detail: ${JSON.stringify(code)} }));
       `);
@@ -62,7 +68,9 @@ export class PythonCodeViewerManager {
     });
 
     // Load the HTML file
-    this.pythonCodeViewerWindow.loadFile(path.join(__dirname, '../static/pythonCodeViewer.html'));
+    this.pythonCodeViewerWindow.loadFile(
+      path.join(__dirname, '../static/pythonCodeViewer.html')
+    );
 
     // Show window when ready and send initial code
     this.pythonCodeViewerWindow.once('ready-to-show', () => {
@@ -85,7 +93,10 @@ export class PythonCodeViewerManager {
    */
   private async updateCode(code: string): Promise<boolean> {
     this.currentPythonCode = code;
-    if (this.pythonCodeViewerWindow && !this.pythonCodeViewerWindow.isDestroyed()) {
+    if (
+      this.pythonCodeViewerWindow &&
+      !this.pythonCodeViewerWindow.isDestroyed()
+    ) {
       this.pythonCodeViewerWindow.webContents.executeJavaScript(`
         window.dispatchEvent(new CustomEvent('codeUpdate', { detail: ${JSON.stringify(code)} }));
       `);
@@ -97,7 +108,10 @@ export class PythonCodeViewerManager {
    * Close the Python Code Viewer window
    */
   private async closeWindow(): Promise<boolean> {
-    if (this.pythonCodeViewerWindow && !this.pythonCodeViewerWindow.isDestroyed()) {
+    if (
+      this.pythonCodeViewerWindow &&
+      !this.pythonCodeViewerWindow.isDestroyed()
+    ) {
       this.pythonCodeViewerWindow.close();
       this.pythonCodeViewerWindow = null;
     }

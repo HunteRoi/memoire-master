@@ -10,33 +10,58 @@ export interface BlockCategory {
   blocks: Block[];
 }
 
-export const blockCategories: BlockCategory[] = [
+// Block categories with translation keys
+export const blockCategoryIds = ['movement', 'sensors', 'control'] as const;
+export const blockIds = [
+  'move_forward',
+  'move_backward',
+  'turn_left',
+  'turn_right',
+  'distance_sensor',
+  'light_sensor',
+  'camera',
+  'if_condition',
+  'while_loop',
+  'wait',
+] as const;
+
+export const blockCategoryDefinitions = [
   {
     id: 'movement',
-    name: 'Movement',
     blocks: [
-      { id: 'move_forward', name: 'Move Forward', icon: '↑' },
-      { id: 'move_backward', name: 'Move Backward', icon: '↓' },
-      { id: 'turn_left', name: 'Turn Left', icon: '↰' },
-      { id: 'turn_right', name: 'Turn Right', icon: '↱' },
-    ]
+      { id: 'move_forward', icon: '↑' },
+      { id: 'move_backward', icon: '↓' },
+      { id: 'turn_left', icon: '↰' },
+      { id: 'turn_right', icon: '↱' },
+    ],
   },
   {
     id: 'sensors',
-    name: 'Sensors',
     blocks: [
-      { id: 'distance_sensor', name: 'Distance Sensor', icon: '📏' },
-      { id: 'light_sensor', name: 'Light Sensor', icon: '💡' },
-      { id: 'camera', name: 'Camera', icon: '📷' },
-    ]
+      { id: 'distance_sensor', icon: '📏' },
+      { id: 'light_sensor', icon: '💡' },
+      { id: 'camera', icon: '📷' },
+    ],
   },
   {
     id: 'control',
-    name: 'Control',
     blocks: [
-      { id: 'if_condition', name: 'If Condition', icon: '❓' },
-      { id: 'while_loop', name: 'While Loop', icon: '🔄' },
-      { id: 'wait', name: 'Wait', icon: '⏸️' },
-    ]
+      { id: 'if_condition', icon: '❓' },
+      { id: 'while_loop', icon: '🔄' },
+      { id: 'wait', icon: '⏸️' },
+    ],
   },
-];
+] as const;
+
+// Helper function to get translated categories (use this in components)
+export const getTranslatedBlockCategories = (t: any): BlockCategory[] => {
+  return blockCategoryDefinitions.map(category => ({
+    id: category.id,
+    name: t(`visualProgramming.blocks.categories.${category.id}`),
+    blocks: category.blocks.map(block => ({
+      id: block.id,
+      name: t(`visualProgramming.blocks.names.${block.id}`),
+      icon: block.icon,
+    })),
+  }));
+};

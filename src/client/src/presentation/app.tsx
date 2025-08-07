@@ -34,10 +34,16 @@ const AppRoutes: React.FC = () => {
       localStorage.setItem('pucklab-language', newLanguage);
     };
 
-    window.addEventListener('languageChange', handleLanguageChange as EventListener);
+    window.addEventListener(
+      'languageChange',
+      handleLanguageChange as EventListener
+    );
 
     return () => {
-      window.removeEventListener('languageChange', handleLanguageChange as EventListener);
+      window.removeEventListener(
+        'languageChange',
+        handleLanguageChange as EventListener
+      );
     };
   }, [setLanguage]);
 

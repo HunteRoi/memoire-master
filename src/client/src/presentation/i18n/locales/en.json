@@ -105,7 +105,7 @@
         "description": "Choose your preferred color theme for the application."
       },
       "ageConfiguration": {
-        "title": "Age Configuration", 
+        "title": "Age Configuration",
         "description": "Set your age to customize the interface complexity."
       },
       "robotManagement": {
@@ -116,6 +116,61 @@
         "title": "Robot Mode",
         "description": "Choose the operating mode for your robot."
       }
+    }
+  },
+  "visualProgramming": {
+    "title": "Visual Programming",
+    "blocks": {
+      "title": "Blocks",
+      "categories": {
+        "movement": "Movement",
+        "sensors": "Sensors",
+        "control": "Control"
+      },
+      "names": {
+        "move_forward": "Move Forward",
+        "move_backward": "Move Backward",
+        "turn_left": "Turn Left",
+        "turn_right": "Turn Right",
+        "distance_sensor": "Distance Sensor",
+        "light_sensor": "Light Sensor",
+        "camera": "Camera",
+        "if_condition": "If Condition",
+        "while_loop": "While Loop",
+        "wait": "Wait"
+      }
+    },
+    "script": {
+      "title": "Script",
+      "status": {
+        "running": "Running",
+        "paused": "Paused",
+        "idle": "Idle"
+      }
+    },
+    "console": {
+      "title": "Console",
+      "showConsole": "Show Console",
+      "messages": {
+        "robotInitialized": "Robot initialized successfully",
+        "connecting": "Connecting to robot...",
+        "connectionEstablished": "Connection established",
+        "readyForCommands": "Ready for commands"
+      }
+    },
+    "alerts": {
+      "noRobotConnected": "No robot connected. Please connect a robot first.",
+      "noBlocksInScript": "No blocks in script. Please add some blocks first.",
+      "scriptStarted": "Script execution started",
+      "scriptResumed": "Script execution resumed",
+      "scriptPaused": "Script execution paused",
+      "scriptStopped": "Script execution stopped"
+    },
+    "pythonViewer": {
+      "title": "Generated Python Code",
+      "generatedComment": "Generated Python Script",
+      "basedOnComment": "Based on visual blocks in the script area",
+      "completedComment": "Script execution completed"
     }
   }
 }

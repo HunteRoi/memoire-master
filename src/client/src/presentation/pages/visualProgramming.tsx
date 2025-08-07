@@ -4,6 +4,7 @@ import { Box, IconButton } from '@mui/material';
 import { Settings, PlayArrow, Pause, Stop } from '@mui/icons-material';
 import { ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { useTranslation } from 'react-i18next';
 
 import { useAppContext } from '../hooks/useAppContext';
 import { useEnsureData } from '../hooks/useEnsureData';
@@ -14,51 +15,58 @@ import { ConsolePanel } from '../components/visualProgramming/consolePanel';
 enum ScriptExecutionState {
   IDLE = 'idle',
   RUNNING = 'running',
-  PAUSED = 'paused'
+  PAUSED = 'paused',
 }
 
 export const VisualProgramming: FC = () => {
   const navigate = useNavigate();
-  const { userAge, selectedRobot, isRobotConnected, showAlert } = useAppContext();
+  const { t } = useTranslation();
+  const { userAge, selectedRobot, isRobotConnected, showAlert } =
+    useAppContext();
   const [showConsole, setShowConsole] = useState(false);
   const [scriptNodes, setScriptNodes] = useState([]);
-  const [executionState, setExecutionState] = useState<ScriptExecutionState>(ScriptExecutionState.IDLE);
+  const [executionState, setExecutionState] = useState<ScriptExecutionState>(
+    ScriptExecutionState.IDLE
+  );
 
   useEnsureData();
 
   const isSimpleMode = userAge.isSimpleMode();
-  const scriptHeight = isSimpleMode ?
-    (showConsole ? '60%' : '100%') :
-    '67%';
+  const scriptHeight = isSimpleMode ? (showConsole ? '60%' : '100%') : '67%';
 
   const hasConnectedRobot = selectedRobot && isRobotConnected(selectedRobot);
   const canExecuteScript = hasConnectedRobot && scriptNodes.length > 0;
 
   const handlePlayScript = () => {
     if (!hasConnectedRobot) {
-      showAlert('No robot connected. Please connect a robot first.', 'warning');
+      showAlert(t('visualProgramming.alerts.noRobotConnected'), 'warning');
       return;
     }
-    
+
     if (scriptNodes.length === 0) {
-      showAlert('No blocks in script. Please add some blocks first.', 'info');
+      showAlert(t('visualProgramming.alerts.noBlocksInScript'), 'info');
       return;
     }
 
     setExecutionState(ScriptExecutionState.RUNNING);
-    showAlert(executionState === ScriptExecutionState.PAUSED ? 'Script execution resumed' : 'Script execution started', 'success');
+    showAlert(
+      executionState === ScriptExecutionState.PAUSED
+        ? t('visualProgramming.alerts.scriptResumed')
+        : t('visualProgramming.alerts.scriptStarted'),
+      'success'
+    );
     // TODO: Implement actual robot script execution
   };
 
   const handlePauseScript = () => {
     setExecutionState(ScriptExecutionState.PAUSED);
-    showAlert('Script execution paused', 'info');
+    showAlert(t('visualProgramming.alerts.scriptPaused'), 'info');
     // TODO: Implement actual robot script pause
   };
 
   const handleStopScript = () => {
     setExecutionState(ScriptExecutionState.IDLE);
-    showAlert('Script execution stopped', 'info');
+    showAlert(t('visualProgramming.alerts.scriptStopped'), 'info');
     // TODO: Implement actual robot script stop
   };
 
@@ -71,20 +79,26 @@ export const VisualProgramming: FC = () => {
           <BlocksPanel isSimpleMode={isSimpleMode} />
 
           {/* Right Side Container */}
-          <Box sx={{
-            width: '80%',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
+          <Box
+            sx={{
+              width: '80%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             {/* Script Panel */}
-            <ScriptPanel 
-              height={scriptHeight} 
+            <ScriptPanel
+              height={scriptHeight}
               isSimpleMode={isSimpleMode}
               onNodesChange={setScriptNodes}
               executionState={executionState}
               onSettings={() => navigate('/settings')}
-              onPlayPause={executionState === ScriptExecutionState.RUNNING ? handlePauseScript : handlePlayScript}
+              onPlayPause={
+                executionState === ScriptExecutionState.RUNNING
+                  ? handlePauseScript
+                  : handlePlayScript
+              }
               onStop={handleStopScript}
               canExecuteScript={canExecuteScript}
             />

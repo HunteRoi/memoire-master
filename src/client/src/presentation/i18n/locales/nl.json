@@ -105,7 +105,7 @@
         "description": "Kies uw voorkeur kleurenthema voor de applicatie."
       },
       "ageConfiguration": {
-        "title": "Leeftijd Configuratie", 
+        "title": "Leeftijd Configuratie",
         "description": "Stel uw leeftijd in om de interface complexiteit aan te passen."
       },
       "robotManagement": {
@@ -116,6 +116,61 @@
         "title": "Robot Modus",
         "description": "Kies de bedrijfsmodus voor uw robot."
       }
+    }
+  },
+  "visualProgramming": {
+    "title": "Visueel Programmeren",
+    "blocks": {
+      "title": "Blokken",
+      "categories": {
+        "movement": "Beweging",
+        "sensors": "Sensoren",
+        "control": "Controle"
+      },
+      "names": {
+        "move_forward": "Vooruit bewegen",
+        "move_backward": "Achteruit bewegen",
+        "turn_left": "Links draaien",
+        "turn_right": "Rechts draaien",
+        "distance_sensor": "Afstandssensor",
+        "light_sensor": "Lichtsensor",
+        "camera": "Camera",
+        "if_condition": "Als conditie",
+        "while_loop": "Terwijl lus",
+        "wait": "Wachten"
+      }
+    },
+    "script": {
+      "title": "Script",
+      "status": {
+        "running": "Actief",
+        "paused": "Gepauzeerd",
+        "idle": "Inactief"
+      }
+    },
+    "console": {
+      "title": "Console",
+      "showConsole": "Toon console",
+      "messages": {
+        "robotInitialized": "Robot succesvol geïnitialiseerd",
+        "connecting": "Verbinding maken met robot...",
+        "connectionEstablished": "Verbinding tot stand gebracht",
+        "readyForCommands": "Klaar voor commando's"
+      }
+    },
+    "alerts": {
+      "noRobotConnected": "Geen robot verbonden. Maak eerst verbinding met een robot.",
+      "noBlocksInScript": "Geen blokken in script. Voeg eerst wat blokken toe.",
+      "scriptStarted": "Script uitvoering gestart",
+      "scriptResumed": "Script uitvoering hervat",
+      "scriptPaused": "Script uitvoering gepauzeerd",
+      "scriptStopped": "Script uitvoering gestopt"
+    },
+    "pythonViewer": {
+      "title": "Gegenereerde Python Code",
+      "generatedComment": "Gegenereerd Python Script",
+      "basedOnComment": "Gebaseerd op visuele blokken in het script gebied",
+      "completedComment": "Script uitvoering voltooid"
     }
   }
 }

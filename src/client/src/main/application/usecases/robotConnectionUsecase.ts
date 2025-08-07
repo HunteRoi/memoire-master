@@ -1,6 +1,10 @@
 import { Robot, type RobotConfig } from '../../../domain/robot';
 import { Result, Success, Failure } from '../../../domain/result';
-import type { RobotCommunicationService } from '../interfaces/robotCommunicationService';
+import type {
+  RobotCommunicationService,
+  RobotFeedback,
+  RobotFeedbackCallback,
+} from '../interfaces/robotCommunicationService';
 
 export class RobotConnectionUseCase {
   constructor(private robotRepository: RobotCommunicationService) {}
@@ -64,5 +68,69 @@ export class RobotConnectionUseCase {
           : 'Failed to check connection with robot'
       );
     }
+  }
+
+  async subscribeToFeedback(
+    robot: RobotConfig,
+    callback: RobotFeedbackCallback
+  ): Promise<Result<boolean>> {
+    try {
+      const bot = new Robot(robot.ipAddress, robot.port);
+      if (!bot.isValid()) {
+        throw new Error('Invalid robot connection parameters');
+      }
+
+      this.robotRepository.subscribeToFeedback(bot, callback);
+      return Success(true);
+    } catch (error) {
+      return Failure(
+        error instanceof Error
+          ? error.message
+          : 'Failed to subscribe to robot feedback'
+      );
+    }
+  }
+
+  async unsubscribeFromFeedback(robot: RobotConfig): Promise<Result<boolean>> {
+    try {
+      const bot = new Robot(robot.ipAddress, robot.port);
+      if (!bot.isValid()) {
+        throw new Error('Invalid robot connection parameters');
+      }
+
+      this.robotRepository.unsubscribeFromFeedback(bot);
+      return Success(true);
+    } catch (error) {
+      return Failure(
+        error instanceof Error
+          ? error.message
+          : 'Failed to unsubscribe from robot feedback'
+      );
+    }
+  }
+
+  async sendCommand(
+    robot: RobotConfig,
+    command: string
+  ): Promise<Result<unknown>> {
+    try {
+      const bot = new Robot(robot.ipAddress, robot.port);
+      if (!bot.isValid()) {
+        throw new Error('Invalid robot connection parameters');
+      }
+
+      const result = await this.robotRepository.sendCommand(bot, command);
+      return Success(result);
+    } catch (error) {
+      return Failure(
+        error instanceof Error
+          ? error.message
+          : 'Failed to send command to robot'
+      );
+    }
+  }
+
+  sendFeedback(feedback: RobotFeedback): void {
+    this.robotRepository.sendFeedback(feedback);
   }
 }

@@ -10,11 +10,7 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import {
-  ArrowBack,
-  Tune,
-  SmartToy,
-} from '@mui/icons-material';
+import { ArrowBack, Tune, SmartToy } from '@mui/icons-material';
 
 import { TabPanel } from '../components/tabPanel';
 import { ThemeSelectionContent } from '../containers/themeSelectionContent';

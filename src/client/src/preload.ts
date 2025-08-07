@@ -28,13 +28,24 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke('robotConnection:disconnectFromRobot', robot),
     checkConnection: (robot: RobotConfig) =>
       ipcRenderer.invoke('robotConnection:checkConnection', robot),
+    subscribeToFeedback: (robotConfig: RobotConfig) =>
+      ipcRenderer.invoke('robotFeedback:subscribe', robotConfig),
+    unsubscribeFromFeedback: (robotConfig: RobotConfig) =>
+      ipcRenderer.invoke('robotFeedback:unsubscribe', robotConfig),
+    sendCommand: (robotConfig: RobotConfig, command: string) =>
+      ipcRenderer.invoke('robotFeedback:sendCommand', robotConfig, command),
+    onFeedback: (callback: (feedback: any) => void) =>
+      ipcRenderer.on('robotFeedback:message', (_, feedback) =>
+        callback(feedback)
+      ),
+    removeFeedbackListener: () =>
+      ipcRenderer.removeAllListeners('robotFeedback:message'),
   },
   pythonCodeViewer: {
     openWindow: (code: string, title?: string) =>
       ipcRenderer.invoke('pythonCodeViewer:openWindow', code, title),
     updateCode: (code: string) =>
       ipcRenderer.invoke('pythonCodeViewer:updateCode', code),
-    closeWindow: () =>
-      ipcRenderer.invoke('pythonCodeViewer:closeWindow'),
+    closeWindow: () => ipcRenderer.invoke('pythonCodeViewer:closeWindow'),
   },
 });
