@@ -1,11 +1,13 @@
 import { type FC, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import type { Robot } from '../../domain/robot';
 import { RobotDialog, type RobotDialogLabels } from '../components/robot/dialog';
 import { RobotConnectionDialog } from '../components/robot/robotConnectionDialog';
 import { RobotGrid } from '../components/robot/robotGrid';
 import { useAppContext } from '../hooks/useAppContext';
 import { useRobotManagement } from '../hooks/useRobotManagement';
+import { DEFAULT_PORT } from '../../domain/constants';
 
 export const RobotSelectionContent: FC = () => {
   const { t } = useTranslation();
@@ -110,7 +112,7 @@ export const RobotSelectionContent: FC = () => {
     ipAddress: t('robot.ipAddress'),
     robotIdWillBe: t('robot.robotIdWillBe', 'Robot ID will be: {{id}}'),
     port: t('robot.port'),
-    portDescription: t('robot.portDescription', 'Enter the port number (default: 443)'),
+    portDescription: t('robot.portDescription', `Enter the port number (default: ${DEFAULT_PORT})`),
     testingConnection: t('robot.testingConnection', 'Testing Connection...'),
     testConnection: t('robot.testConnection'),
     connectionSuccessWithId: t('robot.connectionSuccessWithId', 'Connection successful! Robot {{id}} is reachable.'),

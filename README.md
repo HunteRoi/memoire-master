@@ -6,3 +6,6 @@ The goal is to simplify access and development of specific scenarii on the e-puc
 
 ## Details
 All details on the tool and why it came to life are available and well written in French in the LaTeX project on the `main` branch.
+
+## Documentation
+See [./docs](./docs/README.md).

@@ -13,7 +13,7 @@ import type React from 'react';
 import { useEffect, useState } from 'react';
 
 import { Robot } from '../../../domain/robot';
-import { DEFAULT_ROBOT } from '../../../domain/constants';
+import { DEFAULT_PORT, DEFAULT_ROBOT } from '../../../domain/constants';
 
 export interface RobotDialogLabels {
   editRobot: string;
@@ -49,7 +49,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
   labels,
 }) => {
   const [ip, setIp] = useState('');
-  const [port, setPort] = useState(443);
+  const [port, setPort] = useState(DEFAULT_PORT);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<'success' | 'error' | null>(
     null
@@ -62,7 +62,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
       setPort(robot.port);
     } else {
       setIp('');
-      setPort(443);
+      setPort(DEFAULT_PORT);
     }
     setTestResult(null);
   }, [robot]);
@@ -144,7 +144,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
             fullWidth
             variant='outlined'
             value={port}
-            onChange={e => setPort(parseInt(e.target.value) || 443)}
+            onChange={e => setPort(parseInt(e.target.value) || DEFAULT_PORT)}
             sx={{ mb: 2 }}
             inputProps={{
               'aria-describedby': 'robot-port-description',

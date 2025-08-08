@@ -1,3 +1,0 @@
-- create the visual programming page with three areas : the categories, the main "script" area and the console
-- the visual programming page should be adapted whether it is for a user whose age is below 12 or not (simple interface VS advanced interface - advanced interface means the console is visible directly instead of being hidden behind a button ; also simple means less text, bigger icons and pictograms, etc.)
-- the visual programming page should have a button to open a modal in another window to display the result in Python code of the visual blocks in the main "script" area and both should be kept up to date whenever changes happen in the visual programming page (because the Python code window is NOT editable)

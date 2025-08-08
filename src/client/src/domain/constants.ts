@@ -1,8 +1,10 @@
 import { Robot } from './robot';
 
+export const DEFAULT_PORT = 8765;
+
 const defaultRobotResult = Robot.create()
   .setIpAddress('192.168.1.121')
-  .setPort(443)
+  .setPort(DEFAULT_PORT)
   .build();
 
 if (!defaultRobotResult.success) {
