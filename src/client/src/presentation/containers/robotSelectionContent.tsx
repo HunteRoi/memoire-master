@@ -1,7 +1,7 @@
-import { type FC, useState } from 'react';
+import { type FC, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Robot } from '../../domain/robot';
-import { RobotDialog } from '../components/robot/dialog';
+import { RobotDialog, type RobotDialogLabels } from '../components/robot/dialog';
 import { RobotConnectionDialog } from '../components/robot/robotConnectionDialog';
 import { RobotGrid } from '../components/robot/robotGrid';
 import { useAppContext } from '../hooks/useAppContext';
@@ -104,6 +104,41 @@ export const RobotSelectionContent: FC = () => {
     }
   };
 
+  const robotDialogLabels: RobotDialogLabels = useMemo(() => ({
+    editRobot: t('robot.editRobot'),
+    addNewRobot: t('robot.addNewRobot'),
+    ipAddress: t('robot.ipAddress'),
+    robotIdWillBe: t('robot.robotIdWillBe', 'Robot ID will be: {{id}}'),
+    port: t('robot.port'),
+    portDescription: t('robot.portDescription', 'Enter the port number (default: 443)'),
+    testingConnection: t('robot.testingConnection', 'Testing Connection...'),
+    testConnection: t('robot.testConnection'),
+    connectionSuccessWithId: t('robot.connectionSuccessWithId', 'Connection successful! Robot {{id}} is reachable.'),
+    connectionFailedDetails: t('robot.connectionFailedDetails', 'Connection failed. Please check the IP address and port, and make sure the robot is powered on and connected to the network.'),
+    cancel: t('common.cancel'),
+    updateRobot: t('robot.updateRobot', 'Update Robot'),
+    addRobot: t('robot.addRobot', 'Add Robot'),
+  }), [t]);
+
+  const robotConnectionDialogLabels = useMemo(() => ({
+    title: t('robot.connectToRobotName', 'Connect to {{name}}', { name: robotToConnect?.name || '' }),
+    confirmMessage: t('robot.connectConfirm', 'Are you sure you want to connect to {{name}}?', { name: robotToConnect?.name || '' }),
+    cancel: t('common.cancel'),
+    connect: t('common.connect'),
+    connecting: t('robot.connecting', 'Connecting...'),
+  }), [t, robotToConnect]);
+
+  const addRobotCardLabel = useMemo(() => t('robot.addNewRobot'), [t]);
+
+  const robotCardLabels = useMemo(() => ({
+    select: (robotName: string) => t('robot.card.select', `Select robot ${robotName}`, { name: robotName }),
+    edit: (robotName: string) => t('robot.card.edit', `Edit robot ${robotName}`, { name: robotName }),
+    delete: (robotName: string) => t('robot.card.delete', `Delete robot ${robotName}`, { name: robotName }),
+    disconnect: (robotName: string) => t('robot.card.disconnect', `Disconnect from robot ${robotName}`, { name: robotName }),
+    connected: t('robot.connected'),
+    disconnected: t('robot.disconnected'),
+  }), [t]);
+
   return (
     <>
       <RobotGrid
@@ -115,17 +150,18 @@ export const RobotSelectionContent: FC = () => {
         onRobotDelete={handleDeleteRobot}
         onRobotDisconnect={handleDisconnectRobot}
         onAddRobot={handleAddRobot}
+        robotCardLabels={robotCardLabels}
+        addRobotCardLabel={addRobotCardLabel}
       />
 
-      {robotToEdit && (
-        <RobotDialog
-          open={formDialogOpen}
-          robot={robotToEdit}
-          onClose={() => setFormDialogOpen(false)}
-          onSave={handleSaveRobotWithDialog}
-          onTest={handleRobotConnectionTest}
-        />
-      )}
+      <RobotDialog
+        open={formDialogOpen}
+        robot={robotToEdit}
+        onClose={() => setFormDialogOpen(false)}
+        onSave={handleSaveRobotWithDialog}
+        onTest={handleRobotConnectionTest}
+        labels={robotDialogLabels}
+      />
 
       {robotToConnect && (
         <RobotConnectionDialog
@@ -134,6 +170,7 @@ export const RobotSelectionContent: FC = () => {
           onConfirm={handleConnectConfirmation}
           onCancel={handleCancelConfirmation}
           loading={connecting}
+          labels={robotConnectionDialogLabels}
         />
       )}
     </>

@@ -4,6 +4,15 @@ import type { Robot } from '../../../domain/robot';
 import { AddRobotCard } from './addRobotCard';
 import { RobotCard } from './card';
 
+interface RobotCardLabels {
+  select: (robotName: string) => string;
+  edit: (robotName: string) => string;
+  delete: (robotName: string) => string;
+  disconnect: (robotName: string) => string;
+  connected: string;
+  disconnected: string;
+}
+
 interface RobotGridProps {
   robots: Robot[];
   selectedRobotId: string | null | undefined;
@@ -13,6 +22,8 @@ interface RobotGridProps {
   onRobotDelete: (robotId: string) => void;
   onRobotDisconnect: (robot: Robot) => void;
   onAddRobot: () => void;
+  robotCardLabels: RobotCardLabels;
+  addRobotCardLabel: string;
 }
 
 export const RobotGrid: React.FC<RobotGridProps> = ({
@@ -24,6 +35,8 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
   onRobotDelete,
   onRobotDisconnect,
   onAddRobot,
+  robotCardLabels,
+  addRobotCardLabel,
 }) => {
   return (
     <Grid container spacing={2} sx={{ mb: 3, width: '100%' }}>
@@ -37,12 +50,13 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
             onDisconnect={onRobotDisconnect}
             selected={selectedRobotId === robot.id}
             connected={isRobotConnected(robot.id)}
+            labels={robotCardLabels}
           />
         </Grid>
       ))}
 
       <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-        <AddRobotCard onAddRobot={onAddRobot} />
+        <AddRobotCard onAddRobot={onAddRobot} label={addRobotCardLabel} />
       </Grid>
     </Grid>
   );

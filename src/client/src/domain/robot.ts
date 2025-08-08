@@ -1,3 +1,5 @@
+import { Failure, type Result, Success } from './result';
+
 export class Robot {
   constructor(
     public readonly ipAddress: string,
@@ -13,13 +15,123 @@ export class Robot {
     return `Robot ${this.id}`;
   }
 
-  isValid(): boolean {
-    return this.ipAddress !== '' && this.port > 0 && this.port < 65536;
-  }
-
-  updatePort(port: number): Robot {
-    return new Robot(this.ipAddress, port);
+  static create(): RobotBuilder {
+    return new RobotBuilder();
   }
 }
 
 export type RobotConfig = Pick<Robot, 'ipAddress' | 'port'>;
+
+interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+export class RobotBuilder {
+  private ipAddress?: string;
+  private port?: number;
+
+  setIpAddress(ipAddress: string): RobotBuilder {
+    this.ipAddress = ipAddress?.trim();
+    return this;
+  }
+
+  setPort(port: number): RobotBuilder {
+    this.port = port;
+    return this;
+  }
+
+  build(): Result<Robot> {
+    if (!this.ipAddress) {
+      return Failure('IP address is required');
+    }
+
+    if (this.port === undefined) {
+      return Failure('Port is required');
+    }
+
+    const validation = this.validateInputs(this.ipAddress, this.port);
+    if (!validation.isValid) {
+      return Failure(
+        `Robot validation failed: ${validation.errors.join(', ')}`
+      );
+    }
+
+    const robot = new Robot(this.ipAddress, this.port);
+    return Success(robot);
+  }
+
+  private validateInputs(ipAddress: string, port: number): ValidationResult {
+    const errors: string[] = [];
+
+    const ipValidation = this.validateIpAddress(ipAddress);
+    if (!ipValidation.isValid) {
+      errors.push(...ipValidation.errors);
+    }
+
+    const portValidation = this.validatePort(port);
+    if (!portValidation.isValid) {
+      errors.push(...portValidation.errors);
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  }
+
+  private validateIpAddress(ipAddress: string): ValidationResult {
+    const errors: string[] = [];
+
+    if (!ipAddress || ipAddress.trim().length === 0) {
+      errors.push('IP address is required');
+      return { isValid: false, errors };
+    }
+
+    const trimmedIp = ipAddress.trim();
+
+    const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+    if (!ipv4Regex.test(trimmedIp)) {
+      errors.push(
+        'Invalid IP address format. Expected IPv4 format (e.g., 192.168.1.1)'
+      );
+      return { isValid: false, errors };
+    }
+
+    const octets = trimmedIp.split('.').map(Number);
+    for (const octet of octets) {
+      if (octet < 0 || octet > 255) {
+        errors.push('IP address octets must be between 0 and 255');
+        break;
+      }
+    }
+
+    if (trimmedIp === '0.0.0.0') {
+      errors.push('IP address 0.0.0.0 is not allowed');
+    }
+    if (trimmedIp === '255.255.255.255') {
+      errors.push('Broadcast address 255.255.255.255 is not allowed');
+    }
+
+    return { isValid: errors.length === 0, errors };
+  }
+
+  private validatePort(port: number): ValidationResult {
+    const errors: string[] = [];
+
+    if (!Number.isInteger(port)) {
+      errors.push('Port must be an integer');
+      return { isValid: false, errors };
+    }
+
+    if (port <= 0) {
+      errors.push('Port must be greater than 0');
+    }
+
+    if (port >= 65536) {
+      errors.push('Port must be less than 65536');
+    }
+
+    return { isValid: errors.length === 0, errors };
+  }
+}

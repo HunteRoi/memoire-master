@@ -1,6 +1,7 @@
 import { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+
 import type { Robot } from '../../domain/robot';
 import { PageLayout } from '../components/layout/layout';
 import { RobotSelectionContent } from '../containers/robotSelectionContent';
@@ -18,6 +19,11 @@ export const RobotSelection: FC = () => {
     () => robots.find(bot => bot.id === selectedRobot),
     [robots, selectedRobot]
   );
+
+  const defaultLabels = useMemo(() => ({
+    back: t('common.back'),
+    continue: t('common.continue'),
+  }), [t]);
 
   const handleBack = () => navigate('/age-selection');
   const handleContinue = async () => {
@@ -47,6 +53,7 @@ export const RobotSelection: FC = () => {
         !selectedRobotData || !isRobotConnected(selectedRobot || '')
       }
       maxWidth='lg'
+      defaultLabels={defaultLabels}
     >
       <RobotSelectionContent />
     </PageLayout>

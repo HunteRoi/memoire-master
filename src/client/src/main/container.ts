@@ -1,46 +1,55 @@
 import { app } from 'electron';
 
-import type { RobotCommunicationService } from './application/interfaces/robotCommunicationService';
-import type { RobotsConfigurationRepository } from './application/interfaces/robotsConfigurationRepository';
-import { ManageRobotsUseCase } from './application/usecases/manageRobotsUsecase';
-import { RobotConnectionUseCase } from './application/usecases/robotConnectionUsecase';
-import { MockRobotCommunicationService } from './infrastructure/communication/mockRobotCommunicationService';
-import { WebsocketRobotCommunicationService } from './infrastructure/communication/websocketRobotCommunicationService';
+import type {
+  RobotCommunicationService,
+  RobotsConfigurationRepository,
+} from './application/interfaces';
+import type { Logger } from './application/interfaces/logger';
+import {
+  ManageRobots,
+  ManageRobotConnection,
+} from './application/usecases';
+import {
+  MockRobotCommunicationService,
+  WebsocketRobotCommunicationService,
+} from './infrastructure/communication';
+import { getLogger } from './infrastructure/logging/logger';
 import { FileSystemRobotsConfigurationRepository } from './infrastructure/persistence/fileSystemRobotsConfigurationRepository';
 
 export class Container {
   private static instance: Container;
 
+  public readonly logger: Logger;
+
   private _robotCommunicationService: RobotCommunicationService;
   private _robotsConfigurationRepository: RobotsConfigurationRepository;
 
-  private _manageRobotsUseCase: ManageRobotsUseCase;
-  private _robotConnectionUseCase: RobotConnectionUseCase;
+  private _manageRobots: ManageRobots;
+  private _robotConnection: ManageRobotConnection;
 
   private constructor() {
-    // Initialize infrastructure layer
     const isDevelopment = !app.isPackaged;
-
+    this.logger = getLogger();
     this._robotCommunicationService = isDevelopment
-      ? new MockRobotCommunicationService()
-      : new WebsocketRobotCommunicationService();
-
+      ? new MockRobotCommunicationService(this.logger)
+      : new WebsocketRobotCommunicationService(this.logger);
     this._robotsConfigurationRepository =
-      new FileSystemRobotsConfigurationRepository();
+      new FileSystemRobotsConfigurationRepository(this.logger);
 
-    this._manageRobotsUseCase = new ManageRobotsUseCase(
-      this._robotsConfigurationRepository
+    // USE CASES
+    this._manageRobots = new ManageRobots(
+      this._robotsConfigurationRepository,
+      this.logger
     );
-    this._robotConnectionUseCase = new RobotConnectionUseCase(
-      this._robotCommunicationService
+    this._robotConnection = new ManageRobotConnection(
+      this._robotCommunicationService,
+      this.logger
     );
 
-    console.log(
-      `🔧 Container initialized in ${isDevelopment ? 'DEVELOPMENT' : 'PRODUCTION'} mode`
-    );
-    console.log(
-      `🤖 Using ${isDevelopment ? 'Mock' : 'WebSocket'} robot communication service`
-    );
+    this.logger.info('Container initialized', {
+      mode: isDevelopment ? 'DEVELOPMENT' : 'PRODUCTION',
+      communicationService: isDevelopment ? 'Mock' : 'WebSocket',
+    });
   }
 
   public static getInstance(): Container {
@@ -50,12 +59,10 @@ export class Container {
     return Container.instance;
   }
 
-  // Getters for use cases
-  get manageRobotsUseCase(): ManageRobotsUseCase {
-    return this._manageRobotsUseCase;
+  get manageRobots(): ManageRobots {
+    return this._manageRobots;
   }
-
-  get robotConnectionUseCase(): RobotConnectionUseCase {
-    return this._robotConnectionUseCase;
+  get robotConnection(): ManageRobotConnection {
+    return this._robotConnection;
   }
 }

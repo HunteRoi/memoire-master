@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
@@ -10,6 +11,11 @@ export const ModeSelection: FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { selectedMode } = useAppContext();
+
+  const defaultLabels = useMemo(() => ({
+    back: t('common.back'),
+    continue: t('common.continue'),
+  }), [t]);
 
   const handleBack = () => navigate('/robot-selection');
   const handleContinue = () => navigate('/programming');
@@ -23,6 +29,7 @@ export const ModeSelection: FC = () => {
       continueText={t('mode.startProgramming')}
       continueDisabled={!selectedMode}
       maxWidth='lg'
+      defaultLabels={defaultLabels}
     >
       <ModeSelectionContent />
     </PageLayout>

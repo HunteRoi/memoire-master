@@ -6,6 +6,7 @@ import { HashRouter, Route, Routes } from 'react-router';
 
 import './i18n';
 
+import { GlobalErrorBoundary } from './components/GlobalErrorBoundary';
 import { AlertSnackbar } from './components/layout/alertSnackbar';
 import { useAppContext } from './hooks/useAppContext';
 import { useEnsureData } from './hooks/useEnsureData';
@@ -51,7 +52,7 @@ const AppRoutes: React.FC = () => {
   }, [setLanguage]);
 
   return (
-    <>
+    <GlobalErrorBoundary>
       <HashRouter>
         <Routes>
           <Route path='/' element={<SplashScreen />} />
@@ -63,8 +64,9 @@ const AppRoutes: React.FC = () => {
           <Route path='/settings' element={<Settings />} />
         </Routes>
       </HashRouter>
+
       <AlertSnackbar {...alert} />
-    </>
+    </GlobalErrorBoundary>
   );
 };
 

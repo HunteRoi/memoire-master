@@ -7,14 +7,18 @@ import {
   type Connection,
   type Edge,
   type Node,
+  OnEdgesChange,
+  OnEdgesDelete,
+  OnNodesChange,
+  OnNodesDelete,
   Position,
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
 } from 'reactflow';
-import { BlocksPanel } from '../components/visualProgramming/blocksPanel';
-import { ConsolePanel } from '../components/visualProgramming/consolePanel';
-import { ScriptPanel } from '../components/visualProgramming/scriptPanel';
+import { BlocksPanel, type BlocksPanelLabels } from '../components/visualProgramming/blocksPanel';
+import { ConsolePanel, type ConsolePanelLabels } from '../components/visualProgramming/consolePanel';
+import { ScriptPanel, type ScriptPanelLabels } from '../components/visualProgramming/scriptPanel';
 import { useAppContext } from '../hooks/useAppContext';
 import { useEnsureData } from '../hooks/useEnsureData';
 
@@ -24,8 +28,8 @@ enum ScriptExecutionState {
   PAUSED = 'paused',
 }
 
-import type { RobotFeedback } from '../../domain/RobotFeedback';
-import type { ConsoleMessage } from '../models/Console';
+import type { RobotFeedback } from '../../domain/robotFeedback';
+import type { ConsoleMessage } from '../models/ConsoleMessage';
 
 interface VisualProgrammingContentProps {
   isSimpleMode: boolean;
@@ -41,7 +45,6 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
 
   // State management
   const [showConsole, setShowConsole] = useState(false);
-  const [scriptNodes, setScriptNodes] = useState<Node[]>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([
@@ -55,7 +58,20 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
     ScriptExecutionState.IDLE
   );
 
-  useEnsureData();
+  const onNodesChanges: OnNodesChange = async (changes) => {
+    onNodesChange(changes);
+    await handleUpdateCode();
+  };
+  const onEdgesChanges: OnEdgesChange = async (changes) => {
+    onEdgesChange(changes);
+    await handleUpdateCode();
+  };
+  const onNodesDelete: OnNodesDelete = async (nodes) => {
+    await handleUpdateCode();
+  };
+  const onEdgesDelete: OnEdgesDelete = async (edges) => {
+    await handleUpdateCode();
+  };
 
   // Computed values
   const selectedRobotData = useMemo(
@@ -64,13 +80,78 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   );
 
   const hasConnectedRobot = !!selectedRobot && isRobotConnected(selectedRobot);
-  const canExecuteScript = hasConnectedRobot && scriptNodes.length > 0;
+  const canExecuteScript = hasConnectedRobot && nodes.length > 0;
   const scriptHeight = isSimpleMode ? (showConsole ? '60%' : '100%') : '67%';
 
-  // Update scriptNodes when nodes change
-  useEffect(() => {
-    setScriptNodes(nodes);
-  }, [nodes]);
+  // Create memoized label objects for child components
+  const blocksPanelLabels = useMemo<BlocksPanelLabels>(() => ({
+    title: t('visualProgramming.blocks.title'),
+    categories: {
+      movement: t('visualProgramming.blocks.categories.movement'),
+      sound: t('visualProgramming.blocks.categories.sound'),
+      leds: t('visualProgramming.blocks.categories.leds'),
+      sensors: t('visualProgramming.blocks.categories.sensors'),
+      control: t('visualProgramming.blocks.categories.control'),
+    },
+    blockNames: {
+      move_forward: t('visualProgramming.blocks.names.move_forward'),
+      move_backward: t('visualProgramming.blocks.names.move_backward'),
+      turn_left: t('visualProgramming.blocks.names.turn_left'),
+      turn_right: t('visualProgramming.blocks.names.turn_right'),
+      stop: t('visualProgramming.blocks.names.stop'),
+      play_beep: t('visualProgramming.blocks.names.play_beep'),
+      play_melody: t('visualProgramming.blocks.names.play_melody'),
+      set_volume: t('visualProgramming.blocks.names.set_volume'),
+      set_led_color: t('visualProgramming.blocks.names.set_led_color'),
+      set_led_rgb: t('visualProgramming.blocks.names.set_led_rgb'),
+      blink_leds: t('visualProgramming.blocks.names.blink_leds'),
+      floor_sensor: t('visualProgramming.blocks.names.floor_sensor'),
+      distance_sensor: t('visualProgramming.blocks.names.distance_sensor'),
+      light_sensor: t('visualProgramming.blocks.names.light_sensor'),
+      wait: t('visualProgramming.blocks.names.wait'),
+      if_condition: t('visualProgramming.blocks.names.if_condition'),
+      while_loop: t('visualProgramming.blocks.names.while_loop'),
+      repeat: t('visualProgramming.blocks.names.repeat'),
+    },
+    blockDescriptions: {
+      move_forward: t('visualProgramming.blocks.descriptions.move_forward'),
+      move_backward: t('visualProgramming.blocks.descriptions.move_backward'),
+      turn_left: t('visualProgramming.blocks.descriptions.turn_left'),
+      turn_right: t('visualProgramming.blocks.descriptions.turn_right'),
+      stop: t('visualProgramming.blocks.descriptions.stop'),
+      play_beep: t('visualProgramming.blocks.descriptions.play_beep'),
+      play_melody: t('visualProgramming.blocks.descriptions.play_melody'),
+      set_volume: t('visualProgramming.blocks.descriptions.set_volume'),
+      set_led_color: t('visualProgramming.blocks.descriptions.set_led_color'),
+      set_led_rgb: t('visualProgramming.blocks.descriptions.set_led_rgb'),
+      blink_leds: t('visualProgramming.blocks.descriptions.blink_leds'),
+      floor_sensor: t('visualProgramming.blocks.descriptions.floor_sensor'),
+      distance_sensor: t('visualProgramming.blocks.descriptions.distance_sensor'),
+      light_sensor: t('visualProgramming.blocks.descriptions.light_sensor'),
+      wait: t('visualProgramming.blocks.descriptions.wait'),
+      if_condition: t('visualProgramming.blocks.descriptions.if_condition'),
+      while_loop: t('visualProgramming.blocks.descriptions.while_loop'),
+      repeat: t('visualProgramming.blocks.descriptions.repeat'),
+    },
+  }), [t]);
+
+  const consolePanelLabels = useMemo<ConsolePanelLabels>(() => ({
+    title: t('visualProgramming.console.title'),
+    showConsole: t('visualProgramming.console.showConsole'),
+    messages: {
+      robotInitialized: t('visualProgramming.console.messages.robotInitialized'),
+      connecting: t('visualProgramming.console.messages.connecting'),
+    },
+  }), [t]);
+
+  const scriptPanelLabels = useMemo<ScriptPanelLabels>(() => ({
+    title: t('visualProgramming.script.title'),
+    status: {
+      running: t('visualProgramming.script.status.running'),
+      paused: t('visualProgramming.script.status.paused'),
+      idle: t('visualProgramming.script.status.idle'),
+    },
+  }), [t]);
 
   // React Flow handlers
   const onDrop = useCallback(
@@ -111,7 +192,8 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   const onConnect = useCallback(
     (connection: Connection) => {
       const newEdge: Edge = {
-        ...connection,
+        source: connection.source ?? '',
+        target: connection.target ?? '',
         id: `${connection.source}-${connection.target}-${Date.now()}`,
         type: 'smoothstep',
         animated: true,
@@ -189,14 +271,17 @@ if __name__ == "__main__":
     return pythonCode;
   }, [nodes, t]);
 
-  const handleViewPythonCode = useCallback(() => {
+  const handleViewPythonCode = useCallback(async () => {
     const pythonCode = generatePythonCode();
-    if (window.electronAPI?.pythonCodeViewer?.openWindow) {
-      window.electronAPI.pythonCodeViewer.openWindow(
-        pythonCode,
-        t('visualProgramming.pythonViewer.title')
-      );
-    }
+    await window.electronAPI.pythonCodeViewer.openWindow(
+      pythonCode,
+      t('visualProgramming.pythonViewer.title') as string
+    );
+  }, [generatePythonCode, t]);
+
+  const handleUpdateCode = useCallback(async () => {
+    const pythonCode = generatePythonCode();
+    await window.electronAPI.pythonCodeViewer.updateCode(pythonCode);
   }, [generatePythonCode, t]);
 
   // Console management
@@ -229,7 +314,7 @@ if __name__ == "__main__":
       return;
     }
 
-    if (scriptNodes.length === 0) {
+    if (nodes.length === 0) {
       showAlert(t('visualProgramming.alerts.noBlocksInScript'), 'info');
       return;
     }
@@ -242,7 +327,7 @@ if __name__ == "__main__":
       'success'
     );
     // TODO: Implement actual robot script execution
-  }, [hasConnectedRobot, scriptNodes.length, executionState, showAlert, t]);
+  }, [hasConnectedRobot, nodes.length, executionState, showAlert, t]);
 
   const handlePauseScript = useCallback(() => {
     setExecutionState(ScriptExecutionState.PAUSED);
@@ -267,7 +352,7 @@ if __name__ == "__main__":
   return (
     <ReactFlowProvider>
       {/* Blocks Panel - Left Side (20% width) */}
-      <BlocksPanel isSimpleMode={isSimpleMode} />
+      <BlocksPanel isSimpleMode={isSimpleMode} labels={blocksPanelLabels} />
 
       {/* Right Side Container */}
       <Box
@@ -284,22 +369,24 @@ if __name__ == "__main__":
           isSimpleMode={isSimpleMode}
           nodes={nodes}
           edges={edges}
-          onNodesChange={setScriptNodes}
           executionState={executionState}
           canExecuteScript={canExecuteScript}
+          labels={scriptPanelLabels}
           onSettings={handleSettings}
           onPlayPause={
             executionState === ScriptExecutionState.RUNNING
-              ? handlePauseScript
-              : handlePlayScript
+            ? handlePauseScript
+            : handlePlayScript
           }
           onStop={handleStopScript}
           onDrop={onDrop}
           onDragOver={onDragOver}
           onConnect={onConnect}
-          onNodesChangeInternal={onNodesChange}
-          onEdgesChange={onEdgesChange}
           onViewPythonCode={handleViewPythonCode}
+          onNodesChange={onNodesChanges}
+          onEdgesChange={onEdgesChanges}
+          onNodesDelete={onNodesDelete}
+          onEdgesDelete={onEdgesDelete}
         />
 
         {/* Console Panel - Only visible in advanced mode or when toggled in simple mode */}
@@ -310,6 +397,7 @@ if __name__ == "__main__":
             selectedRobotData={selectedRobotData}
             hasConnectedRobot={hasConnectedRobot}
             consoleMessages={consoleMessages}
+            labels={consolePanelLabels}
             onToggle={handleToggleConsole}
             onFeedback={handleFeedback}
             onAddMessage={addConsoleMessage}
@@ -325,6 +413,7 @@ if __name__ == "__main__":
           selectedRobotData={selectedRobotData}
           hasConnectedRobot={hasConnectedRobot}
           consoleMessages={consoleMessages}
+          labels={consolePanelLabels}
           onToggle={handleToggleConsole}
           onFeedback={handleFeedback}
           onAddMessage={addConsoleMessage}

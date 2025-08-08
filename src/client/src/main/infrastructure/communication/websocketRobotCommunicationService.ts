@@ -1,363 +1,191 @@
-import WebSocket from 'ws';
-
 import type { Robot } from '../../../domain/robot';
-import type { RobotFeedback, RobotFeedbackCallback } from '../../../domain/RobotFeedback';
-import type { ConnectedRobot, RobotMessage, RobotResponse } from '../../../domain/RobotCommunication';
+import type { ConnectedRobot } from '../../../domain/robotCommunication';
+import type {
+  RobotFeedback,
+  RobotFeedbackCallback,
+} from '../../../domain/robotFeedback';
+import type { Logger } from '../../../main/application/interfaces/logger';
+import type { Disposable } from '../../application/interfaces';
 import type { RobotCommunicationService } from '../../application/interfaces/robotCommunicationService';
+import { RobotConnectionManager } from './robotConnectionManager';
+import { RobotHealthMonitor } from './robotHealthMonitor';
+import { RobotMessageHandler } from './robotMessageHandler';
 
 export class WebsocketRobotCommunicationService
-  implements RobotCommunicationService {
-  private connectedRobots: Map<string, ConnectedRobot> = new Map();
-  private readonly connectionTimeout = 10000; // 10 seconds
-  private readonly pingInterval = 30000; // 30 seconds
-  private pingTimer: NodeJS.Timeout;
+  implements RobotCommunicationService, Disposable
+{
+  private connectionManager: RobotConnectionManager;
+  private messageHandler: RobotMessageHandler;
+  private healthMonitor: RobotHealthMonitor;
+  private disposed = false;
 
+  constructor(private logger: Logger) {
+    this.connectionManager = new RobotConnectionManager(logger);
+    this.messageHandler = new RobotMessageHandler();
+    this.healthMonitor = new RobotHealthMonitor(this.messageHandler, logger);
+  }
 
   async connect(robot: Robot): Promise<Robot> {
-    const robotKey = this.getRobotKey(robot);
+    const result = await this.connectionManager.connect(robot);
 
-    // Check if already connected
-    if (this.connectedRobots.has(robotKey)) {
-      const existing = this.connectedRobots.get(robotKey);
-      if (existing.connected) {
-        return robot;
+    // Setup message handling for the connected robot
+    const connectedRobot = this.connectionManager.getConnectedRobot(robot);
+    if (connectedRobot) {
+      connectedRobot.websocket.onmessage = event => {
+        this.messageHandler.handleRobotMessage(
+          connectedRobot,
+          event.data,
+          (robotId: string, timestamp: number) => {
+            this.healthMonitor.updateLastPing(
+              this.connectionManager
+                .getAllConnectedRobots()
+                .reduce((map, cr) => {
+                  map.set(this.getRobotKey(cr.robot), cr);
+                  return map;
+                }, new Map<string, ConnectedRobot>()),
+              robotId,
+              timestamp
+            );
+          }
+        );
+      };
+
+      // Send initial status message
+      this.messageHandler.sendMessage(connectedRobot.websocket, {
+        type: 'status',
+        data: { status: 'connected', client: 'pucklab' },
+        timestamp: Date.now(),
+      });
+
+      // Start health monitoring if this is the first connected robot
+      const allConnectedRobots = this.connectionManager.getAllConnectedRobots();
+      if (allConnectedRobots.length === 1) {
+        this.healthMonitor.startMonitoring(
+          allConnectedRobots.reduce((map, cr) => {
+            map.set(this.getRobotKey(cr.robot), cr);
+            return map;
+          }, new Map<string, ConnectedRobot>())
+        );
       }
     }
 
-    return new Promise((resolve, reject) => {
-      const wsUrl = `ws://${robot.ipAddress}:${robot.port}/robot`;
-      const ws = new WebSocket(wsUrl);
-
-      const connectionTimer = setTimeout(() => {
-        ws.terminate();
-        reject(new Error(`Connection timeout to robot ${robot.id}`));
-      }, this.connectionTimeout);
-
-      ws.on('open', () => {
-        clearTimeout(connectionTimer);
-        console.log(`✅ Connected to robot ${robot.id} at ${wsUrl}`);
-
-        const connectedRobot: ConnectedRobot = {
-          robot,
-          websocket: ws,
-          connected: true,
-          lastPing: Date.now(),
-        };
-
-        this.connectedRobots.set(robotKey, connectedRobot);
-
-        // Start ping timer if this is the first connected robot
-        if (this.connectedRobots.size === 1) {
-          this.startPingTimer();
-        }
-
-        this.sendMessage(ws, {
-          type: 'status',
-          data: { status: 'connected', client: 'pucklab' },
-          timestamp: Date.now(),
-        });
-
-        resolve(robot);
-      });
-
-      ws.on('message', (data: WebSocket.Data) => {
-        this.handleRobotMessageWithFeedback(robotKey, data);
-      });
-
-      ws.on('error', error => {
-        clearTimeout(connectionTimer);
-        console.error(`❌ WebSocket error for robot ${robot.id}:`, error);
-        this.removeRobot(robotKey);
-        reject(error);
-      });
-
-      ws.on('close', (code, reason) => {
-        clearTimeout(connectionTimer);
-        console.log(
-          `🔌 Disconnected from robot ${robot.id}. Code: ${code}, Reason: ${reason}`
-        );
-        this.removeRobot(robotKey);
-      });
-    });
+    return result;
   }
 
   async disconnect(robot: Robot): Promise<Robot> {
-    const robotKey = this.getRobotKey(robot);
-    const connectedRobot = this.connectedRobots.get(robotKey);
+    const connectedRobot = this.connectionManager.getConnectedRobot(robot);
 
-    if (!connectedRobot) {
-      return robot;
-    }
-
-    return new Promise(resolve => {
-      this.sendMessage(connectedRobot.websocket, {
+    if (connectedRobot) {
+      // Send disconnecting status message
+      this.messageHandler.sendMessage(connectedRobot.websocket, {
         type: 'status',
         data: { status: 'disconnecting' },
         timestamp: Date.now(),
       });
+    }
 
-      connectedRobot.websocket.close(1000, 'Client disconnect');
-      this.removeRobot(robotKey);
+    const result = await this.connectionManager.disconnect(robot);
 
-      console.log(`👋 Disconnected from robot ${robot.id}`);
-      resolve(robot);
-    });
+    // Stop health monitoring if no robots are connected
+    const allConnectedRobots = this.connectionManager.getAllConnectedRobots();
+    if (allConnectedRobots.length === 0) {
+      this.healthMonitor.stopMonitoring();
+    }
+
+    return result;
   }
 
   async isConnected(robot: Robot): Promise<boolean> {
-    const robotKey = this.getRobotKey(robot);
-    const connectedRobot = this.connectedRobots.get(robotKey);
-
-    return (
-      (connectedRobot?.connected &&
-        connectedRobot.websocket.readyState === WebSocket.OPEN) ||
-      false
-    );
+    return this.connectionManager.isConnected(robot);
   }
 
   async sendCommand(robot: Robot, command: string): Promise<unknown> {
-    const robotKey = this.getRobotKey(robot);
-    const connectedRobot = this.connectedRobots.get(robotKey);
+    const connectedRobot = this.connectionManager.getConnectedRobot(robot);
 
-    if (!connectedRobot || !connectedRobot.connected) {
+    if (!connectedRobot) {
       throw new Error(`Robot ${robot.id} is not connected`);
     }
 
-    if (connectedRobot.websocket.readyState !== WebSocket.OPEN) {
-      throw new Error(`Robot ${robot.id} connection is not ready`);
-    }
-
-    return new Promise((resolve, reject) => {
-      const message: RobotMessage = {
-        type: 'command',
-        data: { command, source: 'pucklab' },
-        timestamp: Date.now(),
-      };
-
-      const responseTimeout = setTimeout(
-        reject,
-        30000,
-        new Error(`Command timeout for robot ${robot.id}`)
-      );
-
-      const originalHandler = connectedRobot.websocket.onmessage;
-      connectedRobot.websocket.onmessage = event => {
-        try {
-          const response: RobotResponse = JSON.parse(event.data.toString());
-          if (response.type === 'success' || response.type === 'error') {
-            clearTimeout(responseTimeout);
-            connectedRobot.websocket.onmessage = originalHandler;
-
-            if (response.type === 'error') {
-              reject(new Error(response.message || 'Robot command failed'));
-            } else {
-              resolve(response.data);
-            }
-          }
-        } catch (_error) {
-          if (originalHandler) originalHandler(event);
-        }
-      };
-
-      this.sendMessage(connectedRobot.websocket, message);
-    });
+    return this.messageHandler.sendCommand(connectedRobot, command);
   }
 
   private getRobotKey(robot: Robot): string {
     return `${robot.ipAddress}:${robot.port}`;
   }
 
-  private removeRobot(robotKey: string): void {
-    const connectedRobot = this.connectedRobots.get(robotKey);
-    if (connectedRobot) {
-      connectedRobot.connected = false;
-      this.connectedRobots.delete(robotKey);
-
-      // Stop ping timer if no robots are connected
-      if (this.connectedRobots.size === 0) {
-        this.stopPingTimer();
-      }
+  /**
+   * Dispose method for proper resource cleanup
+   * Implements Disposable interface
+   */
+  async dispose(): Promise<void> {
+    if (this.disposed) {
+      return;
     }
-  }
 
-  private sendMessage(ws: WebSocket, message: RobotMessage): void {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(message));
+    this.disposed = true;
+
+    // Stop health monitoring first
+    this.healthMonitor.stopMonitoring();
+
+    // Dispose connection manager (which handles robot disconnections)
+    await this.connectionManager.dispose();
+
+    // Clean up message handler if it has disposal logic
+    if (
+      'dispose' in this.messageHandler &&
+      typeof this.messageHandler.dispose === 'function'
+    ) {
+      await this.messageHandler.dispose();
     }
-  }
 
-  private startPingTimer(): void {
-    this.pingTimer = setInterval(
-      this.sendPingsToRobots.bind(this),
-      this.pingInterval
-    );
-  }
-
-  private stopPingTimer(): void {
-    if (this.pingTimer) {
-      clearInterval(this.pingTimer);
+    // Clean up health monitor if it has disposal logic
+    if (
+      'dispose' in this.healthMonitor &&
+      typeof this.healthMonitor.dispose === 'function'
+    ) {
+      await this.healthMonitor.dispose();
     }
   }
 
   /**
-   * Cleanup method to be called when the service is destroyed
-   * Clears the ping timer and disconnects all robots
+   * Legacy cleanup method for backward compatibility
+   * @deprecated Use dispose() instead
    */
   public cleanup(): void {
-    this.stopPingTimer();
-
-    // Disconnect all robots
-    this.connectedRobots.forEach((connectedRobot) => {
-      if (connectedRobot.websocket.readyState === WebSocket.OPEN) {
-        connectedRobot.websocket.close();
-      }
-    });
-
-    this.connectedRobots.clear();
-  }
-
-  private sendPingsToRobots(): void {
-    const now = Date.now();
-
-    this.connectedRobots.forEach((connectedRobot, robotKey) => {
-      if (connectedRobot.connected) {
-        this.sendMessage(connectedRobot.websocket, {
-          type: 'ping',
-          data: {},
-          timestamp: now,
-        });
-
-        if (now - connectedRobot.lastPing > this.pingInterval * 2) {
-          console.warn(
-            `⚠️ Robot ${connectedRobot.robot.id} ping timeout, disconnecting...`
-          );
-          setTimeout(
-            connectedRobot.websocket.terminate.bind(connectedRobot.websocket),
-            0
-          );
-          setTimeout(this.removeRobot.bind(this), 0, robotKey);
-        }
-      }
+    this.dispose().catch(error => {
+      this.logger.error('Error during service cleanup:', error);
     });
   }
 
   // Feedback methods implementation
   subscribeToFeedback(robot: Robot, callback: RobotFeedbackCallback): void {
-    const robotKey = this.getRobotKey(robot);
-    const connectedRobot = this.connectedRobots.get(robotKey);
+    const connectedRobot = this.connectionManager.getConnectedRobot(robot);
 
     if (connectedRobot) {
-      connectedRobot.feedbackCallback = callback;
-      console.log(
-        `📻 [WebSocket] Subscribed to feedback for robot ${robot.id}`
-      );
-
-      // Send initial connection feedback
-      callback({
-        robotId: robot.id,
-        timestamp: Date.now(),
-        type: 'success',
-        message: 'Real-time feedback connection established',
-      });
+      this.messageHandler.subscribeToFeedback(connectedRobot, callback);
     } else {
-      console.warn(
+      this.logger.warn(
         `📻 [WebSocket] Robot ${robot.id} not connected, cannot subscribe to feedback`
       );
     }
   }
 
   unsubscribeFromFeedback(robot: Robot): void {
-    const robotKey = this.getRobotKey(robot);
-    const connectedRobot = this.connectedRobots.get(robotKey);
+    const connectedRobot = this.connectionManager.getConnectedRobot(robot);
 
     if (connectedRobot) {
-      connectedRobot.feedbackCallback = undefined;
-      console.log(
-        `📻 [WebSocket] Unsubscribed from feedback for robot ${robot.id}`
-      );
+      this.messageHandler.unsubscribeFromFeedback(connectedRobot);
     }
   }
 
   sendFeedback(feedback: RobotFeedback): void {
-    // Find the robot by ID and send feedback if callback exists
-    for (const connectedRobot of this.connectedRobots.values()) {
-      if (
-        connectedRobot.robot.id === feedback.robotId &&
-        connectedRobot.feedbackCallback
-      ) {
-        connectedRobot.feedbackCallback(feedback);
-        break;
-      }
-    }
-  }
+    const connectedRobotsMap = this.connectionManager
+      .getAllConnectedRobots()
+      .reduce((map, cr) => {
+        map.set(this.getRobotKey(cr.robot), cr);
+        return map;
+      }, new Map<string, ConnectedRobot>());
 
-  // Enhanced message handling with feedback
-  private handleRobotMessageWithFeedback(
-    robotKey: string,
-    data: WebSocket.Data
-  ): void {
-    const connectedRobot = this.connectedRobots.get(robotKey);
-    if (!connectedRobot) return;
-
-    try {
-      const response: RobotResponse = JSON.parse(data.toString());
-
-      // Send feedback for all message types
-      const feedback: RobotFeedback = {
-        robotId: connectedRobot.robot.id,
-        timestamp: Date.now(),
-        type: response.type === 'error' ? 'error' : 'info',
-        message: this.formatRobotMessage(response),
-        data: response.data,
-      };
-
-      if (connectedRobot.feedbackCallback) {
-        connectedRobot.feedbackCallback(feedback);
-      }
-
-      // Original message handling logic
-      switch (response.type) {
-        case 'pong':
-          connectedRobot.lastPing = Date.now();
-          break;
-        case 'status':
-        case 'error':
-          // Feedback already sent above
-          break;
-        default:
-          // Handle other message types
-          break;
-      }
-    } catch (error) {
-      console.error(
-        `Failed to parse message from robot ${connectedRobot.robot.id}:`,
-        error
-      );
-
-      if (connectedRobot.feedbackCallback) {
-        connectedRobot.feedbackCallback({
-          robotId: connectedRobot.robot.id,
-          timestamp: Date.now(),
-          type: 'error',
-          message: `Failed to parse robot message: ${error}`,
-          data: { rawData: data.toString() },
-        });
-      }
-    }
-  }
-
-  private formatRobotMessage(response: RobotResponse): string {
-    switch (response.type) {
-      case 'pong':
-        return 'Robot responding to ping';
-      case 'status':
-        return `Robot status: ${JSON.stringify(response.data)}`;
-      case 'error':
-        return `Robot error: ${response.message || 'Unknown error'}`;
-      case 'success':
-        return `Robot command completed successfully`;
-      default:
-        return `Robot message: ${response.type}`;
-    }
+    this.messageHandler.sendFeedback(connectedRobotsMap, feedback);
   }
 }

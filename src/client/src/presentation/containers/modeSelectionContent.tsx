@@ -42,6 +42,10 @@ export const ModeSelectionContent: FC = () => {
                 setSelectedMode(mode.title);
               }}
               selected={selectedMode === mode.title}
+              labels={{
+                exploration: t('mode.names.exploration'),
+                navigation: t('mode.names.navigation')
+              }}
             />
           </Grid>
         ))}

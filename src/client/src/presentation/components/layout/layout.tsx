@@ -1,7 +1,7 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import type React from 'react';
 import { type ReactNode, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '../languageSelector';
 
 interface PageLayoutProps {
   title: string;
@@ -14,6 +14,10 @@ interface PageLayoutProps {
   backText?: string;
   maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   centered?: boolean;
+  defaultLabels: {
+    back: string;
+    continue: string;
+  };
 }
 
 export const PageLayout: React.FC<PageLayoutProps> = ({
@@ -27,13 +31,11 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   backText,
   maxWidth = 'md',
   centered = true,
+  defaultLabels,
 }) => {
-  const { t } = useTranslation();
 
-  // Add keyboard event listeners for Enter and Backspace keys
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Handle Enter key (main keyboard and numpad) for continue button
       if (
         (event.key === 'Enter' || event.key === 'NumpadEnter') &&
         onContinue &&
@@ -41,18 +43,14 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       ) {
         event.preventDefault();
         onContinue();
-      }
-      // Handle Backspace key for back button
-      else if (event.key === 'Backspace' && onBack) {
+      } else if (event.key === 'Backspace' && onBack) {
         event.preventDefault();
         onBack();
       }
     };
 
-    // Add event listener
     document.addEventListener('keydown', handleKeyDown);
 
-    // Cleanup function to remove event listener
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
@@ -65,8 +63,21 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         color: 'text.primary',
         minHeight: '100vh',
         transition: 'all 0.3s ease-in-out',
+        position: 'relative',
       }}
     >
+      {/* Language Selector - positioned in top right */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          zIndex: 1000,
+        }}
+      >
+        <LanguageSelector />
+      </Box>
+
       <Container maxWidth={maxWidth}>
         <Box
           display='flex'
@@ -124,7 +135,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 onClick={onBack}
                 sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
               >
-                {backText || t('common.back')}
+                {backText || defaultLabels.back}
               </Button>
             )}
             {onContinue && (
@@ -135,7 +146,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 disabled={continueDisabled}
                 sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
               >
-                {continueText || t('common.continue')}
+                {continueText || defaultLabels.continue}
               </Button>
             )}
           </Box>

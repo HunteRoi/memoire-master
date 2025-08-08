@@ -2,57 +2,48 @@ import * as path from 'node:path';
 import { BrowserWindow, ipcMain } from 'electron';
 
 /**
- * Manages the Python Code Viewer window and its IPC handlers
+ * A wrapper for the Python code viewer management methods
  */
+// biome-ignore lint/complexity/noStaticOnlyClass: Manager pattern for Python code viewer operations
 export class PythonCodeViewerManager {
-  private pythonCodeViewerWindow: BrowserWindow | null = null;
-  private currentPythonCode: string = '';
+  private static pythonCodeViewerWindow: BrowserWindow | null = null;
+  private static currentPythonCode: string = '';
 
-  constructor() {
-    this.registerIpcHandlers();
-  }
-
-  /**
-   * Register all IPC handlers for Python Code Viewer operations
-   */
-  private registerIpcHandlers(): void {
+  public static registerPythonCodeViewerIpcHandlers(): void {
     ipcMain.handle(
       'pythonCodeViewer:openWindow',
       async (_, code: string, title?: string) => {
-        return await this.openWindow(code, title);
+        return await PythonCodeViewerManager.openWindow(code, title);
       }
     );
 
     ipcMain.handle('pythonCodeViewer:updateCode', async (_, code: string) => {
-      return await this.updateCode(code);
+      return await PythonCodeViewerManager.updateCode(code);
     });
 
     ipcMain.handle('pythonCodeViewer:closeWindow', async () => {
-      return await this.closeWindow();
+      return await PythonCodeViewerManager.closeWindow();
     });
   }
 
-  /**
-   * Open or focus the Python Code Viewer window
-   */
-  private async openWindow(code: string, title?: string): Promise<boolean> {
-    // Store the current code
-    this.currentPythonCode = code;
+  private static async openWindow(
+    code: string,
+    title?: string
+  ): Promise<boolean> {
+    PythonCodeViewerManager.currentPythonCode = code;
 
-    // If window already exists, just update the code and focus
     if (
-      this.pythonCodeViewerWindow &&
-      !this.pythonCodeViewerWindow.isDestroyed()
+      PythonCodeViewerManager.pythonCodeViewerWindow &&
+      !PythonCodeViewerManager.pythonCodeViewerWindow.isDestroyed()
     ) {
-      this.pythonCodeViewerWindow.webContents.executeJavaScript(`
+      PythonCodeViewerManager.pythonCodeViewerWindow.webContents.executeJavaScript(`
         window.dispatchEvent(new CustomEvent('codeUpdate', { detail: ${JSON.stringify(code)} }));
       `);
-      this.pythonCodeViewerWindow.focus();
+      PythonCodeViewerManager.pythonCodeViewerWindow.focus();
       return true;
     }
 
-    // Create new Python code viewer window
-    this.pythonCodeViewerWindow = new BrowserWindow({
+    PythonCodeViewerManager.pythonCodeViewerWindow = new BrowserWindow({
       width: 900,
       height: 700,
       title: title || 'Generated Python Code',
@@ -67,53 +58,44 @@ export class PythonCodeViewerManager {
       icon: path.join(__dirname, '../assets/icon.png'), // Add app icon if available
     });
 
-    // Load the HTML file
-    this.pythonCodeViewerWindow.loadFile(
+    PythonCodeViewerManager.pythonCodeViewerWindow.loadFile(
       path.join(__dirname, '../static/pythonCodeViewer.html')
     );
 
-    // Show window when ready and send initial code
-    this.pythonCodeViewerWindow.once('ready-to-show', () => {
-      this.pythonCodeViewerWindow?.show();
-      this.pythonCodeViewerWindow?.webContents.executeJavaScript(`
-        window.dispatchEvent(new CustomEvent('codeUpdate', { detail: ${JSON.stringify(this.currentPythonCode)} }));
+    PythonCodeViewerManager.pythonCodeViewerWindow.once('ready-to-show', () => {
+      PythonCodeViewerManager.pythonCodeViewerWindow?.show();
+      PythonCodeViewerManager.pythonCodeViewerWindow?.webContents.executeJavaScript(`
+        window.dispatchEvent(new CustomEvent('codeUpdate', { detail: ${JSON.stringify(PythonCodeViewerManager.currentPythonCode)} }));
       `);
     });
 
-    // Clean up reference when window is closed
-    this.pythonCodeViewerWindow.on('closed', () => {
-      this.pythonCodeViewerWindow = null;
+    PythonCodeViewerManager.pythonCodeViewerWindow.on('closed', () => {
+      PythonCodeViewerManager.pythonCodeViewerWindow = null;
     });
 
     return true;
   }
 
-  /**
-   * Update the Python code in the viewer window
-   */
-  private async updateCode(code: string): Promise<boolean> {
-    this.currentPythonCode = code;
+  private static async updateCode(code: string): Promise<boolean> {
+    PythonCodeViewerManager.currentPythonCode = code;
     if (
-      this.pythonCodeViewerWindow &&
-      !this.pythonCodeViewerWindow.isDestroyed()
+      PythonCodeViewerManager.pythonCodeViewerWindow &&
+      !PythonCodeViewerManager.pythonCodeViewerWindow.isDestroyed()
     ) {
-      this.pythonCodeViewerWindow.webContents.executeJavaScript(`
+      PythonCodeViewerManager.pythonCodeViewerWindow.webContents.executeJavaScript(`
         window.dispatchEvent(new CustomEvent('codeUpdate', { detail: ${JSON.stringify(code)} }));
       `);
     }
     return true;
   }
 
-  /**
-   * Close the Python Code Viewer window
-   */
-  private async closeWindow(): Promise<boolean> {
+  private static async closeWindow(): Promise<boolean> {
     if (
-      this.pythonCodeViewerWindow &&
-      !this.pythonCodeViewerWindow.isDestroyed()
+      PythonCodeViewerManager.pythonCodeViewerWindow &&
+      !PythonCodeViewerManager.pythonCodeViewerWindow.isDestroyed()
     ) {
-      this.pythonCodeViewerWindow.close();
-      this.pythonCodeViewerWindow = null;
+      PythonCodeViewerManager.pythonCodeViewerWindow.close();
+      PythonCodeViewerManager.pythonCodeViewerWindow = null;
     }
     return true;
   }

@@ -1,10 +1,13 @@
 import { Grid } from '@mui/material';
 import type { FC } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { ThemePreviewCard } from '../components/themePreviewCard';
 import { useAppContext } from '../hooks/useAppContext';
 import { themeOptions } from '../models/Theme';
 
 export const ThemeSelectionContent: FC = () => {
+  const { t } = useTranslation();
   const { theme, setTheme } = useAppContext();
 
   const handleThemeSelection = (selectedTheme: typeof theme) => {
@@ -24,6 +27,10 @@ export const ThemeSelectionContent: FC = () => {
             themeOption={option}
             isSelected={theme === option.type}
             onSelect={handleThemeSelection}
+            labels={{
+              themeName: t(`theme.names.${theme.toLowerCase()}`),
+              themeDescription: t(`theme.descriptions.${theme.toLowerCase()}`)
+            }}
           />
         </Grid>
       ))}

@@ -1,11 +1,19 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Box, Button, IconButton, Paper, Typography } from '@mui/material';
 import { type FC, useCallback, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import type { Robot } from '../../../domain/robot';
-import type { RobotFeedback } from '../../../domain/RobotFeedback';
-import type { ConsoleMessage } from '../../models/Console';
+import type { RobotFeedback } from '../../../domain/robotFeedback';
+import type { ConsoleMessage } from '../../models/ConsoleMessage';
+
+export interface ConsolePanelLabels {
+  title: string;
+  showConsole: string;
+  messages: {
+    robotInitialized: string;
+    connecting: string;
+  };
+}
 
 interface ConsolePanelProps {
   isSimpleMode: boolean;
@@ -13,6 +21,7 @@ interface ConsolePanelProps {
   selectedRobotData?: Robot | null;
   hasConnectedRobot: boolean;
   consoleMessages: ConsoleMessage[];
+  labels: ConsolePanelLabels;
   onToggle: () => void;
   onFeedback: (feedback: RobotFeedback) => void;
   onAddMessage: (type: string, message: string) => void;
@@ -24,11 +33,11 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
   selectedRobotData,
   hasConnectedRobot,
   consoleMessages,
+  labels,
   onToggle,
   onFeedback,
   onAddMessage,
 }) => {
-  const { t } = useTranslation();
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -45,7 +54,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
     if (!hasConnectedRobot || !selectedRobotData) {
       onAddMessage(
         'info',
-        t('visualProgramming.console.messages.robotInitialized')
+        labels.messages.robotInitialized
       );
       return;
     }
@@ -60,7 +69,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
     });
 
     // Add initial connection message
-    onAddMessage('info', t('visualProgramming.console.messages.connecting'));
+    onAddMessage('info', labels.messages.connecting);
 
     // Cleanup function
     return () => {
@@ -72,7 +81,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
       }
       window.electronAPI.robotConnection.removeFeedbackListener();
     };
-  }, [hasConnectedRobot, selectedRobotData, onFeedback, onAddMessage, t]);
+  }, [hasConnectedRobot, selectedRobotData, onFeedback, onAddMessage, labels.messages]);
 
   const formatTimestamp = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString();
@@ -105,7 +114,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
           zIndex: 998,
         }}
       >
-        {t('visualProgramming.console.showConsole')}
+        {labels.showConsole}
       </Button>
     );
   }
@@ -145,7 +154,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
             fontSize: isSimpleMode ? '1.5rem' : '1.25rem',
           }}
         >
-          🖥️ {t('visualProgramming.console.title')}
+          🖥️ {labels.title}
         </Typography>
         {isSimpleMode && (
           <IconButton onClick={onToggle}>

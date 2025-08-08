@@ -1,7 +1,6 @@
 import { Code, Pause, PlayArrow, Settings, Stop } from '@mui/icons-material';
 import { Box, IconButton, Paper, Typography } from '@mui/material';
 import type { DragEvent, FC } from 'react';
-import { useTranslation } from 'react-i18next';
 import ReactFlow, {
   Background,
   type Connection,
@@ -11,24 +10,37 @@ import ReactFlow, {
   type Node,
   type OnEdgesChange,
   type OnNodesChange,
+  type OnEdgesDelete,
+  type OnNodesDelete
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+
+export interface ScriptPanelLabels {
+  title: string;
+  status: {
+    running: string;
+    paused: string;
+    idle: string;
+  };
+}
 
 interface ScriptPanelProps {
   height: string;
   isSimpleMode: boolean;
   nodes: Node[];
-  onNodesChange: (nodes: Node[]) => void;
   executionState: 'idle' | 'running' | 'paused';
   canExecuteScript: boolean;
+  labels: ScriptPanelLabels;
   onSettings: () => void;
   onPlayPause: () => void;
   onStop: () => void;
   onDrop: (event: DragEvent) => void;
   onDragOver: (event: DragEvent) => void;
   onConnect: (connection: Connection) => void;
-  onNodesChangeInternal: OnNodesChange;
+  onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
+  onNodesDelete: OnNodesDelete;
+  onEdgesDelete: OnEdgesDelete;
   onViewPythonCode: () => void;
   edges: Edge[];
 }
@@ -39,18 +51,20 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
   nodes,
   executionState,
   canExecuteScript,
+  labels,
   onSettings,
   onPlayPause,
   onStop,
   onDrop,
   onDragOver,
   onConnect,
-  onNodesChangeInternal,
+  onNodesChange,
   onEdgesChange,
+  onNodesDelete,
+  onEdgesDelete,
   onViewPythonCode,
   edges,
 }) => {
-  const { t } = useTranslation();
 
   return (
     <Box sx={{ position: 'relative', height, width: '100%' }}>
@@ -81,7 +95,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
                 fontSize: isSimpleMode ? '1.5rem' : '1.25rem',
               }}
             >
-              📝 {t('visualProgramming.script.title')}
+              📝 {labels.title}
             </Typography>
 
             {/* Execution Status Indicator */}
@@ -123,7 +137,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
                   variant='caption'
                   sx={{ fontWeight: 600, textTransform: 'capitalize' }}
                 >
-                  {t(`visualProgramming.script.status.${executionState}`)}
+                  {labels.status[executionState]}
                 </Typography>
               </Box>
             )}
@@ -242,8 +256,10 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
           <ReactFlow
             nodes={nodes}
             edges={edges}
-            onNodesChange={onNodesChangeInternal}
+            onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            onNodesDelete={onNodesDelete}
+            onEdgesDelete={onEdgesDelete}
             onConnect={onConnect}
             connectionMode={ConnectionMode.Loose}
             fitView

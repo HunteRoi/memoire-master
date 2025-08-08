@@ -8,7 +8,6 @@ import {
   Typography,
 } from '@mui/material';
 import type React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import type { Robot } from '../../../domain/robot';
 
@@ -18,6 +17,13 @@ interface RobotConnectionDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
+  labels: {
+    title: string;
+    confirmMessage: string;
+    cancel: string;
+    connect: string;
+    connecting: string;
+  };
 }
 
 export const RobotConnectionDialog: React.FC<RobotConnectionDialogProps> = ({
@@ -26,27 +32,17 @@ export const RobotConnectionDialog: React.FC<RobotConnectionDialogProps> = ({
   onConfirm,
   onCancel,
   loading = false,
+  labels,
 }) => {
-  const { t } = useTranslation();
   return (
     <Dialog open={open} onClose={onCancel} maxWidth='sm' fullWidth>
-      <DialogTitle>
-        {t('robot.connectToRobotName', 'Connect to {{name}}', {
-          name: robot.name,
-        })}
-      </DialogTitle>
+      <DialogTitle>{labels.title}</DialogTitle>
       <DialogContent>
-        <Typography variant='body1'>
-          {t(
-            'robot.connectConfirm',
-            'Are you sure you want to connect to {{name}}?',
-            { name: robot.name }
-          )}
-        </Typography>
+        <Typography variant='body1'>{labels.confirmMessage}</Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel} disabled={loading}>
-          {t('common.cancel')}
+          {labels.cancel}
         </Button>
         <Button
           onClick={onConfirm}
@@ -54,9 +50,7 @@ export const RobotConnectionDialog: React.FC<RobotConnectionDialogProps> = ({
           disabled={loading}
           startIcon={loading ? <CircularProgress size={16} /> : null}
         >
-          {loading
-            ? t('robot.connecting', 'Connecting...')
-            : t('common.connect')}
+          {loading ? labels.connecting : labels.connect}
         </Button>
       </DialogActions>
     </Dialog>

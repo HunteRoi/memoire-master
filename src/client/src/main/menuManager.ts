@@ -4,24 +4,23 @@ import {
   Menu,
   type MenuItemConstructorOptions,
 } from 'electron';
+import type { Logger } from './application/interfaces/logger';
 
 /**
- * Manages the application's native menu system
+ * A wrapper for the application menu management methods
+ *
+ * @export
+ * @class ApplicationMenuManager
  */
-export class MenuManager {
-  private mainWindow: BrowserWindow | null = null;
-
-  /**
-   * Set the main window reference for menu actions
-   */
-  setMainWindow(window: BrowserWindow | null): void {
-    this.mainWindow = window;
-  }
-
+// biome-ignore lint/complexity/noStaticOnlyClass: Manager pattern for menu operations
+export class ApplicationMenuManager {
   /**
    * Create and set the application menu with Settings and Language options
    */
-  createApplicationMenu(): void {
+  public static createApplicationMenu(
+    mainWindow: BrowserWindow,
+    logger: Logger
+  ): void {
     const template: MenuItemConstructorOptions[] = [
       {
         label: 'File',
@@ -30,8 +29,10 @@ export class MenuManager {
             label: 'Settings',
             accelerator: 'CmdOrCtrl+,',
             click: () => {
-              console.log('Settings clicked, mainWindow:', this.mainWindow);
-              this.mainWindow?.webContents.executeJavaScript(`
+              logger.debug('Settings menu clicked', {
+                hasMainWindow: !!mainWindow,
+              });
+              mainWindow?.webContents.executeJavaScript(`
                 window.location.hash = '/settings';
               `);
             },
@@ -44,18 +45,6 @@ export class MenuManager {
               app.quit();
             },
           },
-        ],
-      },
-      {
-        label: 'Edit',
-        submenu: [
-          { role: 'undo' as const },
-          { role: 'redo' as const },
-          { type: 'separator' as const },
-          { role: 'cut' as const },
-          { role: 'copy' as const },
-          { role: 'paste' as const },
-          { role: 'selectAll' as const },
         ],
       },
       {
@@ -79,8 +68,10 @@ export class MenuManager {
                 type: 'radio' as const,
                 checked: true,
                 click: () => {
-                  console.log('English clicked, mainWindow:', this.mainWindow);
-                  this.mainWindow?.webContents.executeJavaScript(`
+                  logger.debug('Language changed to English', {
+                    hasMainWindow: !!mainWindow,
+                  });
+                  mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'en' }));
                   `);
                 },
@@ -89,8 +80,10 @@ export class MenuManager {
                 label: 'Français',
                 type: 'radio' as const,
                 click: () => {
-                  console.log('French clicked, mainWindow:', this.mainWindow);
-                  this.mainWindow?.webContents.executeJavaScript(`
+                  logger.debug('Language changed to French', {
+                    hasMainWindow: !!mainWindow,
+                  });
+                  mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'fr' }));
                   `);
                 },
@@ -99,8 +92,10 @@ export class MenuManager {
                 label: 'Nederlands',
                 type: 'radio' as const,
                 click: () => {
-                  console.log('Dutch clicked, mainWindow:', this.mainWindow);
-                  this.mainWindow?.webContents.executeJavaScript(`
+                  logger.debug('Language changed to Dutch', {
+                    hasMainWindow: !!mainWindow,
+                  });
+                  mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'nl' }));
                   `);
                 },
@@ -109,8 +104,10 @@ export class MenuManager {
                 label: 'Deutsch',
                 type: 'radio' as const,
                 click: () => {
-                  console.log('German clicked, mainWindow:', this.mainWindow);
-                  this.mainWindow?.webContents.executeJavaScript(`
+                  logger.debug('Language changed to German', {
+                    hasMainWindow: !!mainWindow,
+                  });
+                  mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'de' }));
                   `);
                 },
@@ -122,17 +119,6 @@ export class MenuManager {
       {
         label: 'Window',
         submenu: [{ role: 'minimize' as const }, { role: 'close' as const }],
-      },
-      {
-        label: 'Help',
-        submenu: [
-          {
-            label: 'About',
-            click: () => {
-              // TODO: Show about dialog
-            },
-          },
-        ],
       },
     ];
 

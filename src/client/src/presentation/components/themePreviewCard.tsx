@@ -7,30 +7,27 @@ import {
   Typography,
 } from '@mui/material';
 import type React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import type { ThemeOption } from '../models/Theme';
+
+export interface ThemePreviewCardLabels {
+  themeName: string;
+  themeDescription: string;
+}
 
 interface ThemePreviewCardProps {
   themeOption: ThemeOption;
   isSelected: boolean;
   onSelect: (themeType: ThemeOption['type']) => void;
+  labels: ThemePreviewCardLabels;
 }
 
 export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
   themeOption,
   isSelected,
   onSelect,
+  labels,
 }) => {
-  const { t } = useTranslation();
-
-  const getThemeName = (themeType: string) => {
-    return t(`theme.names.${themeType.toLowerCase()}`);
-  };
-
-  const getThemeDescription = (themeType: string) => {
-    return t(`theme.descriptions.${themeType.toLowerCase()}`);
-  };
 
   return (
     <Card
@@ -142,7 +139,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
               fontWeight: 'bold',
             }}
           >
-            {getThemeName(themeOption.type)}
+            {labels.themeName}
           </Typography>
           <Typography
             variant='body2'
@@ -150,7 +147,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
               color: themeOption.theme.colors.text.secondary,
             }}
           >
-            {getThemeDescription(themeOption.type)}
+            {labels.themeDescription}
           </Typography>
         </CardContent>
       </CardActionArea>

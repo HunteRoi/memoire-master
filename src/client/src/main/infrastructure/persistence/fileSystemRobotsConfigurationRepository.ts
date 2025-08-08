@@ -1,19 +1,17 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { app } from 'electron';
-
-import { Robot } from '../../../domain/robot';
+import { isSuccess, type Result } from '../../../domain/result';
+import { Robot, type RobotConfig } from '../../../domain/robot';
+import type { Logger } from '../../../main/application/interfaces/logger';
 import type { RobotsConfigurationRepository } from '../../application/interfaces/robotsConfigurationRepository';
-
-type RobotConfig = {
-  ipAddress: string;
-  port: number;
-};
 
 export class FileSystemRobotsConfigurationRepository
   implements RobotsConfigurationRepository
 {
   private robots: RobotConfig[] = [];
+
+  constructor(private logger: Logger) {}
 
   private getConfigPath(): string {
     if (app.isPackaged) {
@@ -29,7 +27,7 @@ export class FileSystemRobotsConfigurationRepository
       const fileContent = await readFile(configPath, 'utf8');
       return (JSON.parse(fileContent) as RobotConfig[]) || null;
     } catch (error) {
-      console.error('Failed to read robots config:', error);
+      this.logger.error('Failed to read robots config:', error as Error);
       return null;
     }
   }
@@ -39,7 +37,7 @@ export class FileSystemRobotsConfigurationRepository
       const configPath = this.getConfigPath();
       await writeFile(configPath, JSON.stringify(robots, null, 2), 'utf8');
     } catch (error) {
-      console.error('Failed to write robots config:', error);
+      this.logger.error('Failed to write robots config:', error as Error);
       throw error;
     }
   }
@@ -82,7 +80,30 @@ export class FileSystemRobotsConfigurationRepository
   async loadRobots(): Promise<Robot[]> {
     const robotConfigs = await this.readRobotsConfig();
     this.robots = robotConfigs || [];
-    return this.robots.map(config => new Robot(config.ipAddress, config.port));
+
+    const validRobots: Robot[] = [];
+
+    for (const config of this.robots) {
+      const robotResult: Result<Robot> = Robot.create()
+        .setIpAddress(config.ipAddress)
+        .setPort(config.port)
+        .build();
+
+      if (isSuccess(robotResult)) {
+        validRobots.push(robotResult.data);
+      } else {
+        this.logger.error(
+          `Failed to create robot from config:`,
+          new Error(robotResult.error),
+          {
+            ipAddress: config.ipAddress,
+            port: config.port,
+          }
+        );
+      }
+    }
+
+    return validRobots;
   }
 
   findById(id: string): Promise<Robot | null> {
@@ -90,9 +111,24 @@ export class FileSystemRobotsConfigurationRepository
       cfg.ipAddress.endsWith(`.${id}`)
     );
     if (robotConfig) {
-      return Promise.resolve(
-        new Robot(robotConfig.ipAddress, robotConfig.port)
-      );
+      const robotResult: Result<Robot> = Robot.create()
+        .setIpAddress(robotConfig.ipAddress)
+        .setPort(robotConfig.port)
+        .build();
+
+      if (isSuccess(robotResult)) {
+        return Promise.resolve(robotResult.data);
+      } else {
+        this.logger.error(
+          `Failed to create robot from config:`,
+          new Error(robotResult.error),
+          {
+            ipAddress: robotConfig.ipAddress,
+            port: robotConfig.port,
+          }
+        );
+        return Promise.resolve(null);
+      }
     }
     return Promise.resolve(null);
   }

@@ -1,26 +1,30 @@
 import { Box, Card, CardContent, Tooltip, Typography } from '@mui/material';
 import type React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { type Mode, ModeType } from '../models/Mode';
+
+export interface ModeCardLabels {
+  exploration: string;
+  navigation: string;
+}
 
 interface ModeCardProps {
   mode: Mode;
   onSelect: (mode: Mode) => void;
   selected: boolean;
+  labels: ModeCardLabels;
 }
 
 export const ModeCard: React.FC<ModeCardProps> = ({
   mode,
   onSelect,
   selected,
+  labels,
 }) => {
-  const { t } = useTranslation();
-
   const getModeTitle = (modeTitle: ModeType) => {
     return modeTitle === ModeType.EXPLORATION
-      ? t('mode.names.exploration')
-      : t('mode.names.navigation');
+      ? labels.exploration
+      : labels.navigation;
   };
 
   return (

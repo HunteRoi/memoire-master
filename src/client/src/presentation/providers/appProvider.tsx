@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { DEFAULT_ROBOT } from '../../domain/constants';
 import { isSuccess } from '../../domain/result';
-import { Robot } from '../../domain/robot';
+import { Robot, type RobotConfig } from '../../domain/robot';
 import type { AlertSnackbarProps } from '../components/layout/alertSnackbar';
 import {
   type AppAction,
@@ -88,6 +88,28 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const loadingRef = useRef({ robots: false, theme: false });
 
+  // Memoize robot transformation to prevent unnecessary recalculations
+  const transformRobotData = useCallback(
+    (robotConfigs: RobotConfig[]): Robot[] => {
+      return robotConfigs
+        .map(robot => {
+          const result = Robot.create()
+            .setIpAddress(robot.ipAddress)
+            .setPort(robot.port)
+            .build();
+
+          if (!result.success) {
+            console.error(`Failed to create robot: ${result.error}`);
+            return null;
+          }
+
+          return result.data;
+        })
+        .filter((robot): robot is Robot => robot !== null);
+    },
+    []
+  );
+
   const setTheme = useCallback(
     (theme: ThemeType) => dispatch({ type: 'SET_THEME', payload: theme }),
     []
@@ -158,16 +180,13 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const resetState = useCallback(() => dispatch({ type: 'RESET_STATE' }), []);
 
   const ensureRobotsLoaded = useCallback(async () => {
-    if (state.robots.length === 0 && !loadingRef.current.robots) {
+    if (state.robots.length === 1 && !loadingRef.current.robots) {
       loadingRef.current.robots = true;
       setLoading(true);
       try {
         const result = await window.electronAPI.manageRobots.loadRobots();
         if (isSuccess(result)) {
-          const robots = result.data.map(
-            robot => new Robot(robot.ipAddress, robot.port)
-          );
-          setRobotsList(robots);
+          setRobotsList(transformRobotData(result.data as RobotConfig[]));
         }
       } catch (error) {
         console.error('Failed to lazy load robots:', error);
@@ -176,7 +195,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
         setLoading(false);
       }
     }
-  }, [state.robots.length, setRobotsList, setLoading]);
+  }, [state.robots.length, setRobotsList, setLoading, transformRobotData]);
 
   const ensureThemeLoaded = useCallback(() => {
     if (!loadingRef.current.theme) {
@@ -221,6 +240,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
       addConnectedRobot,
       removeConnectedRobot,
       isRobotConnected,
+      transformRobotData,
       setLoading,
       setError,
       showAlert,
@@ -241,6 +261,7 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
       addConnectedRobot,
       removeConnectedRobot,
       isRobotConnected,
+      transformRobotData,
       setLoading,
       setError,
       showAlert,

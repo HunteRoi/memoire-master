@@ -1,5 +1,9 @@
 import type { Robot } from '../../../domain/robot';
-import type { RobotFeedback, RobotFeedbackCallback } from '../../../domain/RobotFeedback';
+import type {
+  RobotFeedback,
+  RobotFeedbackCallback,
+} from '../../../domain/robotFeedback';
+import type { Logger } from '../../../main/application/interfaces/logger';
 import type { RobotCommunicationService } from '../../application/interfaces/robotCommunicationService';
 
 /**
@@ -7,21 +11,23 @@ import type { RobotCommunicationService } from '../../application/interfaces/rob
  * Simulates robot connections without requiring actual hardware.
  */
 export class MockRobotCommunicationService
-  implements RobotCommunicationService
-{
+  implements RobotCommunicationService {
   private connectedRobots: Set<string> = new Set();
   private readonly simulatedDelay = 500; // 500ms simulation delay
   private feedbackCallbacks: Map<string, RobotFeedbackCallback> = new Map();
   private feedbackIntervals: Map<string, NodeJS.Timeout> = new Map();
 
+  constructor(private logger: Logger) { }
+
   async connect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);
 
-    console.log(
-      `🤖 [MOCK] Attempting to connect to robot ${robot.id} at ${robot.ipAddress}:${robot.port}`
-    );
+    this.logger.info('Mock robot connection attempt', {
+      robotId: robot.id,
+      ipAddress: robot.ipAddress,
+      port: robot.port,
+    });
 
-    // Send initial feedback
     this.sendFeedback({
       robotId: robot.id,
       timestamp: Date.now(),
@@ -29,13 +35,10 @@ export class MockRobotCommunicationService
       message: 'Connecting to robot...',
     });
 
-    // Simulate connection delay
     await this.delay(this.simulatedDelay);
 
-    // Always succeed in development mode
     this.connectedRobots.add(robotKey);
 
-    // Send success feedback
     this.sendFeedback({
       robotId: robot.id,
       timestamp: Date.now(),
@@ -43,19 +46,17 @@ export class MockRobotCommunicationService
       message: 'Robot connected successfully',
     });
 
-    // Start periodic status updates
     this.startPeriodicFeedback(robot);
 
-    console.log(`✅ [MOCK] Successfully connected to robot ${robot.id}`);
+    this.logger.info('Mock robot connection successful', { robotId: robot.id });
     return robot;
   }
 
   async disconnect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);
 
-    console.log(`🔌 [MOCK] Disconnecting from robot ${robot.id}`);
+    this.logger.info('Mock robot disconnection started', { robotId: robot.id });
 
-    // Send disconnection feedback
     this.sendFeedback({
       robotId: robot.id,
       timestamp: Date.now(),
@@ -63,15 +64,12 @@ export class MockRobotCommunicationService
       message: 'Disconnecting from robot...',
     });
 
-    // Simulate disconnection delay
     await this.delay(this.simulatedDelay);
 
     this.connectedRobots.delete(robotKey);
 
-    // Stop periodic feedback
     this.stopPeriodicFeedback(robot);
 
-    // Send final feedback
     this.sendFeedback({
       robotId: robot.id,
       timestamp: Date.now(),
@@ -79,7 +77,9 @@ export class MockRobotCommunicationService
       message: 'Robot disconnected',
     });
 
-    console.log(`👋 [MOCK] Disconnected from robot ${robot.id}`);
+    this.logger.info('Mock robot disconnection completed', {
+      robotId: robot.id,
+    });
     return robot;
   }
 
@@ -87,9 +87,10 @@ export class MockRobotCommunicationService
     const robotKey = this.getRobotKey(robot);
     const connected = this.connectedRobots.has(robotKey);
 
-    console.log(
-      `🔍 [MOCK] Checking connection for robot ${robot.id}: ${connected ? 'connected' : 'disconnected'}`
-    );
+    this.logger.debug('Mock robot connection status checked', {
+      robotId: robot.id,
+      connected,
+    });
     return connected;
   }
 
@@ -100,20 +101,25 @@ export class MockRobotCommunicationService
       throw new Error(`[MOCK] Robot ${robot.id} is not connected`);
     }
 
-    console.log(`📤 [MOCK] Sending command to robot ${robot.id}: ${command}`);
+    this.logger.info('Mock robot command sent', {
+      robotId: robot.id,
+      command: command.substring(0, 100),
+    });
 
-    // Simulate command processing delay
     await this.delay(this.simulatedDelay);
 
-    // Mock successful response based on command type
     const mockResponse = this.generateMockResponse(command);
 
-    console.log(`📥 [MOCK] Response from robot ${robot.id}:`, mockResponse);
+    this.logger.debug('Mock robot command response', {
+      robotId: robot.id,
+      response: mockResponse,
+    });
+
     return mockResponse;
   }
 
   private getRobotKey(robot: Robot): string {
-    return `${robot.ipAddress}:${robot.port}`;
+    return robot.id;
   }
 
   private async delay(ms: number): Promise<void> {
@@ -170,22 +176,24 @@ export class MockRobotCommunicationService
     );
   }
 
-  // New feedback methods
   subscribeToFeedback(robot: Robot, callback: RobotFeedbackCallback): void {
     const robotKey = this.getRobotKey(robot);
     this.feedbackCallbacks.set(robotKey, callback);
-    console.log(`📻 [MOCK] Subscribed to feedback for robot ${robot.id}`);
+    this.logger.info('Mock robot feedback subscription started', {
+      robotId: robot.id,
+    });
   }
 
   unsubscribeFromFeedback(robot: Robot): void {
     const robotKey = this.getRobotKey(robot);
     this.feedbackCallbacks.delete(robotKey);
     this.stopPeriodicFeedback(robot);
-    console.log(`📻 [MOCK] Unsubscribed from feedback for robot ${robot.id}`);
+    this.logger.info('Mock robot feedback subscription stopped', {
+      robotId: robot.id,
+    });
   }
 
   sendFeedback(feedback: RobotFeedback): void {
-    // Find callback by robotId
     for (const [robotKey, callback] of this.feedbackCallbacks.entries()) {
       if (
         robotKey.includes(feedback.robotId) ||
@@ -200,10 +208,8 @@ export class MockRobotCommunicationService
   private startPeriodicFeedback(robot: Robot): void {
     const robotKey = this.getRobotKey(robot);
 
-    // Clear existing interval if any
     this.stopPeriodicFeedback(robot);
 
-    // Send periodic status updates every 3 seconds
     const interval = setInterval(() => {
       if (this.connectedRobots.has(robotKey)) {
         const statusMessages = [
@@ -246,8 +252,6 @@ export class MockRobotCommunicationService
   }
 
   private getRobotIdFromKey(robotKey: string): string {
-    // Extract robot ID from IP:port format - this is a simple approach
-    // In a real implementation, you'd maintain a proper mapping
     return robotKey.replace(':', '_').replace('.', '_');
   }
 

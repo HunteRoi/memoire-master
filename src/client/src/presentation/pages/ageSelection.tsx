@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { PageLayout } from '../components/layout/layout';
@@ -9,6 +10,11 @@ export const AgeSelection: FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { userAge } = useAppContext();
+
+  const defaultLabels = useMemo(() => ({
+    back: t('common.back'),
+    continue: t('common.continue'),
+  }), [t]);
 
   const handleBack = () => navigate('/theme-selection');
   const handleContinue = () => {
@@ -24,6 +30,7 @@ export const AgeSelection: FC = () => {
       onBack={handleBack}
       onContinue={handleContinue}
       continueDisabled={!userAge}
+      defaultLabels={defaultLabels}
     >
       <AgeSelectionContent />
     </PageLayout>

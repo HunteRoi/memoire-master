@@ -1,11 +1,11 @@
-import { WebSocket } from 'ws';
+import type WebSocket from 'ws';
 
 import type { Robot } from './robot';
-import type { RobotFeedback, RobotFeedbackCallback } from './RobotFeedback';
+import type { RobotFeedbackCallback } from './robotFeedback';
 
 export interface ConnectedRobot {
   robot: Robot;
-  websocket: WebSocket;
+  websocket: WebSocket; // design decision to let external package blood into the domain layer
   connected: boolean;
   lastPing: number;
   feedbackCallback?: RobotFeedbackCallback;
