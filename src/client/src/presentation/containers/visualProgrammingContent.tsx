@@ -52,7 +52,7 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
     useAppContext();
 
   // State management
-  const [showConsole, setShowConsole] = useState(false);
+  const [showConsole, setShowConsole] = useState(!isSimpleMode);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([
@@ -410,11 +410,11 @@ if __name__ == "__main__":
           onEdgesDelete={onEdgesDelete}
         />
 
-        {/* Console Panel - Only visible in advanced mode or when toggled in simple mode */}
+        {/* Console Panel - Always visible in advanced mode, toggleable in simple mode */}
         {(!isSimpleMode || showConsole) && (
           <ConsolePanel
             isSimpleMode={isSimpleMode}
-            isVisible={showConsole}
+            isVisible={!isSimpleMode || showConsole}
             selectedRobotData={selectedRobotData}
             hasConnectedRobot={hasConnectedRobot}
             consoleMessages={consoleMessages}
