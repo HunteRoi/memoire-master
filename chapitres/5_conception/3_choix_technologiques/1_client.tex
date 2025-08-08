@@ -1,0 +1,62 @@
+\subsubsection{Choix du framework pour le client lourd} \label{sec:client_code}
+
+Dans ce projet, l’interface utilisateur est conçue comme une application qui devra :
+\begin{itemize}
+    \item fonctionner sous Linux en priorité mais avec support pour Windows et macOS (multi-plateforme),
+    \item accéder au réseau pour gérer des connexions entre appareils en TCP/IP,
+    \item offrir la possibilité d'évoluer vers des interactions riches (simulation, édition visuelle, gestion multi-robot).
+\end{itemize}
+
+Il existe différentes solutions technologiques:
+\begin{itemize}
+    \item \textbf{Electron}: basé sur Node et Chromium, permet de développer des applications en JavaScript/TypeScript.
+    \item \textbf{Tauri}: framework moderne utilisant Rust et des technologies web, plus léger qu’Electron.
+    \item \textbf{Java Swing}: bibliothèque graphique vieillissante mais toujours fonctionnelle, multi-plateforme.
+    \item \textbf{.NET WPF}: solution riche et performante, mais limitée à Windows.
+\end{itemize}
+
+Le \autoref{tab:comparison_clients}, disponible en annexes, compare les options possibles selon des critères pertinents (voir la \autoref{sec:choix_client}).
+Les critères et l'échelle d'évaluation y sont également disponibles.
+Ci-dessous, le \autoref{tab:frameworks_scores_color} donne un résumé avec uniquement la pondération de chaque framework pour chaque critère et le score final.
+
+\begin{longtable}{|c|c|c|c|c|}
+\caption{\label{tab:frameworks_scores_color} Pondération des frameworks pour l'interface} \\
+
+\hline
+\textbf{Critères \textbackslash\ Frameworks} & \textbf{Electron} & \textbf{Tauri} & \textbf{Java Swing} & \textbf{.NET WPF} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{c}{\textit{Suite du tableau \ref{tab:frameworks_scores_color}}} \\
+\hline
+\textbf{Critères \textbackslash\ Frameworks} & \textbf{Electron} & \textbf{Tauri} & \textbf{Java Swing} & \textbf{.NET WPF} \\
+\hline
+\endhead
+
+\textbf{Communauté (/5)} & \cellcolor{green!20}5 & \cellcolor{yellow!20}4 & \cellcolor{red!20}2 & \cellcolor{yellow!20}3 \\
+
+\textbf{Activité récente (/5)} & \cellcolor{green!20}5 & \cellcolor{green!20}5 & \cellcolor{yellow!20}3 & \cellcolor{red!20}2 \\
+
+\textbf{Taille de l'application (/5)} & \cellcolor{red!20}1 & \cellcolor{green!20}5 & \cellcolor{yellow!20}3 & \cellcolor{red!20}2 \\
+
+\textbf{Prise en main (/5)} & \cellcolor{green!20}5 & \cellcolor{red!20}2 & \cellcolor{yellow!20}3 & \cellcolor{yellow!20}3 \\
+
+\textbf{Compatibilité OS (/5)} & \cellcolor{green!20}5 & \cellcolor{green!20}5 & \cellcolor{yellow!20}3 & \cellcolor{red!20}2 \\
+
+\textbf{Écosystème compatible (/5)} & \cellcolor{green!20}5 & \cellcolor{yellow!20}4 & \cellcolor{red!20}2 & \cellcolor{yellow!20}4 \\
+
+\textbf{Maturité (/5)} & \cellcolor{green!20}5 & \cellcolor{yellow!20}3 & \cellcolor{green!20}5 & \cellcolor{green!20}5 \\
+\hline
+\textbf{Total (/35)} & \cellcolor{green!20}31 & \cellcolor{yellow!20}28 & \cellcolor{red!20}21 & \cellcolor{red!20}21 \\
+\hline
+\textbf{Score (\%)} & \cellcolor{green!20}\textbf{89\%} & \cellcolor{yellow!20}80\% & \cellcolor{red!20}60\% & \cellcolor{red!20}60\% \\
+\hline
+
+\end{longtable}
+
+Le choix s’est donc naturellement porté sur \textbf{Electron}.
+Bien que plus gourmand en ressources que Tauri, Electron garantit une meilleure maturité et une intégration plus facile avec les bibliothèques Web existantes (e.g. React-Flow pour la programmation par blocs).
+
+Étant donné qu’Electron est un système dit \textit{framework-agnostic}, c’est-à-dire indépendant de tout \textit{framework} spécifique pour le développement d’interfaces utilisateur, un choix stratégique s’impose à ce niveau.
+Selon les résultats du sondage "2024 State of JavaScript" \autocite{noauthor_state_nodate-1}, le framework \textbf{React} reste, de loin, le plus populaire, devançant largement Angular ainsi que d’autres bibliothèques similaires.
+Le choix s’oriente donc vers celui-ci.

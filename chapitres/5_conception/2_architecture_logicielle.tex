@@ -1,0 +1,20 @@
+\subsection{Architecture logicielle} \label{sec:architecture_logicielle}
+Comme pour toute application bien conçue, l’objectif des standards de développement adoptés est de réduire le couplage entre les différents composants logiciels et les fonctionnalités qu’ils implémentent.
+
+Dans le contexte spécifique de ce projet, qui vise à concevoir une interface de contrôle pour le robot e-puck2, un certain degré de couplage reste toutefois nécessaire, notamment au niveau des scripts de contrôle générés pour le robot.
+
+Cela dit, la priorité reste de garantir une architecture logicielle assurant testabilité, maintenabilité et scalabilité. 
+Si ces trois qualités peuvent être respectées à la fois dans le logiciel embarqué et dans l'interface utilisateur, on peut considérer que les objectifs de conception sont atteints.
+
+L’architecture logicielle retenue pour ce projet est fondée sur le modèle de la \textit{Clean Architecture}, popularisé par Robert C. Martin \autocite{martin_clean_2012}.
+Ce paradigme architectural, qui combine les idées de l’architecture en oignon \autocite{palermo_onion_2008} et de l’architecture hexagonale (ou "ports et adaptateurs") \autocite{cockburn_hexagonal_2005}, vise à organiser le code en couches concentriques avec une règle stricte : les dépendances vont toujours de l’extérieur vers l’intérieur.
+Ainsi, les règles métier (qui forment le cœur du domaine) sont totalement découplées des détails techniques tels que l’interface graphique, le protocole réseau ou le système de persistance employé.
+
+Ce découplage structurel, qui a déjà montré sa pertinence dans des contextes similaires de développement logiciel \autocite{tinael_devresse_analyse_2023}, permet de répondre aux trois critères fondamentaux de qualité logicielle :
+\begin{itemize}
+    \item \textbf{Testabilité} — chaque couche peut être testée indépendamment, facilitant la vérification des comportements métier sans dépendre de l’interface ou du robot ;
+    
+    \item \textbf{Maintenabilité} — la structure modulaire permet d’implémenter des évolutions ou des correctifs sans impacter les autres couches ;
+    
+    \item \textbf{Scalabilité} — les composants peuvent être remplacés ou étendus (par exemple en passant d’un robot à un autre, ou d’un protocole de communication à un autre) sans remettre en cause l’ensemble de l’architecture.
+\end{itemize}

@@ -1,0 +1,82 @@
+\subsection{Architecture système} \label{sec:architecture_système}
+
+\subsubsection{Critères décisionnels}
+La détermination de l'architecture à adopter repose sur plusieurs critères essentiels dictés par les contraintes du projet :
+\begin{itemize}
+    \item \textbf{Ressources matérielles limitées} : le Raspberry Pi Zero embarqué dans les robots e-puck2 présente des capacités de calcul réduites.
+    
+    \item \textbf{Infrastructure réseau inexistante} : aucune présence de serveur central, de routeur intelligent ou de broker \acrfull{mqtt}.
+    
+    \item \textbf{Contexte de recherche partagé} : les robots sont aussi utilisés dans d'autres projets, ce qui impose une compatibilité et une interopérabilité forte.
+\end{itemize}
+
+Ces limitations excluent de facto l'utilisation de standards comme \acrfull{ros} ou de systèmes centralisés complexes. 
+En conséquence, plusieurs alternatives ont été envisagées, chacune analysée en fonction de ses avantages et inconvénients.
+
+\subsubsection{Comparaison des architectures}
+
+\begin{longtable}{|p{0.3\textwidth}|c|c|c|}
+\caption{\label{tab:architectures_comparaison_full} Comparaison des architectures système envisageables} \\
+
+\hline
+\textbf{Architecture} & \textbf{Pertinence projet} & \textbf{Complexité} & \textbf{Multi-robot} \\
+\hline
+\endfirsthead
+
+\multicolumn{4}{c}{\textit{Suite du tableau \ref{tab:architectures_comparaison_full}}} \\
+\hline
+\textbf{Architecture} & \textbf{Pertinence projet} & \textbf{Complexité} & \textbf{Multi-robot} \\
+\hline
+\endhead
+
+Monolithique locale &
+\textcolor{green}{\faCheckSquare} Haute &
+\textcolor{blue}{\faDotCircle[regular]} Faible &
+\textcolor{red}{\faTimes} Non \\
+\hline
+
+Client-serveur légère &
+\textcolor{green}{\faCheckSquare} Haute &
+\textcolor{DarkOrange}{\faDotCircle[regular]} Moyenne &
+\textcolor{Gold}{\faExclamationTriangle} Limité \\
+\hline
+
+Client-serveur événementielle &
+\textcolor{red}{\faTimes} Faible &
+\textcolor{DarkOrange}{\faDotCircle[regular]} Moyenne &
+\textcolor{green}{\faCheckSquare} Oui \\
+\hline
+
+Hybride à sandbox &
+\textcolor{green}{\faCheckSquare} Haute &
+\textcolor{DarkOrange}{\faDotCircle[regular]} Moyenne &
+\textcolor{Gold}{\faExclamationTriangle} Possible \\
+\hline
+
+\end{longtable}
+
+\paragraph{Architecture monolithique locale}
+Cette architecture regroupe l’ensemble des responsabilités (interface utilisateur, logique métier, communication, exécution) au sein d’un seul logiciel local.  
+Elle présente l’avantage d’être simple à mettre en œuvre et de ne dépendre d’aucun composant externe, ce qui en fait une solution rapide à déployer et facilement maintenable dans un premier temps.  
+Cependant, elle montre rapidement ses limites dès qu’un besoin d’évolutivité (i.e. extension multi-robot) apparaît. 
+Son couplage fort empêche une modularité propre, et elle n’offre pas de mécanisme clair de mise à l’échelle.
+
+\paragraph{Architecture client-serveur légère}
+Dans cette approche, une séparation claire est faite entre le poste client (interface utilisateur et logique de haut niveau) et un mini-serveur local embarqué sur le robot, responsable de recevoir et d’exécuter les instructions.  
+Cette séparation permet une meilleure isolation des responsabilités, la possibilité d’exécuter une logique plus proche du robot, et d’envisager un support limité pour plusieurs robots.  
+Toutefois, les ressources limitées sur le robot restreignent la complexité embarquée, et la synchronisation entre les entités devient plus complexe à gérer.
+
+\paragraph{Architecture client-serveur événementielle}
+Inspirée de standards de robotique distribuée comme \acrshort{ros} ou \acrshort{mqtt}, cette architecture repose sur l’émission et la réception d’événements à travers un broker central.  
+Elle permet une excellente extensibilité, une communication décentralisée, et une interopérabilité aisée avec d’autres outils.  
+Cependant, elle requiert une infrastructure réseau plus lourde et une configuration plus complexe, ce qui la rend peu adaptée au cadre restreint de ce projet.
+
+\paragraph{Architecture hybride à sandbox}
+Cette solution combine la légèreté d’un système local avec l’isolation d’un interpréteur embarqué dans le robot.  
+Le poste de contrôle génère des scripts qui sont exécutés dans une sandbox locale sur le robot, permettant ainsi une exécution sécurisée sans exposer le système global.  
+Elle limite la dépendance à des services externes, reste compatible avec une architecture multi-robot décentralisée, et s’inspire des modèles modernes comme \acrshort{ros} tout en les simplifiant.  
+Ses limites résident principalement dans la centralisation de la charge sur le poste client, l’absence de persistance native, et la forte dépendance à une connexion réseau stable.
+
+\subsubsection{Choix de l'architecture}
+Le choix retenu s'est posé sur l'architecture \textbf{hybride à sandbox} car elle présente le meilleur compris entre pertinence, complexité la préparation à l'évolutivité multi-robot.
+Ses avantaghes garantissent une sécurité d'utilisation, une modularité dans le développement et une voie claire vers des améliorations futures (autant pour en mitiger les inconvénients que pour en améliorer le produit fini - voir \autoref{sec:axes_amelioration}).

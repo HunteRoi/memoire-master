@@ -1,4 +1,4 @@
-\subsubsection{Fonctionnalités}
+\subsubsection{Fonctionnalités} \label{sec:features}
 
 Les fonctionnalités du projet sont organisées en \textbf{Epics}, divisées en \textbf{Features}, elles-mêmes décomposées en \textbf{\acrfull{us}} qui peuvent être ainsi divisées en \textbf{Technical Tasks} lors du développement.
 Ce découpage permet d’assurer une approche structurée du développement, en garantissant une intégration fluide et progressive des différentes capacités du robot e-puck2.
@@ -6,41 +6,78 @@ Ce découpage permet d’assurer une approche structurée du développement, en 
 Chaque \acrshort{us} respecte l'acronyme \acrfull{invest} \autocite{alliance_what_2015}.
 Elles sont également rédigées en tant que "Job Stories" afin de changer la perception des besoins et ainsi remettre au centre ce qui doit être fait pour le client \autocite{klement_replacing_2018}.
 
-\paragraph{Epic 1 - Contrôle des mouvements du robot}
+\begin{longtable}{|p{0.3\textwidth}|p{0.65\textwidth}|}
+\caption{\label{tab:features_overview} Vue structurée des fonctionnalités} \\
+\hline
+\textbf{Feature} & \textbf{Job Story} \\
+\hline
+\endfirsthead
 
-\subparagraph{Feature 1.1 - Navigation en environnement défini}
+\multicolumn{2}{c}{\textit{Suite du tableau \ref{tab:features_overview}}} \\
+\hline
+\textbf{Feature} & \textbf{Job Story} \\
+\hline
+\endhead
 
-\textbf{\acrshort{us} 1.1.1} Lorsque je veux que le robot suive un trajet spécifique, je veux pouvoir définir une séquence de mouvements afin qu'il puisse exécuter un parcours précis.
+\hline
+\multicolumn{2}{|c|}{\textbf{Epic 1 – Expérience utilisateur et personnalisation de l’interface}} \\
+\hline
+\multirow{2}{=}{\textbf{1.1 } – Thématisation de l’application} & \textbf{1.1.1}  Lorsque je lance l’application pour la première fois, je veux pouvoir choisir un thème global (clair, sombre, aventure, Lego Mindset, rose) afin de personnaliser l’ambiance visuelle selon mes préférences. \\
+ & \textbf{1.1.2}  Lorsque j’utilise l’application, je veux que le thème sélectionné s’applique uniformément à tous les écrans. \\
+\hline
+\multirow{3}{=}{\textbf{1.2 } – Adaptation à l’âge de l’utilisateur} & \textbf{1.2.1}  Lorsque je configure l’application, je veux pouvoir indiquer mon âge pour adapter l’interface à ma tranche (6–12 ou 13–18 ans). \\
+ & \textbf{1.2.2}  Lorsque j’ai moins de 12 ans, je veux une interface simplifiée avec pictogrammes, blocs agrandis et peu de texte. \\
+ & \textbf{1.2.3}  Lorsque j’ai 13 ans ou plus, je veux une interface plus avancée avec affichage de la console et du code Python généré. \\
+\hline
+\multirow{2}{=}{\textbf{1.3 } – Multilinguisme} & \textbf{1.3.1}  Lorsque je configure l’application, je veux pouvoir choisir ma langue (FR, EN, DE, GE) afin de comprendre tous les textes affichés. \\
+ & \textbf{1.3.2}  Lorsque je change la langue dans les paramètres, je veux que tous les textes de l’application soient automatiquement mis à jour. \\
+\hline
 
-\textbf{\acrshort{us} 1.1.2} Lorsque j’ai besoin d’adapter la vitesse du robot, je veux pouvoir choisir entre plusieurs niveaux de vitesse afin d’ajuster sa rapidité en fonction du scénario.
+\multicolumn{2}{|c|}{\textbf{Epic 2 – Connexion au robot et configuration matérielle}} \\
+\hline
+\multirow{3}{=}{\textbf{2.1 } – Sélection et gestion des robots} & \textbf{2.1.1}  Lorsque je souhaite me connecter à un robot, je veux pouvoir le choisir dans une liste de robots disponibles. \\
+ & \textbf{2.1.2}  Lorsque je sélectionne un robot, je veux pouvoir établir, tester ou interrompre une connexion. \\
+ & \textbf{2.1.3}  Lorsque j’ajoute ou retire un robot, je veux que les informations soient sauvegardées dans un fichier statique \texttt{robots.json}. \\
+\hline
+\multirow{2}{=}{\textbf{2.2 } – Choix du mode de fonctionnement} & \textbf{2.2.1}  Lorsque j’utilise l’application, je veux pouvoir choisir entre le mode "navigation" ou "exploration" pour définir le comportement général du robot. \\
+ & \textbf{2.2.2}  Lorsque mes besoins évoluent, je veux pouvoir changer de mode à tout moment depuis les paramètres. \\
+\hline
 
-\subparagraph{Feature 1.2 - Gestion des obstacles et détection de collisions}
+\multicolumn{2}{|c|}{\textbf{Epic 3 – Programmation visuelle et interaction robot}} \\
+\hline
+\multirow{4}{=}{\textbf{3.1 } – Construction de scripts visuels} & \textbf{3.1.1}  Lorsque je programme, je veux accéder à des blocs classés par catégories pour créer un script. \\
+ & \textbf{3.1.2}  Lorsque je glisse un bloc dans la zone de script, je veux qu’il soit intégré dans l’ordre d’exécution. \\
+ & \textbf{3.1.3}  Lorsque j’exécute un script, je veux pouvoir utiliser les boutons Play, Pause et Stop. \\
+ & \textbf{3.1.4}  Lorsque le script est en cours d’exécution, je veux que le bloc en cours change de couleur pour savoir ce que le robot fait. \\
+\hline
+\multirow{3}{=}{\textbf{3.2 } – Console et visualisation du code} & \textbf{3.2.1}  Lorsque j’utilise le mode avancé, je veux voir une console avec les retours du robot en temps réel. \\
+ & \textbf{3.2.2}  Lorsque je souhaite, je veux pouvoir afficher le code Python correspondant au script visuel dans une fenêtre dédiée. \\
+ & \textbf{3.2.3}  Lorsque je suis en mode simple, je ne veux pas voir ces éléments pour ne pas être submergé. \\
+\hline
+\textbf{3.3 } – Paramètres dynamiques & \textbf{3.3.1}  Lorsque je navigue dans l’application, je veux accéder à une page de paramètres me permettant de modifier à tout moment le thème, l’âge, la langue, le robot et le mode. \\
+\hline
 
-\textbf{\acrshort{us} 1.2.1} Lorsque le robot rencontre un obstacle en mode pré-programmé, je veux qu’il s’arrête immédiatement afin d’éviter une collision.
+\multicolumn{2}{|c|}{\textbf{Epic 4 – Exécution côté robot et communication réseau}} \\
+\hline
+\multirow{2}{=}{\textbf{4.1 } – Communication WebSocket bidirectionnelle} & \textbf{4.1.1}  Lorsque je me connecte au robot, je veux établir une communication WebSocket stable avec l’interface. \\
+ & \textbf{4.1.2}  Lorsque j’envoie un script, je veux que le robot reçoive chaque instruction et réponde avec des états ou des erreurs. \\
+\hline
+\multirow{2}{=}{\textbf{4.2 } – Traitement et exécution de scripts} & \textbf{4.2.1}  Lorsque je reçois un script, je veux exécuter chaque commande (déplacement, lecture capteurs, LEDs…). \\
+ & \textbf{4.2.2}  Lorsque je détecte un obstacle ou un événement, je veux pouvoir adapter l’exécution automatiquement (si prévu). \\
+\hline
+\multirow{2}{=}{\textbf{4.3 } – Gestion des états du robot} & \textbf{4.3.1}  Lorsque l’état du robot change (erreur, en pause, en exécution), je veux déclencher des LEDs et sons associés. \\
+ & \textbf{4.3.2}  Lorsque l’état change, je veux envoyer un feedback structuré à l’interface pour l’informer. \\
+\hline
 
-\textbf{\acrshort{us} 1.2.2} Lorsque le robot détecte un obstacle en mode aléatoire, je veux qu’il redirige sa trajectoire automatiquement afin qu’il puisse continuer son déplacement sans interruption.
+\multicolumn{2}{|c|}{\textbf{Epic 5 – Scénarii multi-robots}\footnote{L'Epic 5 représente des perspectives de développement ultérieur, en dehors du périmètre de ce projet.
+Il vise à élargir les possibilités pédagogiques par l'introduction de comportements collaboratifs ou compétitifs entre robots.}} \\
+\hline
+\multirow{2}{=}{\textbf{5.1 } – Coordination entre plusieurs robots} & \textbf{5.1.1}  Lorsque plusieurs robots sont utilisés en simultané, je veux qu’ils puissent synchroniser leurs actions pour réaliser des comportements collectifs (formation, évitement, etc.). \\
+ & \textbf{5.1.2}  Lorsque les robots partagent un environnement, je veux pouvoir leur assigner des rôles différents (ex. : suiveur, leader) afin d’illustrer des dynamiques de groupe. \\
+\hline
+\multirow{2}{=}{\textbf{5.2 } – Simulation de comportements interactifs} & \textbf{5.2.1}  Lorsque deux robots sont configurés pour interagir, je veux pouvoir simuler un jeu du type "chasseur et proie" afin d’illustrer des principes de stratégie, détection, et réponse adaptative. \\
+ & \textbf{5.2.2}  Lorsque plusieurs robots se croisent, je veux pouvoir observer et ajuster leurs comportements d’évitement et de priorité de passage. \\
+\hline
 
-\paragraph{Epic 2 - Exploration de l’environnement}
+\end{longtable}
 
-\subparagraph{Feature 2.1 - Détection et suivi des zones de couleur}
-
-\textbf{\acrshort{us} 2.1.1} Lorsque le robot évolue sur une surface colorée, je veux qu’il identifie les zones spécifiques en fonction de leur couleur afin de déclencher des actions adaptées.
-
-\textbf{\acrshort{us} 2.1.2} Lorsque le robot détecte une couleur spécifique, je veux pouvoir lui attribuer une action prédéfinie afin qu’il puisse interagir dynamiquement avec son environnement.
-
-\paragraph{Epic 3 - Interaction avec l’utilisateur et retour d’état}
-
-\subparagraph{Feature 3.1 - Affichage des états du robot via \acrshort{led}s et son}
-
-\textbf{\acrshort{us} 3.1.1} Lorsque l’état du robot change, je veux qu’il affiche une couleur spécifique sur ses \acrshort{led}s afin que je puisse identifier rapidement son statut.
-
-\textbf{\acrshort{us} 3.1.2} Lorsque le robot rencontre un événement important, je veux qu’il émette un son spécifique afin que je sois alerté sans avoir à regarder directement le robot.
-
-\paragraph{Epic 4 - Observation et comportements collectifs}
-
-\subparagraph{Feature 4.1 - Coordination entre plusieurs robots}  
-Bien qu'en dehors de la portée de ce projet, cette fonctionnalité pourrait être un atout majeur pour le futur de ce projet.
-
-\textbf{\acrshort{us} 4.1.1} Lorsque plusieurs robots interagissent, je veux qu’ils puissent synchroniser leurs actions afin de réaliser des comportements coordonnés.
-
-\textbf{\acrshort{us} 4.1.2} Lorsque deux robots participent à une simulation de poursuite, je veux leur attribuer un rôle de chasseur et de proie afin d’observer un scénario de type "jeu du chat et de la souris".

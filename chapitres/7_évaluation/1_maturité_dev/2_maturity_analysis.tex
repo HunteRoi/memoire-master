@@ -1,0 +1,58 @@
+\subsection{Analyse de la maturité du projet}
+
+Cette section présente une analyse structurée de la maturité technique des deux composants principaux du projet : l’application cliente (\textit{React/TypeScript/Electron}, située dans \texttt{src/client}) et le serveur robot (\textit{Python}, situé dans \texttt{src/robot}).
+L’évaluation s’appuie sur l’observation de l’architecture, de l’usage des principes SOLID, des patterns de conception, ainsi que des bonnes pratiques de développement mises en œuvre.
+
+\subsubsection{Analyse du projet client (\texttt{src/client})}
+
+\paragraph{Architecture et organisation}
+L’architecture côté client est inspirée de la \textit{Clean Architecture} et applique plusieurs principes de conception :  
+\begin{itemize}
+    \item \textbf{Séparation des couches} claire :  
+    \begin{itemize}
+        \item \texttt{domain/} : entités métier et logique de validation
+        \item \texttt{main/application/} : contrats (interfaces) et cas d'utilisation
+        \item \texttt{main/infrastructure/} : implémentations concrètes des contrats
+        \item \texttt{presentation/} : interface visuelle
+    \end{itemize}
+    \item \textbf{DIP et IoC} : dépendances inversées vers des interfaces et injection via un conteneur central (\textit{Singleton}) permettant de substituer facilement des implémentations (e.g. communication robot, logging).
+\end{itemize}
+
+\paragraph{Patterns React et gestion d’état}
+L’interface adopte une séparation entre \textit{smart components} (gestion d’état, logique) et \textit{dumb components} (affichage pur).  
+Les optimisations incluent \texttt{React.memo}, \texttt{useCallback}, et \texttt{useMemo} pour limiter le rendering superflu.
+L’état global est géré via la \textit{Context API} combinée à \texttt{useReducer}, avec un typage strict des actions (architecture d'application "Flux" avec une implémentation du pattern "Redux" simplifiée).
+
+\paragraph{Patterns utilisés côté client}
+\begin{itemize}
+    \item \textbf{Redux Pattern} : gestion de l'état au travers de l'application.
+    \item \textbf{Builder Pattern} : création d’objets métier complexes avec validations en chaîne.
+    \item \textbf{Monad} : gestion des erreurs sans exceptions, en rendant explicite la réussite ou l’échec.
+    \item \textbf{Repository Pattern} : abstraction des accès aux données (e.g. \texttt{robots.json}).
+\end{itemize}
+
+\paragraph{Internationalisation et accessibilité}
+\begin{itemize}
+    \item \textbf{i18next} : prise en charge de plusieurs langues (FR, EN, DE, NL).
+    \item \textbf{Accessibilité} : attributs ARIA et navigation clavier.
+\end{itemize}
+
+\subsubsection{Analyse du projet robot (\texttt{src/robot})}
+
+\paragraph{Architecture et organisation}
+Le serveur robot, en Python, est également structuré selon les principes de la \textit{Clean Architecture} :  
+\begin{itemize}
+    \item \textbf{Domain Layer} : entités métiers (\texttt{@dataclass}), énumérations, interfaces abstraites.
+    \item \textbf{Application Layer} : orchestration des commandes et gestion des états.
+    \item \textbf{Infrastructure Layer} : accès matériel (moteurs, capteurs, LEDs, audio).
+\end{itemize}
+
+\paragraph{Patterns utilisés côté robot}
+\begin{itemize}
+    \item \textbf{Strategy Pattern} : choix de l’implémentation matérielle adaptée via interfaces.
+    \item \textbf{State Pattern} : gestion explicite des transitions d’état du robot.
+    \item \textbf{Command Pattern} : encapsulation des actions (mouvement, éclairage, audio) sous forme de commandes.
+\end{itemize}
+
+\subsubsection{Analyse synthétique}
+L’architecture et les patterns appliqués offrent un socle robuste, modulaire et extensible, tout en restant lisible.

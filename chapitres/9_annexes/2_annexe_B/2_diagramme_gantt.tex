@@ -1,6 +1,6 @@
 \begin{landscape}
 
-\subsubsection{Diagramme de Gantt}
+\subsubsection{Diagramme de Gantt} \label{sec:gantt_chart_full}
 
 \begin{figure}[H]
     \centering
@@ -15,8 +15,8 @@
             bar label font=\small\bfseries
         ]{2025-02-19}{2025-05-20}
             \gantttitlecalendar{month=name, day} \\
-            \ganttbar[bar/.style={fill=green!70}]{Analyse des besoins}{2025-02-20}{2025-05-20} \\
-            \ganttbar[bar/.style={fill=yellow!70}]{Relecture et corrections}{2025-03-22}{2025-04-01} \\
+            \ganttbar[bar/.style={fill=green!70}]{Analyse des besoins}{2025-02-20}{2025-03-20} \\
+            \ganttbar[bar/.style={fill=yellow!70}]{Relecture et corrections}{2025-03-21}{2025-04-10} \\
             \ganttbar[bar/.style={fill=yellow!70}]{Rédaction}{2025-02-21}{2025-05-20} \\
             \ganttmilestone{Remise}{2025-08-17}
         \end{ganttchart}
@@ -34,15 +34,11 @@
             milestone inline label node/.append style={left=5mm}
         ]{2025-05-20}{2025-08-18}
             \gantttitlecalendar{month=name, day} \\
-            \ganttbar[bar/.style={fill=green!70}]{Analyse des besoins}{2025-05-20}{2025-06-19} \\
-            
-            \ganttbar{Conception}{2025-06-01}{2025-07-20} \\
-            \ganttbar{Développement firmware (robot)}{2025-07-21}{2025-07-27} \\
-            \ganttbar{Développement interface (Electron)}{2025-07-21}{2025-07-31} \\
-            \ganttbar{Intégration et tests}{2025-07-25}{2025-08-03} \\
-
+            \ganttbar[bar/.style={fill=green!70}]{Analyse technique}{2025-05-20}{2025-06-30} \\
+            \ganttbar{Développement interface (client)}{2025-07-01}{2025-07-17} \\
+            \ganttbar{Développement firmware (robot)}{2025-07-18}{2025-07-31} \\
+            \ganttbar{Intégration et tests}{2025-08-01}{2025-08-03} \\
             \ganttbar{Tests utilisateur}{2025-08-04}{2025-08-10} \\
-
             \ganttbar[bar/.style={fill=yellow!70}]{Compilation des résultats}{2025-08-10}{2025-08-12} \\
             \ganttbar[bar/.style={fill=yellow!70}]{Relecture et corrections}{2025-06-30}{2025-08-16} \\
             \ganttbar[bar/.style={fill=yellow!70}]{Rédaction}{2025-05-20}{2025-08-16} \\
@@ -52,6 +48,7 @@
     \caption{\label{fig:complete_gantt_chart} Diagramme de Gantt complet}
 \end{figure}
 
-\textbf{Légende:} En vert, l'analyse. En bleu, les tâches d'implémentation. En jaune, les tâches de rédaction du travail. En rouge, la date de remise.
+
+\textbf{Légende :} En vert, l'analyse. En bleu, les tâches d'implémentation. En jaune, les tâches de rédaction du travail. En rouge, la date de remise.
 
 \end{landscape}

@@ -1,28 +1,134 @@
-\subsubsection{Choix technologiques concernant le processus embarqué dans le robot} \label{sec:choix_robot}
-Deux langages sont disponibles nativement dans l'e-puck2 :
-\begin{itemize}
-    \item \textbf{Python} – déjà installé, facile à manipuler, très utilisé en robotique éducative.
-    \item \textbf{C++} – compilable avec \textit{gcc} déjà disponible sur les robots, performant mais plus complexe.
-\end{itemize}
+\subsubsection{Choix technologiques pour le processus embarqué} \label{sec:choix_robot}
 
-\begin{longtable}[H]{|p{0.22\textwidth}|p{0.26\textwidth}|p{0.26\textwidth}|}
-\caption{\label{tab:comparison_robot_languages} Comparaison des langages utilisables sur le robot} \\
+En s’appuyant sur le rapport "State of Developer Ecosystem 2024" publié par JetBrains (23262 réponses recueillies sur l’ensemble de l’année) \autocite{noauthor_software_nodate}, et en croisant ces données avec les informations issues de dépôts de code publics, de sites officiels des technologies concernées, etc., les comparaisons suivantes ont pu être établies.
+
+\begin{longtable}{|p{0.25\textwidth}|p{0.325\textwidth}|p{0.325\textwidth}|}
+\caption{\label{tab:comparison_robot_languages} Comparaison détaillée des langages de programmation embarqués} \\
 
 \hline
-\textbf{Critères} & \textbf{Python} & \textbf{C++} \\
+\textbf{Critères \textbackslash\ Langages} & \textbf{Python} & \textbf{C++} \\
+\hline
 \endfirsthead
 
+\multicolumn{3}{c}{\textit{Suite du tableau \ref{tab:comparison_robot_languages}}} \\
 \hline
-\textbf{Déjà installé sur le robot} & Oui & Oui (compilateur) \\
+\textbf{Critères \textbackslash\ Langages} & \textbf{Python} & \textbf{C++} \\
 \hline
-\textbf{Facilité d’écriture} & Très élevée & Moyenne à faible \\
+\endhead
+
+\textbf{Installation sur le robot (/5)} & 
+5, interpréteur préinstallé, prêt à l’emploi & 
+5, compilateur \texttt{gcc} déjà disponible \\
 \hline
-\textbf{Performance} & Moyenne & Élevée \\
+
+\textbf{Facilité d’écriture (/5)} & 
+5, syntaxe simple et intuitive, adaptée aux enfants & 
+3, syntaxe plus rigide et verbosité plus élevée \\
 \hline
-\textbf{Consommation mémoire} & Moyenne & Faible \\
+
+\textbf{Performance (/5)} & 
+3, suffisant pour l’éducation mais pas optimal en temps réel & 
+5, hautes performances, proche du matériel \\
 \hline
-\textbf{Support robotique} & Excellent (OpenCV, PySerial, etc.) & Excellent (ROS, libs natives) \\
+
+\textbf{Consommation mémoire (/5)} & 
+3, interpréteur gourmand sur petit matériel & 
+5, faible empreinte mémoire une fois compilé \\
 \hline
-\textbf{Courbe d’apprentissage} & Douce & Abrupte \\
+
+\textbf{Support robotique (/5)} & 
+5, très utilisé en robotique éducative (OpenCV, PySerial...) & 
+5, nombreuses bibliothèques performantes (ROS, etc.) \\
 \hline
+
+\textbf{Courbe d’apprentissage (/5)} & 
+5, idéal pour les débutants et rapide à maîtriser & 
+3, courbe abrupte, concepts avancés requis \\
+\hline
+
+\textbf{Modernité (/5)} & 
+5, tendance actuelle, très utilisé en IA et éducation & 
+4, mature et puissant, mais syntaxe parfois datée \\
+\hline
+
+\textbf{Total (/35)} & 
+\textbf{31} & 
+\textbf{30} \\
+\hline
+
+\textbf{Score (\%)} & 
+89\% & 
+86\% \\
+\hline
+
+\end{longtable}
+
+
+\paragraph{Critères d’évaluation}
+Les langages sont comparés selon sept critères clés, chacun noté sur 5 points. 
+Voici les définitions :
+
+\begin{longtable}{|p{0.30\textwidth}|p{0.30\textwidth}|p{0.30\textwidth}|}
+\caption{\label{tab:criteria_robot_languages} Grille d’évaluation des langages embarqués} \\
+
+\hline
+\textbf{Critère} & \textbf{Définition} & \textbf{Échelle (1 à 5)} \\
+\hline
+\endfirsthead
+
+\multicolumn{3}{c}{\textit{Suite du tableau \ref{tab:criteria_robot_languages}}} \\
+\hline
+\textbf{Critère} & \textbf{Définition} & \textbf{Échelle (1 à 5)} \\
+\hline
+\endhead
+
+Déjà installé & Présence native de l’interpréteur ou compilateur sur le robot. & 
+\begin{itemize}
+  \item 5 : oui sans installation
+  \item 1 : non disponible
+\end{itemize} \\
+\hline
+
+Facilité d’écriture & Simplicité syntaxique et expérience de développement. & 
+\begin{itemize}
+  \item 5 : très facile
+  \item 1 : complexe
+\end{itemize} \\
+\hline
+
+Performance & Rapidité d’exécution et efficacité à faible charge. & 
+\begin{itemize}
+  \item 5 : très performant
+  \item 1 : lent
+\end{itemize} \\
+\hline
+
+Consommation mémoire & Empreinte mémoire lors de l’usage sur le robot. & 
+\begin{itemize}
+  \item 5 : très faible
+  \item 1 : très élevée
+\end{itemize} \\
+\hline
+
+Support robotique & Disponibilité de bibliothèques, documentation spécialisée. & 
+\begin{itemize}
+  \item 5 : excellent support
+  \item 1 : support limité
+\end{itemize} \\
+\hline
+
+Courbe d’apprentissage & Rapidité d’adoption par des utilisateurs non experts. & 
+\begin{itemize}
+  \item 5 : très douce
+  \item 1 : très abrupte
+\end{itemize} \\
+\hline
+
+Modernité & Popularité récente et adoption dans les projets actuels. & 
+\begin{itemize}
+  \item 5 : très moderne
+  \item 1 : obsolète
+\end{itemize} \\
+\hline
+
 \end{longtable}

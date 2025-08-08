@@ -1,0 +1,44 @@
+\subsubsection{Choix du langage pour le code embarqué sur le robot} \label{sec:robot_code}
+
+Le robot e-puck2 utilisé dans ce projet est équipé d’un Raspberry Pi Zero W tournant sous Linux.
+Deux langages sont disponibles nativement sur l’e‑puck2 :
+\begin{itemize}
+  \item \textbf{Python} : déjà installé, facile à utiliser, très répandu en robotique éducative.
+  \item \textbf{C++} : compilable via \textit{gcc} présent sur le robot, plus performant mais aussi plus complexe.
+\end{itemize}
+
+Le \autoref{tab:comparison_robot_languages}, disponible en annexes, compare les options possibles selon des critères pertinents (voir la \autoref{sec:choix_robot}).
+Les critères et l'échelle d'évaluation y sont également disponibles.
+Ci-dessous, le \autoref{tab:robot_languages_scores_color} donne un résumé avec uniquement la pondération de chaque langage pour chaque critère et le score final.
+
+\begin{longtable}[H]{|p{0.30\textwidth}|c|c|}
+\caption{\label{tab:robot_languages_scores_color} Pondération des langages embarqués} \\
+
+\hline
+\textbf{Critère} & \textbf{Python} & \textbf{C++} \\
+\hline
+\endfirsthead
+
+\multicolumn{3}{c}{\textit{Suite du tableau \ref{tab:robot_languages_scores_color}}} \\
+\hline
+\textbf{Critère} & \textbf{Python} & \textbf{C++} \\
+\hline
+\endhead
+
+Déjà installé sur le robot       & \cellcolor{green!20}5 & \cellcolor{green!20}5 \\
+Facilité d’écriture              & \cellcolor{green!20}5 & \cellcolor{yellow!30}3 \\
+Performance                      & \cellcolor{yellow!30}3 & \cellcolor{green!20}5 \\
+Consommation mémoire             & \cellcolor{yellow!30}3 & \cellcolor{green!20}5 \\
+Support robotique                & \cellcolor{green!20}5 & \cellcolor{green!20}5 \\
+Courbe d’apprentissage           & \cellcolor{green!20}5 & \cellcolor{yellow!30}3 \\
+Modernité                        & \cellcolor{green!20}5 & \cellcolor{blue!15}4 \\
+\hline
+\textbf{Total (/35)}             & \cellcolor{green!25}\textbf{31} & \cellcolor{green!20}\textbf{30} \\
+\hline
+\textbf{Score \%}                & \cellcolor{green!25}\textbf{89\%} & \cellcolor{green!20}\textbf{86\%} \\
+\hline
+
+\end{longtable}
+
+Le choix s’oriente donc vers \textbf{Python}.
+Il est déjà installé et donc supporté par le Raspberry Pi Zero W, est aussi facile à lire et écrire pour des élèves, compatible avec de nombreux modules utiles et performant.

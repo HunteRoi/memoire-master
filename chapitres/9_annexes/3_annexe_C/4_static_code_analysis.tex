@@ -1,0 +1,25 @@
+\subsubsection{Analyse du code statique par CodeScene} \label{sec:codescene}
+
+\begin{longtable}{|c|p{0.35\linewidth}|p{0.45\linewidth}|}
+\caption{\label{tab:codescene_thresholds} Interprétation des scores de santé du code selon CodeScene} \\
+\hline
+\textbf{Plage de score} & \textbf{Catégorie} & \textbf{Interprétation} \\
+\hline
+\endfirsthead
+
+\multicolumn{3}{c}{\textit{Suite du tableau \ref{tab:codescene_thresholds}}} \\
+\hline
+\textbf{Plage de score} & \textbf{Catégorie} & \textbf{Interprétation} \\
+\hline
+\endhead
+
+\hline
+\textbf{9.0 -- 10} & Santé optimale & Code structuré, maintenable et conforme aux bonnes pratiques. Aucune action corrective nécessaire. \\
+\hline
+\textbf{7.0 -- 8.9} & Code sain & Bon niveau de qualité. Peut contenir quelques points mineurs d’amélioration, mais aucune dette technique critique. \\
+\hline
+\textbf{5.0 -- 6.9} & Code à surveiller & Qualité acceptable mais susceptible de poser problème à moyen terme. Recommandé : analyse ciblée et améliorations progressives. \\
+\hline
+\textbf{0.0 -- 4.9} & Code problématique & Qualité insuffisante. Dette technique importante à réduire en priorité afin d’éviter une dégradation de la maintenabilité. \\
+\hline
+\end{longtable}

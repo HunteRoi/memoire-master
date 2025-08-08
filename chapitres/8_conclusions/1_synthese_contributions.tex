@@ -1,2 +1,24 @@
 \subsection{Synthèse des contributions} \label{sec:synthese_contribs}
 
+Au terme de ce travail, l'application est pleinement exécutable sur toute machine compatible.
+
+\paragraph{Côté interface}  
+L’ensemble des fonctionnalités prévues a été implémenté et est opérationnel :
+\begin{itemize}
+    \item page de sélection du thème, appliquée à l’ensemble de l’interface ;
+    \item page de sélection de l’âge, influençant l’affichage de l’éditeur visuel ;
+    \item page de sélection du robot, avec gestion de la connexion ;
+    \item page de sélection du mode, permettant le filtrage et le tri des blocs visuels ;
+    \item éditeur de programmation visuelle en glisser-déposer, accompagné d’une console et d’un visualisateur du script Python généré ;
+    \item page de paramètres pour modifier à tout moment les options choisies ;
+    \item support multilingue complet ;
+    \item ergonomie soignée, avec notamment la navigation clavier et l’usage d’icônes/pictogrammes cohérents.
+\end{itemize}
+
+\paragraph{Côté robot}  
+La structure logicielle et les principales implémentations nécessaires au fonctionnement du serveur embarqué ont été réalisées, incluant :
+\begin{itemize}
+    \item la communication par WebSocket ;
+    \item les liaisons matérielles via les bibliothèques Python spécifiques à l’e-puck.
+\end{itemize}
+Ces éléments constituent le socle fonctionnel principal du développement Python.

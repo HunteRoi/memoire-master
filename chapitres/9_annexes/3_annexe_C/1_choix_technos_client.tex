@@ -1,28 +1,171 @@
 \subsubsection{Choix technologiques concernant l'interface utilisateur} \label{sec:choix_client}
-Plusieurs technologies ont été envisagées :
-\begin{itemize}
-    \item \textbf{ElectronJS}: basé sur NodeJS et Chromium, permet de développer des applications desktop en JavaScript/TypeScript.
-    \item \textbf{Tauri}: framework moderne utilisant Rust et des technologies web, plus léger qu’Electron.
-    \item \textbf{Java Swing}: bibliothèque graphique vieillissante mais toujours fonctionnelle, multi-plateforme.
-    \item \textbf{.NET WPF}: solution riche et performante, mais limitée à Windows (ou partiellement via Mono/Wine).
-\end{itemize}
 
-\begin{longtable}[H]{|p{0.22\textwidth}|p{0.19\textwidth}|p{0.19\textwidth}|p{0.19\textwidth}|p{0.19\textwidth}|}
-\caption{\label{tab:comparison_clients} Comparaison des frameworks pour le client lourd} \\
+En s’appuyant sur les résultats du sondage "2024 State of JavaScript" réalisé par le collectif Devographics (14015 réponses collectées entre le 13 novembre et le 10 décembre 2024), ainsi que sur le rapport "State of Developer Ecosystem 2024" publié par JetBrains (23262 réponses recueillies sur l’ensemble de l’année) \autocites{noauthor_state_nodate}{noauthor_state_nodate-1}{noauthor_software_nodate}, et en croisant ces données avec les informations issues de dépôts de code publics, de sites officiels des technologies concernées, etc., les comparaisons suivantes ont pu être établies.
+
+\begin{longtable}{|p{0.25\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|}
+\caption{\label{tab:comparison_clients} Comparaison détaillée des frameworks client pour l'interface utilisateur} \\
 
 \hline
-\textbf{Critères} & \textbf{Electron} & \textbf{Tauri} & \textbf{Java Swing} & \textbf{.NET WPF} \\
+\textbf{Critères \textbackslash\ Frameworks} & \textbf{Electron} & \textbf{Tauri} & \textbf{Java Swing} & \textbf{.NET WPF} \\
+\hline
 \endfirsthead
 
+\multicolumn{5}{c}{\textit{Suite du tableau \ref{tab:comparison_clients}}} \\
 \hline
-\textbf{Multi-plateforme} & Oui & Oui & Oui & Non (principalement Windows) \\
+\textbf{Critères \textbackslash\ Frameworks} & \textbf{Electron} & \textbf{Tauri} & \textbf{Java Swing} & \textbf{.NET WPF} \\
 \hline
-\textbf{Support UI moderne} & Excellent & Bon & Limité & Très bon \\
+\endhead
+
+\textbf{Communauté (/5)} & 
+5, très populaire & 
+4, populaire & 
+2, décroissante & 
+3, stable \\
 \hline
-\textbf{Écosystème et communauté} & Très large & En croissance & Déclinant & Large mais centré Windows \\
+
+\textbf{Activité récente (/5)} & 
+5, juillet 2025 & 
+5, juillet 2025 & 
+3, maintenance uniquement & 
+2, mai 2024 \\
 \hline
-\textbf{Poids des applications} & Élevé & Faible & Modéré & Élevé \\
+
+\textbf{Taille de l'application (/5)} & 
+1, taille importante ($\sim$180Mo) & 
+5, taille minimale ($\sim$600Ko) & 
+3, modérée ($\sim$30Mo) & 
+2, moyenne à élevée ($\sim$100Mo) \\
 \hline
-\textbf{Technologies requises} & JS/TS + Node & JS/TS + Node + Rust + C++ Build Tools & Java & C\#, .NET \\
+
+\textbf{Prise en main (/5)} & 
+5, facile & 
+2, difficile (Rust requis) & 
+3, modérée & 
+3, modérée \\
+\hline
+
+\textbf{Compatibilité OS (/5)} & 
+5, multi-plateforme & 
+5, multi-plateforme & 
+3, multi-plateforme si JRE & 
+2, uniquement Windows \\
+\hline
+
+\textbf{Écosystème compatible (/5)} & 
+5, Web (JS/TS) & 
+4, Web + Rust & 
+2, Java standard & 
+4, .NET \\
+\hline
+
+\textbf{Maturité (/5)} & 
+5, éprouvé & 
+3, jeune mais stable & 
+5, éprouvé & 
+5, éprouvé \\
+\hline
+
+\textbf{Total (/35)} & 
+\textbf{31} & 
+\textbf{28} & 
+\textbf{21} & 
+\textbf{21} \\
+\hline
+
+\textbf{Score (\%)} & 
+89\% & 
+80\% & 
+60\% & 
+60\% \\
+\hline
+
+\end{longtable}
+
+\paragraph{Échelle d’évaluation des frameworks} \label{sec:criteria_frameworks}
+
+Les critères ci-dessous permettent d’évaluer les différents frameworks de développement client selon une échelle de pondération sur 5.
+Chaque note correspond à un degré de satisfaction par rapport aux besoins du projet.
+
+\begin{longtable}{|p{0.25\textwidth}|p{0.3\textwidth}|p{0.35\textwidth}|}
+\caption{\label{tab:echelle_frameworks} Échelle d’évaluation des frameworks client} \\
+\hline
+\textbf{Critère} & \textbf{Définition} & \textbf{Échelle de pondération (1 à 5)} \\
+\hline
+\endfirsthead
+
+\multicolumn{3}{c}{\textit{Suite du tableau \ref{tab:echelle_frameworks}}} \\
+\hline
+\textbf{Critère} & \textbf{Définition} & \textbf{Échelle de pondération (1 à 5)} \\
+\hline
+\endhead
+
+\textbf{Communauté} & Taille et dynamisme de la communauté, popularité sur GitHub, support, documentation & 
+\begin{itemize}
+    \item 5 : Très large, très active
+    \item 4 : Importante et active
+    \item 3 : Moyenne
+    \item 2 : En déclin
+    \item 1 : Marginale
+\end{itemize} \\
+\hline
+
+\textbf{Activité récente} & Date des dernières mises à jour, fréquence des commits et versions & 
+\begin{itemize}
+    \item 5 : < 1 mois
+    \item 4 : < 3 mois
+    \item 3 : Dans l’année
+    \item 2 : > 1 an
+    \item 1 : Abandonné
+\end{itemize} \\
+\hline
+
+\textbf{Taille de l’application générée} & Espace disque requis pour l’installation d’une application type & 
+\begin{itemize}
+    \item 5 : < 5Mo
+    \item 4 : < 20Mo
+    \item 3 : 20–50Mo
+    \item 2 : 50–100Mo
+    \item 1 : > 100Mo
+\end{itemize} \\
+\hline
+
+\textbf{Prise en main} & Courbe d’apprentissage, documentation, écosystème de démarrage & 
+\begin{itemize}
+    \item 5 : Très facile
+    \item 4 : Facile
+    \item 3 : Moyenne
+    \item 2 : Difficile
+    \item 1 : Très difficile
+\end{itemize} \\
+\hline
+
+\textbf{Compatibilité OS} & Nombre de systèmes d’exploitation supportés nativement & 
+\begin{itemize}
+    \item 5 : Multi-plateforme complète
+    \item 4 : OS principaux (Windows, Linux, macOS)
+    \item 3 : Multi-plateforme avec VM
+    \item 2 : Un seul OS
+    \item 1 : Un seul OS avec quelques limites
+\end{itemize} \\
+\hline
+
+\textbf{Écosystème} & Richesse de l’environnement technique, intégration de bibliothèques & 
+\begin{itemize}
+    \item 5 : Très riche (NPM, NuGet, etc.)
+    \item 4 : Complet avec quelques limites
+    \item 3 : Modéré
+    \item 2 : Pauvre
+    \item 1 : Isolé
+\end{itemize} \\
+\hline
+
+\textbf{Maturité} & Niveau de stabilité et adoption en production & 
+\begin{itemize}
+    \item 5 : Mature et éprouvé
+    \item 4 : Stable
+    \item 3 : Jeune mais stable
+    \item 2 : Instable
+    \item 1 : Expérimental
+\end{itemize} \\
 \hline
 \end{longtable}
