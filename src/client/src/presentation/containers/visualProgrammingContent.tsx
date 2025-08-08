@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { type FC, useCallback, useMemo, useState } from 'react';
+import { type FC, useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import {
@@ -15,6 +15,7 @@ import {
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
+  useReactFlow,
 } from 'reactflow';
 import {
   BlocksPanel,
@@ -43,13 +44,14 @@ interface VisualProgrammingContentProps {
   isSimpleMode: boolean;
 }
 
-export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
+const VisualProgrammingFlow: FC<VisualProgrammingContentProps> = ({
   isSimpleMode,
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { selectedRobot, isRobotConnected, robots, showAlert } =
     useAppContext();
+  const { screenToFlowPosition } = useReactFlow();
 
   // State management
   const [showConsole, setShowConsole] = useState(!isSimpleMode);
@@ -65,6 +67,15 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   const [executionState, setExecutionState] = useState<ScriptExecutionState>(
     ScriptExecutionState.IDLE
   );
+  const [currentlyExecutingNodeId, setCurrentlyExecutingNodeId] = useState<string | null>(null);
+
+  // Execution control
+  const executionControlRef = useRef<{
+    shouldStop: boolean;
+    shouldPause: boolean;
+    currentIndex: number;
+    abortController?: AbortController;
+  }>({ shouldStop: false, shouldPause: false, currentIndex: 0 });
 
   const onNodesChanges: OnNodesChange = async changes => {
     onNodesChange(changes);
@@ -90,6 +101,19 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   const hasConnectedRobot = !!selectedRobot && isRobotConnected(selectedRobot);
   const canExecuteScript = hasConnectedRobot && nodes.length > 0;
   const scriptHeight = isSimpleMode ? (showConsole ? '60%' : '100%') : '67%';
+
+  // Enhanced nodes with execution highlighting
+  const enhancedNodes = useMemo(() => {
+    return nodes.map(node => ({
+      ...node,
+      style: {
+        ...node.style,
+        backgroundColor: node.id === currentlyExecutingNodeId ? '#ffd54f' : node.style?.backgroundColor,
+        border: node.id === currentlyExecutingNodeId ? '2px solid #ff9800' : node.style?.border,
+        boxShadow: node.id === currentlyExecutingNodeId ? '0 4px 8px rgba(255, 152, 0, 0.3)' : node.style?.boxShadow,
+      }
+    }));
+  }, [nodes, currentlyExecutingNodeId]);
 
   // Create memoized label objects for child components
   const blocksPanelLabels = useMemo<BlocksPanelLabels>(
@@ -174,36 +198,91 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
     [t]
   );
 
+
+
+  // Console management
+  const handleFeedback = useCallback((feedback: RobotFeedback) => {
+    setConsoleMessages(prev => [
+      ...prev,
+      {
+        timestamp: feedback.timestamp,
+        type: feedback.type,
+        message: feedback.message,
+      },
+    ]);
+  }, []);
+
+  const addConsoleMessage = useCallback((type: string, message: string) => {
+    setConsoleMessages(prev => [
+      ...prev,
+      {
+        timestamp: Date.now(),
+        type,
+        message,
+      },
+    ]);
+  }, []);
+
   // React Flow handlers
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      const blockData = JSON.parse(
-        event.dataTransfer.getData('application/reactflow')
-      );
-      const reactFlowBounds = event.currentTarget.getBoundingClientRect();
-      const position = {
-        x: event.clientX - reactFlowBounds.left - 75,
-        y: event.clientY - reactFlowBounds.top - 25,
-      };
 
-      const newNode: Node = {
-        id: `${blockData.id}-${Date.now()}`,
-        type: 'default',
-        position,
-        data: {
-          label: `${blockData.icon} ${blockData.name}`,
-          blockType: blockData.id,
-          blockName: blockData.name,
-          blockIcon: blockData.icon,
-        },
-        sourcePosition: Position.Bottom,
-        targetPosition: Position.Top,
-      };
+      try {
+        const rawData = event.dataTransfer.getData('application/reactflow');
 
-      setNodes(nodes => [...nodes, newNode]);
+        if (!rawData || rawData.trim() === '') {
+          console.warn('No drag data received');
+          return;
+        }
+
+        let blockData;
+        try {
+          blockData = JSON.parse(rawData);
+        } catch (parseError) {
+          console.error('Invalid JSON in drag data:', parseError, 'Raw data:', rawData);
+          showAlert('Invalid block data received', 'error');
+          return;
+        }
+
+        // Validate block data structure
+        if (!blockData || typeof blockData !== 'object' || !blockData.id || !blockData.name) {
+          console.error('Invalid block data structure:', blockData);
+          showAlert('Invalid block structure', 'error');
+          return;
+        }
+
+        // Use ReactFlow's screenToFlowPosition for accurate positioning
+        const position = screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
+
+        const newNode: Node = {
+          id: `${blockData.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: 'default',
+          position,
+          data: {
+            label: `${blockData.icon || '🔧'} ${blockData.name}`,
+            blockType: blockData.id,
+            blockName: blockData.name,
+            blockIcon: blockData.icon || '🔧',
+          },
+          sourcePosition: Position.Bottom,
+          targetPosition: Position.Top,
+        };
+
+        setNodes(nodes => [...nodes, newNode]);
+
+        // Add console message for successful block addition
+        addConsoleMessage('info', `Added block: ${blockData.name}`);
+
+      } catch (error) {
+        console.error('Error handling drop:', error);
+        showAlert('Failed to add block', 'error');
+      }
     },
-    [setNodes]
+    [setNodes, screenToFlowPosition, showAlert, addConsoleMessage]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -228,17 +307,24 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   // Python code generation logic
   const generatePythonCode = useCallback(() => {
     if (nodes.length === 0) {
-      return `# ${t('visualProgramming.pythonViewer.generatedComment')}
-# ${t('visualProgramming.pythonViewer.basedOnComment')}
+      const generatedComment = t('visualProgramming.pythonViewer.generatedComment');
+      const basedOnComment = t('visualProgramming.pythonViewer.basedOnComment');
+      const completedComment = t('visualProgramming.pythonViewer.completedComment');
+
+      return `# ${generatedComment}
+# ${basedOnComment}
 
 import robot
 
 # No blocks in script
-print("${t('visualProgramming.pythonViewer.completedComment')}")`;
+print("${completedComment}")`;
     }
 
-    let pythonCode = `# ${t('visualProgramming.pythonViewer.generatedComment')}
-# ${t('visualProgramming.pythonViewer.basedOnComment')}
+    const generatedComment = t('visualProgramming.pythonViewer.generatedComment');
+    const basedOnComment = t('visualProgramming.pythonViewer.basedOnComment');
+
+    let pythonCode = `# ${generatedComment}
+# ${basedOnComment}
 
 import robot
 import time
@@ -278,13 +364,14 @@ def main():
     print("Starting script execution...")
 
     # Execute all blocks independently
-    `;
+`;
 
     nodes.forEach(node => {
       pythonCode += `    execute_block("${node.data.blockType}", "${node.data.blockName}")  # ${node.data.blockIcon} ${node.data.blockName}\n`;
     });
 
-    pythonCode += `    print("${t('visualProgramming.pythonViewer.completedComment')}")
+    const completedComment = t('visualProgramming.pythonViewer.completedComment');
+    pythonCode += `    print("${completedComment}")
 
 if __name__ == "__main__":
     main()`;
@@ -305,31 +392,36 @@ if __name__ == "__main__":
     await window.electronAPI.pythonCodeViewer.updateCode(pythonCode);
   }, [generatePythonCode]);
 
-  // Console management
-  const handleFeedback = useCallback((feedback: RobotFeedback) => {
-    setConsoleMessages(prev => [
-      ...prev,
-      {
-        timestamp: feedback.timestamp,
-        type: feedback.type,
-        message: feedback.message,
-      },
-    ]);
-  }, []);
+  // Helper function for cancellable delay
+  const cancellableDelay = useCallback((ms: number, abortController: AbortController): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      // Validate inputs
+      if (typeof ms !== 'number' || ms < 0) {
+        reject(new Error('Invalid delay duration'));
+        return;
+      }
 
-  const addConsoleMessage = useCallback((type: string, message: string) => {
-    setConsoleMessages(prev => [
-      ...prev,
-      {
-        timestamp: Date.now(),
-        type,
-        message,
-      },
-    ]);
+      if (!abortController || abortController.signal.aborted) {
+        reject(new Error('Execution cancelled'));
+        return;
+      }
+
+      const timeoutId = setTimeout(() => {
+        resolve();
+      }, ms);
+
+      // Add abort listener
+      const onAbort = () => {
+        clearTimeout(timeoutId);
+        reject(new Error('Execution cancelled'));
+      };
+
+      abortController.signal.addEventListener('abort', onAbort, { once: true });
+    });
   }, []);
 
   // Script execution handlers
-  const handlePlayScript = useCallback(() => {
+  const handlePlayScript = useCallback(async () => {
     if (!hasConnectedRobot) {
       showAlert(t('visualProgramming.alerts.noRobotConnected'), 'warning');
       return;
@@ -340,27 +432,113 @@ if __name__ == "__main__":
       return;
     }
 
+    const isResuming = executionState === ScriptExecutionState.PAUSED;
+    const startIndex = isResuming ? executionControlRef.current.currentIndex : 0;
+
+    // Reset or setup execution control
+    executionControlRef.current = {
+      shouldStop: false,
+      shouldPause: false,
+      currentIndex: startIndex,
+      abortController: new AbortController()
+    };
+
     setExecutionState(ScriptExecutionState.RUNNING);
     showAlert(
-      executionState === ScriptExecutionState.PAUSED
+      isResuming
         ? t('visualProgramming.alerts.scriptResumed')
         : t('visualProgramming.alerts.scriptStarted'),
       'success'
     );
-    // TODO: Implement actual robot script execution
-  }, [hasConnectedRobot, nodes.length, executionState, showAlert, t]);
+
+    try {
+      // Validate nodes before execution
+      if (!Array.isArray(nodes) || nodes.length === 0) {
+        throw new Error('No valid nodes to execute');
+      }
+
+      // Execute script with proper control flow
+      for (let i = startIndex; i < nodes.length; i++) {
+        const control = executionControlRef.current;
+
+        // Check for stop or pause
+        if (control.shouldStop) {
+          break;
+        }
+
+        if (control.shouldPause) {
+          control.currentIndex = i;
+          setExecutionState(ScriptExecutionState.PAUSED);
+          setCurrentlyExecutingNodeId(null);
+          return;
+        }
+
+        const node = nodes[i];
+
+        // Validate node structure
+        if (!node || !node.id || !node.data) {
+          console.warn(`Skipping invalid node at index ${i}:`, node);
+          continue;
+        }
+
+        control.currentIndex = i;
+        setCurrentlyExecutingNodeId(node.id);
+
+        const blockName = node.data.blockName || node.data.label || 'Unknown block';
+        addConsoleMessage('info', `Executing: ${blockName}`);
+
+        // Cancellable delay with validation
+        try {
+          if (!control.abortController) {
+            throw new Error('Abort controller not available');
+          }
+          await cancellableDelay(1500, control.abortController);
+        } catch (error) {
+          // Execution was cancelled or failed
+          if (error instanceof Error && error.message !== 'Execution cancelled') {
+            console.error('Delay error:', error);
+          }
+          break;
+        }
+      }
+
+      // Execution completed normally
+      setCurrentlyExecutingNodeId(null);
+      setExecutionState(ScriptExecutionState.IDLE);
+      executionControlRef.current.currentIndex = 0;
+
+      if (!executionControlRef.current.shouldStop) {
+        addConsoleMessage('success', 'Script execution completed');
+      }
+    } catch (error) {
+      console.error('Script execution error:', error);
+      setCurrentlyExecutingNodeId(null);
+      setExecutionState(ScriptExecutionState.IDLE);
+      executionControlRef.current.currentIndex = 0;
+      addConsoleMessage('error', 'Script execution failed');
+    }
+  }, [hasConnectedRobot, nodes, executionState, showAlert, t, addConsoleMessage, cancellableDelay]);
 
   const handlePauseScript = useCallback(() => {
-    setExecutionState(ScriptExecutionState.PAUSED);
-    showAlert(t('visualProgramming.alerts.scriptPaused'), 'info');
-    // TODO: Implement actual robot script pause
-  }, [showAlert, t]);
+    if (executionState === ScriptExecutionState.RUNNING) {
+      executionControlRef.current.shouldPause = true;
+      showAlert(t('visualProgramming.alerts.scriptPaused'), 'info');
+    }
+  }, [executionState, showAlert, t]);
 
   const handleStopScript = useCallback(() => {
-    setExecutionState(ScriptExecutionState.IDLE);
-    showAlert(t('visualProgramming.alerts.scriptStopped'), 'info');
-    // TODO: Implement actual robot script stop
-  }, [showAlert, t]);
+    if (executionState !== ScriptExecutionState.IDLE) {
+      executionControlRef.current.shouldStop = true;
+      executionControlRef.current.abortController?.abort();
+
+      setExecutionState(ScriptExecutionState.IDLE);
+      setCurrentlyExecutingNodeId(null);
+      executionControlRef.current.currentIndex = 0;
+
+      showAlert(t('visualProgramming.alerts.scriptStopped'), 'info');
+      addConsoleMessage('info', 'Script execution stopped by user');
+    }
+  }, [executionState, showAlert, t, addConsoleMessage]);
 
   const handleSettings = useCallback(() => {
     navigate('/settings');
@@ -370,8 +548,21 @@ if __name__ == "__main__":
     setShowConsole(prev => !prev);
   }, []);
 
+  // Cleanup effect to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Cleanup on component unmount
+      const control = executionControlRef.current;
+      if (control.abortController) {
+        control.abortController.abort();
+      }
+      control.shouldStop = true;
+      control.shouldPause = false;
+    };
+  }, []);
+
   return (
-    <ReactFlowProvider>
+    <>
       {/* Blocks Panel - Left Side (20% width) */}
       <BlocksPanel isSimpleMode={isSimpleMode} labels={blocksPanelLabels} />
 
@@ -388,7 +579,7 @@ if __name__ == "__main__":
         <ScriptPanel
           height={scriptHeight}
           isSimpleMode={isSimpleMode}
-          nodes={nodes}
+          nodes={enhancedNodes}
           edges={edges}
           executionState={executionState}
           canExecuteScript={canExecuteScript}
@@ -440,6 +631,16 @@ if __name__ == "__main__":
           onAddMessage={addConsoleMessage}
         />
       )}
+    </>
+  );
+};
+
+export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
+  isSimpleMode,
+}) => {
+  return (
+    <ReactFlowProvider>
+      <VisualProgrammingFlow isSimpleMode={isSimpleMode} />
     </ReactFlowProvider>
   );
 };

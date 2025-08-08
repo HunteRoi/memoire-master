@@ -5,6 +5,8 @@ body {
   background-color: #1e1e1e;
   color: #d4d4d4;
   line-height: 1.5;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .header {
@@ -51,10 +53,9 @@ body {
   background-color: #2d2d30;
   padding: 20px;
   border-radius: 8px;
-  overflow: auto;
-  max-height: calc(100vh - 120px);
   border: 1px solid #404040;
   position: relative;
+  /* Removed overflow and max-height to eliminate internal scrollbar */
 }
 
 .code-content {
@@ -62,6 +63,7 @@ body {
   white-space: pre-wrap;
   word-wrap: break-word;
   font-size: 14px;
+  overflow-x: auto; /* Only allow horizontal scroll if needed for long lines */
 }
 
 .line-numbers {
@@ -82,6 +84,7 @@ body {
 
 .line {
   min-height: 1.5em;
+  position: relative;
 }
 
 .empty-state {
@@ -108,23 +111,37 @@ body {
   opacity: 1;
 }
 
-/* Python syntax highlighting */
-.keyword {
-  color: #569cd6;
+/* Empty state styling */
+.empty-state {
+  text-align: center !important;
+  color: #858585 !important;
+  font-style: italic !important;
+  padding: 40px !important;
+  background: none !important;
 }
 
-.string {
-  color: #ce9178;
+/* Error state styling */
+.error-state {
+  text-align: center !important;
+  color: #e74c3c !important;
+  font-style: italic !important;
+  padding: 40px !important;
+  background: none !important;
 }
 
-.comment {
-  color: #6a9955;
+/* Override Prism.js theme to match our dark theme */
+pre[class*="language-"] {
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-.number {
-  color: #b5cea8;
+code[class*="language-"] {
+  background: transparent !important;
+  color: #d4d4d4 !important;
 }
 
-.function {
-  color: #dcdcaa;
+/* Ensure line numbers work with Prism */
+.line-numbers .line-numbers-rows {
+  border-right: 1px solid #404040 !important;
 }

@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generated Python Code</title>
   <link rel="stylesheet" href="./pythonCodeViewer.css">
+  <!-- Prism.js for syntax highlighting -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
 </head>
 <body>
   <div class="header">
@@ -14,12 +20,10 @@
       <button class="close-btn" onclick="closeWindow()">Close</button>
     </div>
   </div>
-  
+
   <div class="code-container">
     <div class="update-indicator" id="updateIndicator">Updated</div>
-    <pre class="code-content line-numbers" id="codeContent">
-      <div class="empty-state">No blocks in script yet. Add some blocks to see the generated Python code.</div>
-    </pre>
+    <pre class="line-numbers"><code class="language-python" id="codeContent">No blocks in script yet. Add some blocks to see the generated Python code.</code></pre>
   </div>
 
   <script>
@@ -31,41 +35,54 @@
     function updateCode(code) {
       const codeContent = document.getElementById('codeContent');
       const updateIndicator = document.getElementById('updateIndicator');
-      
-      if (!code || code.trim() === '') {
-        codeContent.innerHTML = '<div class="empty-state">No blocks in script yet. Add some blocks to see the generated Python code.</div>';
-      } else {
-        // Split code into lines and add line numbers
-        const lines = code.split('\n');
-        const linesHtml = lines.map(line => {
-          // Basic syntax highlighting
-          let highlightedLine = line
-            .replace(/(import|def|class|if|else|elif|for|while|try|except|finally|with|return|print)(\s)/g, '<span class="keyword">$1</span>$2')
-            .replace(/(["'])((?:\\.|[^"'\\])*?)\1/g, '<span class="string">$1$2$1</span>')
-            .replace(/(#.*$)/gm, '<span class="comment">$1</span>')
-            .replace(/\b(\d+\.?\d*)\b/g, '<span class="number">$1</span>');
+
+      try {
+        if (!code || code.trim() === '') {
+          codeContent.textContent = 'No blocks in script yet. Add some blocks to see the generated Python code.';
+          codeContent.className = 'empty-state';
+        } else {
+          // Set the code content
+          codeContent.textContent = code;
+          codeContent.className = 'language-python';
           
-          return `<div class="line">${highlightedLine || ' '}</div>`;
-        }).join('');
-        
-        codeContent.innerHTML = linesHtml;
+          // Apply Prism.js highlighting
+          if (window.Prism && window.Prism.languages && window.Prism.languages.python) {
+            // Force re-highlighting
+            delete codeContent.dataset.highlighted;
+            Prism.highlightElement(codeContent);
+          } else {
+            console.warn('Prism or Python language not loaded');
+          }
+        }
+
+        // Show update indicator briefly
+        if (updateIndicator) {
+          updateIndicator.classList.add('show');
+          setTimeout(() => {
+            updateIndicator.classList.remove('show');
+          }, 1500);
+        }
+      } catch (error) {
+        console.error('Error updating code:', error);
+        codeContent.textContent = 'Error displaying code. Please try refreshing.';
+        codeContent.className = 'error-state';
       }
-      
-      // Show update indicator briefly
-      updateIndicator.classList.add('show');
-      setTimeout(() => {
-        updateIndicator.classList.remove('show');
-      }, 1500);
     }
 
     function closeWindow() {
       window.close();
     }
 
-    // Initialize with empty state - code will be sent via custom event
+    // Initialize when DOM and scripts are ready
     document.addEventListener('DOMContentLoaded', () => {
-      // Window is ready to receive code updates
       console.log('Python code viewer ready');
+      console.log('Prism available:', !!window.Prism);
+      console.log('Python language available:', !!(window.Prism && window.Prism.languages && window.Prism.languages.python));
+      
+      // Force Prism manual mode for better control
+      if (window.Prism) {
+        window.Prism.manual = true;
+      }
     });
   </script>
 </body>
