@@ -11,9 +11,8 @@ import {
 } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-
-import { Robot } from '../../../domain/robot';
 import { DEFAULT_PORT, DEFAULT_ROBOT } from '../../../domain/constants';
+import { Robot } from '../../../domain/robot';
 
 export interface RobotDialogLabels {
   editRobot: string;
@@ -164,9 +163,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
             fullWidth
             aria-describedby={testing ? 'testing-status' : undefined}
           >
-            {testing
-              ? labels.testingConnection
-              : labels.testConnection}
+            {testing ? labels.testingConnection : labels.testConnection}
           </Button>
         </Box>
 
@@ -189,9 +186,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
           disabled={testResult !== 'success'}
           variant='contained'
         >
-          {robot
-            ? labels.updateRobot
-            : labels.addRobot}
+          {robot ? labels.updateRobot : labels.addRobot}
         </Button>
       </DialogActions>
     </Dialog>

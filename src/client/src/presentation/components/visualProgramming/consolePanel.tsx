@@ -52,10 +52,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
   // Set up robot feedback subscription
   useEffect(() => {
     if (!hasConnectedRobot || !selectedRobotData) {
-      onAddMessage(
-        'info',
-        labels.messages.robotInitialized
-      );
+      onAddMessage('info', labels.messages.robotInitialized);
       return;
     }
 
@@ -81,7 +78,13 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
       }
       window.electronAPI.robotConnection.removeFeedbackListener();
     };
-  }, [hasConnectedRobot, selectedRobotData, onFeedback, onAddMessage, labels.messages]);
+  }, [
+    hasConnectedRobot,
+    selectedRobotData,
+    onFeedback,
+    onAddMessage,
+    labels.messages,
+  ]);
 
   const formatTimestamp = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString();

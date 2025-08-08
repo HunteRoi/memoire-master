@@ -29,7 +29,7 @@ export const ThemeSelectionContent: FC = () => {
             onSelect={handleThemeSelection}
             labels={{
               themeName: t(`theme.names.${theme.toLowerCase()}`),
-              themeDescription: t(`theme.descriptions.${theme.toLowerCase()}`)
+              themeDescription: t(`theme.descriptions.${theme.toLowerCase()}`),
             }}
           />
         </Grid>

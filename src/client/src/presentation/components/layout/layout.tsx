@@ -33,7 +33,6 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   centered = true,
   defaultLabels,
 }) => {
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (

@@ -9,9 +9,9 @@ import ReactFlow, {
   type Edge,
   type Node,
   type OnEdgesChange,
-  type OnNodesChange,
   type OnEdgesDelete,
-  type OnNodesDelete
+  type OnNodesChange,
+  type OnNodesDelete,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -65,7 +65,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
   onViewPythonCode,
   edges,
 }) => {
-
   return (
     <Box sx={{ position: 'relative', height, width: '100%' }}>
       <Paper

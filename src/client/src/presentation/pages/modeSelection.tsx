@@ -12,10 +12,13 @@ export const ModeSelection: FC = () => {
   const { t } = useTranslation();
   const { selectedMode } = useAppContext();
 
-  const defaultLabels = useMemo(() => ({
-    back: t('common.back'),
-    continue: t('common.continue'),
-  }), [t]);
+  const defaultLabels = useMemo(
+    () => ({
+      back: t('common.back'),
+      continue: t('common.continue'),
+    }),
+    [t]
+  );
 
   const handleBack = () => navigate('/robot-selection');
   const handleContinue = () => navigate('/programming');

@@ -5,10 +5,7 @@ import type {
   RobotsConfigurationRepository,
 } from './application/interfaces';
 import type { Logger } from './application/interfaces/logger';
-import {
-  ManageRobots,
-  ManageRobotConnection,
-} from './application/usecases';
+import { ManageRobotConnection, ManageRobots } from './application/usecases';
 import {
   MockRobotCommunicationService,
   WebsocketRobotCommunicationService,

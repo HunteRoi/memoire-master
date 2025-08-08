@@ -13,7 +13,7 @@ export class ManageRobots {
   constructor(
     private robotsConfigurationRepository: RobotsConfigurationRepository,
     private logger: Logger
-  ) { }
+  ) {}
 
   async loadRobots(): Promise<Result<Robot[]>> {
     try {
@@ -72,9 +72,9 @@ export class ManageRobots {
       const robotError = isRobotError(error)
         ? error
         : new RobotConfigurationError(
-          error instanceof Error ? error.message : 'Failed to add robot',
-          'add'
-        );
+            error instanceof Error ? error.message : 'Failed to add robot',
+            'add'
+          );
 
       this.logger.error('Failed to add robot', robotError, {
         robotIp: robot.ipAddress,
@@ -126,9 +126,9 @@ export class ManageRobots {
       const robotError = isRobotError(error)
         ? error
         : new RobotConfigurationError(
-          error instanceof Error ? error.message : 'Failed to update robot',
-          'update'
-        );
+            error instanceof Error ? error.message : 'Failed to update robot',
+            'update'
+          );
 
       this.logger.error('Failed to update robot', robotError, {
         robotIp: robot.ipAddress,
@@ -181,9 +181,9 @@ export class ManageRobots {
       const robotError = isRobotError(error)
         ? error
         : new RobotConfigurationError(
-          error instanceof Error ? error.message : 'Failed to remove robot',
-          'remove'
-        );
+            error instanceof Error ? error.message : 'Failed to remove robot',
+            'remove'
+          );
 
       this.logger.error('Failed to remove robot', robotError, { robotId });
 
@@ -249,9 +249,9 @@ export class ManageRobots {
       const robotError = isRobotError(error)
         ? error
         : new RobotConfigurationError(
-          error instanceof Error ? error.message : 'Failed to find robot',
-          'find'
-        );
+            error instanceof Error ? error.message : 'Failed to find robot',
+            'find'
+          );
 
       this.logger.error('Failed to find robot', robotError, { robotId });
 

@@ -11,10 +11,13 @@ export const AgeSelection: FC = () => {
   const { t } = useTranslation();
   const { userAge } = useAppContext();
 
-  const defaultLabels = useMemo(() => ({
-    back: t('common.back'),
-    continue: t('common.continue'),
-  }), [t]);
+  const defaultLabels = useMemo(
+    () => ({
+      back: t('common.back'),
+      continue: t('common.continue'),
+    }),
+    [t]
+  );
 
   const handleBack = () => navigate('/theme-selection');
   const handleContinue = () => {

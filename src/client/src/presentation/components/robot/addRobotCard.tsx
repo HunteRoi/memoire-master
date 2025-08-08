@@ -7,7 +7,10 @@ interface AddRobotCardProps {
   label: string;
 }
 
-export const AddRobotCard: React.FC<AddRobotCardProps> = ({ onAddRobot, label }) => {
+export const AddRobotCard: React.FC<AddRobotCardProps> = ({
+  onAddRobot,
+  label,
+}) => {
   return (
     <Card
       sx={{

@@ -1,2 +1,2 @@
-export { ManageRobots } from './manageRobots';
 export { ManageRobotConnection } from './manageRobotConnection';
+export { ManageRobots } from './manageRobots';

@@ -9,11 +9,8 @@ import {
 } from '@mui/material';
 import type React from 'react';
 
-import type { Robot } from '../../../domain/robot';
-
 interface RobotConnectionDialogProps {
   open: boolean;
-  robot: Robot;
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
@@ -28,7 +25,6 @@ interface RobotConnectionDialogProps {
 
 export const RobotConnectionDialog: React.FC<RobotConnectionDialogProps> = ({
   open,
-  robot,
   onConfirm,
   onCancel,
   loading = false,

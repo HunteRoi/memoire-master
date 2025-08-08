@@ -42,7 +42,6 @@ const RobotCardComponent: FC<RobotCardProps> = ({
   connected,
   labels,
 }) => {
-
   // Memoize event handlers to prevent unnecessary re-renders
   const onEditClick: MouseEventHandler<HTMLButtonElement> = useCallback(
     event => {

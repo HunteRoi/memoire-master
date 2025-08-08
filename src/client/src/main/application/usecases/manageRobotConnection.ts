@@ -16,7 +16,7 @@ export class ManageRobotConnection {
   constructor(
     private robotRepository: RobotCommunicationService,
     private logger: Logger
-  ) { }
+  ) {}
 
   async connectToRobot(robot: RobotConfig): Promise<Result<RobotConfig>> {
     try {
@@ -45,11 +45,11 @@ export class ManageRobotConnection {
       const robotError = isRobotError(error)
         ? error
         : new RobotConnectionError(
-          error instanceof Error
-            ? error.message
-            : 'Failed to connect to robot',
-          robot.ipAddress
-        );
+            error instanceof Error
+              ? error.message
+              : 'Failed to connect to robot',
+            robot.ipAddress
+          );
 
       this.logger.warn('Failed to connect to robot', robotError, {
         robotIp: robot.ipAddress,
@@ -92,11 +92,11 @@ export class ManageRobotConnection {
       const robotError = isRobotError(error)
         ? error
         : new RobotConnectionError(
-          error instanceof Error
-            ? error.message
-            : 'Failed to disconnect from robot',
-          robot.ipAddress
-        );
+            error instanceof Error
+              ? error.message
+              : 'Failed to disconnect from robot',
+            robot.ipAddress
+          );
 
       this.logger.error('Failed to disconnect from robot', robotError, {
         robotIp: robot.ipAddress,
@@ -145,11 +145,11 @@ export class ManageRobotConnection {
       const robotError = isRobotError(error)
         ? error
         : new RobotConnectionError(
-          error instanceof Error
-            ? error.message
-            : 'Failed to check connection with robot',
-          robot.ipAddress
-        );
+            error instanceof Error
+              ? error.message
+              : 'Failed to check connection with robot',
+            robot.ipAddress
+          );
 
       this.logger.error('Robot connection check failed', robotError, {
         robotIp: robot.ipAddress,
@@ -183,11 +183,11 @@ export class ManageRobotConnection {
       const robotError = isRobotError(error)
         ? error
         : new RobotConnectionError(
-          error instanceof Error
-            ? error.message
-            : 'Failed to subscribe to robot feedback',
-          robot.ipAddress
-        );
+            error instanceof Error
+              ? error.message
+              : 'Failed to subscribe to robot feedback',
+            robot.ipAddress
+          );
 
       this.logger.error('Failed to subscribe to robot feedback', robotError, {
         robotIp: robot.ipAddress,
@@ -220,11 +220,11 @@ export class ManageRobotConnection {
       const robotError = isRobotError(error)
         ? error
         : new RobotConnectionError(
-          error instanceof Error
-            ? error.message
-            : 'Failed to unsubscribe from robot feedback',
-          robot.ipAddress
-        );
+            error instanceof Error
+              ? error.message
+              : 'Failed to unsubscribe from robot feedback',
+            robot.ipAddress
+          );
 
       this.logger.error(
         'Failed to unsubscribe from robot feedback',
@@ -273,12 +273,12 @@ export class ManageRobotConnection {
       const robotError = isRobotError(error)
         ? error
         : new RobotCommandError(
-          error instanceof Error
-            ? error.message
-            : 'Failed to send command to robot',
-          command,
-          robot.ipAddress
-        );
+            error instanceof Error
+              ? error.message
+              : 'Failed to send command to robot',
+            command,
+            robot.ipAddress
+          );
 
       this.logger.error('Failed to send command to robot', robotError, {
         robotIp: robot.ipAddress,

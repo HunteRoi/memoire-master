@@ -32,7 +32,6 @@ interface BlocksPanelProps {
 }
 
 export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels }) => {
-
   return (
     <Paper
       elevation={2}
@@ -82,7 +81,11 @@ export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels }) => {
                   variant={isSimpleMode ? 'h6' : 'subtitle1'}
                   sx={{ fontWeight: 500 }}
                 >
-                  {labels.categories[category.id as keyof typeof labels.categories]}
+                  {
+                    labels.categories[
+                      category.id as keyof typeof labels.categories
+                    ]
+                  }
                 </Typography>
                 <Chip
                   label={category.blocks.length}
@@ -103,7 +106,9 @@ export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels }) => {
                   key={block.id}
                   {...block}
                   name={labels.blockNames[block.id] || block.name}
-                  description={labels.blockDescriptions[block.id] || block.description}
+                  description={
+                    labels.blockDescriptions[block.id] || block.description
+                  }
                   isSimpleMode={isSimpleMode}
                   categoryColor={category.color}
                 />

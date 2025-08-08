@@ -28,7 +28,6 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
   onSelect,
   labels,
 }) => {
-
   return (
     <Card
       sx={{

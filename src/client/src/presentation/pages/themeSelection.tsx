@@ -10,10 +10,13 @@ export const ThemeSelection: FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const defaultLabels = useMemo(() => ({
-    back: t('common.back'),
-    continue: t('common.continue'),
-  }), [t]);
+  const defaultLabels = useMemo(
+    () => ({
+      back: t('common.back'),
+      continue: t('common.continue'),
+    }),
+    [t]
+  );
 
   const handleContinue = () => navigate('/age-selection');
 

@@ -20,10 +20,13 @@ export const RobotSelection: FC = () => {
     [robots, selectedRobot]
   );
 
-  const defaultLabels = useMemo(() => ({
-    back: t('common.back'),
-    continue: t('common.continue'),
-  }), [t]);
+  const defaultLabels = useMemo(
+    () => ({
+      back: t('common.back'),
+      continue: t('common.continue'),
+    }),
+    [t]
+  );
 
   const handleBack = () => navigate('/age-selection');
   const handleContinue = async () => {
