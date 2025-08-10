@@ -1,6 +1,6 @@
 import type { RobotConfig } from './domain/robotBuilder';
 import type { Result } from './domain/result';
-import type { RobotFeedback } from './domain/robotFeedback';
+import type { RobotFeedback } from './domain/robot';
 
 export interface ElectronAPI {
   app: {

@@ -3,7 +3,7 @@ import { Box, Button, IconButton, Paper, Typography } from '@mui/material';
 import { type FC, useCallback, useEffect, useRef } from 'react';
 
 import type { Robot } from '../../../domain/robot';
-import type { RobotFeedback } from '../../../domain/robotFeedback';
+import type { RobotFeedback } from '../../../domain/robot';
 import type { ConsoleMessage } from '../../models/ConsoleMessage';
 
 export interface ConsolePanelLabels {

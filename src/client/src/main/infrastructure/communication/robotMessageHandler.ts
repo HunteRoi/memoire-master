@@ -4,11 +4,11 @@ import type {
   ConnectedRobot,
   RobotMessage,
   RobotResponse,
-} from '../../../domain/robotCommunication';
+} from '../../../domain/robot';
 import type {
   RobotFeedback,
   RobotFeedbackCallback,
-} from '../../../domain/robotFeedback';
+} from '../../../domain/robot';
 
 export class RobotMessageHandler {
   sendMessage(ws: WebSocket, message: RobotMessage): void {

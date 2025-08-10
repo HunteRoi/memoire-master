@@ -4,7 +4,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 import type { RobotConfig } from './domain/robot';
-import type { RobotFeedback } from './domain/robotFeedback';
+import type { RobotFeedback } from './domain/robot';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   app: {

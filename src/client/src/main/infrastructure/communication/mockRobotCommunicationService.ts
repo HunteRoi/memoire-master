@@ -2,7 +2,7 @@ import type { Robot } from '../../../domain/robot';
 import type {
   RobotFeedback,
   RobotFeedbackCallback,
-} from '../../../domain/robotFeedback';
+} from '../../../domain/robot';
 import type { Logger } from '../../../main/application/interfaces/logger';
 import type { RobotCommunicationService } from '../../application/interfaces/robotCommunicationService';
 
@@ -11,14 +11,13 @@ import type { RobotCommunicationService } from '../../application/interfaces/rob
  * Simulates robot connections without requiring actual hardware.
  */
 export class MockRobotCommunicationService
-  implements RobotCommunicationService
-{
+  implements RobotCommunicationService {
   private connectedRobots: Set<string> = new Set();
   private readonly simulatedDelay = 500; // 500ms simulation delay
   private feedbackCallbacks: Map<string, RobotFeedbackCallback> = new Map();
   private feedbackIntervals: Map<string, NodeJS.Timeout> = new Map();
 
-  constructor(private logger: Logger) {}
+  constructor(private logger: Logger) { }
 
   async connect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);

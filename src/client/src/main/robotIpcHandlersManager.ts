@@ -2,7 +2,7 @@ import { BrowserWindow, ipcMain } from 'electron';
 import { createErrorResponse, isRobotError } from '../domain/errors';
 import { isSuccess } from '../domain/result';
 import { Robot } from '../domain/robot';
-import type { RobotFeedback } from '../domain/robotFeedback';
+import type { RobotFeedback } from '../domain/robot';
 import { Container } from './container';
 import { IpcValidator } from './infrastructure/security/ipcValidator';
 

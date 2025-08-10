@@ -1,7 +1,7 @@
 import type {
   ConnectedRobot,
   RobotMessage,
-} from '../../../domain/robotCommunication';
+} from '../../../domain/robot';
 import type { Logger } from '../../../main/application/interfaces/logger';
 import type { RobotMessageHandler } from './robotMessageHandler';
 
@@ -12,7 +12,7 @@ export class RobotHealthMonitor {
   constructor(
     private messageHandler: RobotMessageHandler,
     private logger: Logger
-  ) {}
+  ) { }
 
   startMonitoring(connectedRobots: Map<string, ConnectedRobot>): void {
     if (this.pingTimer) {

@@ -37,7 +37,7 @@ enum ScriptExecutionState {
   PAUSED = 'paused',
 }
 
-import type { RobotFeedback } from '../../domain/robotFeedback';
+import type { RobotFeedback } from '../../domain/robot';
 import type { ConsoleMessage } from '../models/ConsoleMessage';
 
 interface VisualProgrammingContentProps {

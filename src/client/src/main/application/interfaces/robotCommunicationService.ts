@@ -2,7 +2,7 @@ import type { Robot } from '../../../domain/robot';
 import type {
   RobotFeedback,
   RobotFeedbackCallback,
-} from '../../../domain/robotFeedback';
+} from '../../../domain/robot';
 
 export interface RobotCommunicationService {
   connect(robot: Robot): Promise<Robot>;

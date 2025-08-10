@@ -1,9 +1,9 @@
 import type { Robot } from '../../../domain/robot';
-import type { ConnectedRobot } from '../../../domain/robotCommunication';
+import type { ConnectedRobot } from '../../../domain/robot';
 import type {
   RobotFeedback,
   RobotFeedbackCallback,
-} from '../../../domain/robotFeedback';
+} from '../../../domain/robot';
 import type { Logger } from '../../../main/application/interfaces/logger';
 import type { Disposable } from '../../application/interfaces';
 import type { RobotCommunicationService } from '../../application/interfaces/robotCommunicationService';
@@ -12,8 +12,7 @@ import { RobotHealthMonitor } from './robotHealthMonitor';
 import { RobotMessageHandler } from './robotMessageHandler';
 
 export class WebsocketRobotCommunicationService
-  implements RobotCommunicationService, Disposable
-{
+  implements RobotCommunicationService, Disposable {
   private connectionManager: RobotConnectionManager;
   private messageHandler: RobotMessageHandler;
   private healthMonitor: RobotHealthMonitor;
