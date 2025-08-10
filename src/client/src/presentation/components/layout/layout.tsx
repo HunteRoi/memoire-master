@@ -35,14 +35,18 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
 }) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      const isInputElement = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
       if (
         (event.key === 'Enter' || event.key === 'NumpadEnter') &&
         onContinue &&
-        !continueDisabled
+        !continueDisabled &&
+        !isInputElement
       ) {
         event.preventDefault();
         onContinue();
-      } else if (event.key === 'Backspace' && onBack) {
+      } else if (event.key === 'Backspace' && onBack && !isInputElement) {
         event.preventDefault();
         onBack();
       }
