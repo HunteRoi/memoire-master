@@ -103,8 +103,8 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
     }
   };
 
-  // In simple mode, show toggle button when console is hidden
-  if (isSimpleMode && !isVisible) {
+  // Show toggle button when console is closed (in both modes)
+  if (!isVisible) {
     return (
       <Button
         variant='contained'
@@ -120,11 +120,6 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
         {labels.showConsole}
       </Button>
     );
-  }
-
-  // Don't render console in advanced mode if not visible
-  if (!isSimpleMode && !isVisible) {
-    return null;
   }
 
   return (
@@ -159,11 +154,9 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
         >
           🖥️ {labels.title}
         </Typography>
-        {isSimpleMode && (
-          <IconButton onClick={onToggle}>
-            <VisibilityOff />
-          </IconButton>
-        )}
+        <IconButton onClick={onToggle} title="Close console">
+          <VisibilityOff />
+        </IconButton>
       </Box>
 
       <Box

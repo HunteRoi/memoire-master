@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { type FC, useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import { type FC, useCallback, useMemo, useState, useRef, useEffect, SetStateAction, Dispatch } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import {
@@ -24,8 +24,7 @@ import { ScriptPanel } from '../components/visualProgramming/scriptPanel';
 import { LabelsProvider, useVisualProgrammingLabels } from '../providers/visualProgramming/labelsProvider';
 import { RobotConnectionContainer, useRobotConnection } from './visualProgramming/robotConnectionContainer';
 import { CodeGenerationContainer, useCodeGeneration } from './visualProgramming/codeGenerationContainer';
-import type { RobotFeedback } from '../../domain/robot';
-import type { ConsoleMessage } from '../models/ConsoleMessage';
+import { ConsoleContainer, useConsole } from './visualProgramming/consoleContainer';
 
 enum ScriptExecutionState {
   IDLE = 'idle',
@@ -38,9 +37,9 @@ interface VisualProgrammingContentProps {
 }
 
 interface VisualProgrammingFlowProps extends VisualProgrammingContentProps {
-  nodes: any[];
-  setNodes: any;
-  onNodesChange: any;
+  nodes: Node<any, string | undefined>[];
+  setNodes: Dispatch<SetStateAction<Node<any, string | undefined>[]>>;
+  onNodesChange: OnNodesChange;
 }
 
 const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
@@ -54,10 +53,10 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels } = useVisualProgrammingLabels();
   const { selectedRobotData, hasConnectedRobot, canExecuteScript, showAlert } = useRobotConnection();
   const { handleViewPythonCode, handleUpdateCode } = useCodeGeneration();
+  const { consoleMessages, showConsole, handleFeedback, addConsoleMessage, handleToggleConsole } = useConsole();
   const { screenToFlowPosition } = useReactFlow();
 
   // State management
-  const [showConsole, setShowConsole] = useState(!isSimpleMode);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   // Update code when nodes change (including deletions)
@@ -67,13 +66,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     };
     updateCode();
   }, [nodes, handleUpdateCode]);
-  const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([
-    {
-      timestamp: Date.now(),
-      type: 'info',
-      message: t('visualProgramming.console.messages.robotInitialized'),
-    },
-  ]);
   const [executionState, setExecutionState] = useState<ScriptExecutionState>(
     ScriptExecutionState.IDLE
   );
@@ -102,8 +94,8 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     // Code update will be triggered by useEffect when nodes change
   };
 
-  // Computed values
-  const scriptHeight = isSimpleMode ? (showConsole ? '60%' : '100%') : '67%';
+  // Computed values - adapt script height based on console visibility
+  const scriptHeight = showConsole ? (isSimpleMode ? '67%' : '60%') : '100%';
 
   // Enhanced nodes with execution highlighting
   const enhancedNodes = useMemo(() => {
@@ -117,32 +109,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
       }
     }));
   }, [nodes, currentlyExecutingNodeId]);
-
-
-
-
-  // Console management
-  const handleFeedback = useCallback((feedback: RobotFeedback) => {
-    setConsoleMessages(prev => [
-      ...prev,
-      {
-        timestamp: feedback.timestamp,
-        type: feedback.type,
-        message: feedback.message,
-      },
-    ]);
-  }, []);
-
-  const addConsoleMessage = useCallback((type: string, message: string) => {
-    setConsoleMessages(prev => [
-      ...prev,
-      {
-        timestamp: Date.now(),
-        type,
-        message,
-      },
-    ]);
-  }, []);
 
   // React Flow handlers
   const onDrop = useCallback(
@@ -193,7 +159,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           targetPosition: Position.Top,
         };
 
-        setNodes(nodes => [...nodes, newNode]);
+        setNodes(n => [...n, newNode]);
 
         // Add console message for successful block addition
         addConsoleMessage('info', `Added block: ${blockData.name}`);
@@ -224,7 +190,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     },
     [setEdges]
   );
-
 
   // Helper function for cancellable delay
   const cancellableDelay = useCallback((ms: number, abortController: AbortController): Promise<void> => {
@@ -378,9 +343,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     navigate('/settings');
   }, [navigate]);
 
-  const handleToggleConsole = useCallback(() => {
-    setShowConsole(prev => !prev);
-  }, []);
 
   // Cleanup effect to prevent memory leaks
   useEffect(() => {
@@ -435,24 +397,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           onEdgesDelete={onEdgesDelete}
         />
 
-        {/* Console Panel - Always visible in advanced mode, toggleable in simple mode */}
-        {(!isSimpleMode || showConsole) && (
-          <ConsolePanel
-            isSimpleMode={isSimpleMode}
-            isVisible={!isSimpleMode || showConsole}
-            selectedRobotData={selectedRobotData}
-            hasConnectedRobot={hasConnectedRobot}
-            consoleMessages={consoleMessages}
-            labels={consolePanelLabels}
-            onToggle={handleToggleConsole}
-            onFeedback={handleFeedback}
-            onAddMessage={addConsoleMessage}
-          />
-        )}
-      </Box>
-
-      {/* Console Toggle Button for Simple Mode */}
-      {isSimpleMode && !showConsole && (
         <ConsolePanel
           isSimpleMode={isSimpleMode}
           isVisible={showConsole}
@@ -464,7 +408,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           onFeedback={handleFeedback}
           onAddMessage={addConsoleMessage}
         />
-      )}
+      </Box>
     </>
   );
 };
@@ -477,12 +421,14 @@ const VisualProgrammingWithRobotConnection: FC<VisualProgrammingContentProps> = 
   return (
     <RobotConnectionContainer nodes={nodes}>
       <CodeGenerationContainer nodes={nodes}>
-        <VisualProgrammingFlow 
-          isSimpleMode={isSimpleMode}
-          nodes={nodes}
-          setNodes={setNodes}
-          onNodesChange={onNodesChange}
-        />
+        <ConsoleContainer isSimpleMode={isSimpleMode}>
+          <VisualProgrammingFlow
+            isSimpleMode={isSimpleMode}
+            nodes={nodes}
+            setNodes={setNodes}
+            onNodesChange={onNodesChange}
+          />
+        </ConsoleContainer>
       </CodeGenerationContainer>
     </RobotConnectionContainer>
   );
