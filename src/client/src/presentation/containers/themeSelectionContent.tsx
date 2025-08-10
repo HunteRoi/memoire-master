@@ -28,8 +28,8 @@ export const ThemeSelectionContent: FC = () => {
             isSelected={theme === option.type}
             onSelect={handleThemeSelection}
             labels={{
-              themeName: t(`theme.names.${theme.toLowerCase()}`),
-              themeDescription: t(`theme.descriptions.${theme.toLowerCase()}`),
+              themeName: t(`theme.names.${option.type.toLowerCase()}`),
+              themeDescription: t(`theme.descriptions.${option.type.toLowerCase()}`),
             }}
           />
         </Grid>

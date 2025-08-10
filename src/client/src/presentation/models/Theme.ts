@@ -8,8 +8,6 @@ export enum ThemeType {
 
 export type ThemeOption = {
   type: ThemeType;
-  name: string;
-  description: string;
   theme: Theme;
 };
 
@@ -51,7 +49,7 @@ export class Theme {
   constructor(
     public readonly type: ThemeType,
     public readonly colors: ThemeColors
-  ) {}
+  ) { }
 
   static createClassic(): Theme {
     return new Theme(ThemeType.CLASSIC, {
@@ -254,32 +252,22 @@ export class Theme {
 export const themeOptions: ThemeOption[] = [
   {
     type: ThemeType.CLASSIC,
-    name: 'Classic',
-    description: 'Clean and professional',
     theme: Theme.createClassic(),
   },
   {
     type: ThemeType.DARK,
-    name: 'Dark',
-    description: 'Easy on the eyes',
     theme: Theme.createDark(),
   },
   {
     type: ThemeType.PINK,
-    name: 'Pink',
-    description: 'Fun and colorful',
     theme: Theme.createPink(),
   },
   {
     type: ThemeType.ADVENTURE,
-    name: 'Adventure',
-    description: 'Nature inspired',
     theme: Theme.createAdventure(),
   },
   {
     type: ThemeType.LEGO,
-    name: 'Lego',
-    description: 'Bright and playful',
     theme: Theme.createLego(),
   },
 ];
