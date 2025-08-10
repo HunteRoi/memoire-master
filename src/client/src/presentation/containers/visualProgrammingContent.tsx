@@ -22,7 +22,7 @@ import { BlocksPanel } from '../components/visualProgramming/blocksPanel';
 import { ConsolePanel } from '../components/visualProgramming/consolePanel';
 import { ScriptPanel } from '../components/visualProgramming/scriptPanel';
 import { LabelsProvider, useVisualProgrammingLabels } from '../providers/visualProgramming/labelsProvider';
-import { useAppContext } from '../hooks/useAppContext';
+import { RobotConnectionContainer, useRobotConnection } from './visualProgramming/robotConnectionContainer';
 import type { RobotFeedback } from '../../domain/robot';
 import type { ConsoleMessage } from '../models/ConsoleMessage';
 
@@ -36,19 +36,26 @@ interface VisualProgrammingContentProps {
   isSimpleMode: boolean;
 }
 
-const VisualProgrammingFlow: FC<VisualProgrammingContentProps> = ({
+interface VisualProgrammingFlowProps extends VisualProgrammingContentProps {
+  nodes: any[];
+  setNodes: any;
+  onNodesChange: any;
+}
+
+const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   isSimpleMode,
+  nodes,
+  setNodes,
+  onNodesChange,
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels } = useVisualProgrammingLabels();
-  const { selectedRobot, isRobotConnected, robots, showAlert } =
-    useAppContext();
+  const { selectedRobotData, hasConnectedRobot, canExecuteScript, showAlert } = useRobotConnection();
   const { screenToFlowPosition } = useReactFlow();
 
   // State management
   const [showConsole, setShowConsole] = useState(!isSimpleMode);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([
     {
@@ -70,7 +77,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingContentProps> = ({
     abortController?: AbortController;
   }>({ shouldStop: false, shouldPause: false, currentIndex: 0 });
 
-  const onNodesChanges: OnNodesChange = async changes => {
+  const onNodesChangeWithCodeUpdate: OnNodesChange = async changes => {
     onNodesChange(changes);
     await handleUpdateCode();
   };
@@ -86,13 +93,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingContentProps> = ({
   };
 
   // Computed values
-  const selectedRobotData = useMemo(
-    () => robots.find(robot => robot.id === selectedRobot),
-    [robots, selectedRobot]
-  );
-
-  const hasConnectedRobot = !!selectedRobot && isRobotConnected(selectedRobot);
-  const canExecuteScript = hasConnectedRobot && nodes.length > 0;
   const scriptHeight = isSimpleMode ? (showConsole ? '60%' : '100%') : '67%';
 
   // Enhanced nodes with execution highlighting
@@ -506,7 +506,7 @@ if __name__ == "__main__":
           onDragOver={onDragOver}
           onConnect={onConnect}
           onViewPythonCode={handleViewPythonCode}
-          onNodesChange={onNodesChanges}
+          onNodesChange={onNodesChangeWithCodeUpdate}
           onEdgesChange={onEdgesChanges}
           onNodesDelete={onNodesDelete}
           onEdgesDelete={onEdgesDelete}
@@ -546,13 +546,30 @@ if __name__ == "__main__":
   );
 };
 
+const VisualProgrammingWithRobotConnection: FC<VisualProgrammingContentProps> = ({
+  isSimpleMode,
+}) => {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+
+  return (
+    <RobotConnectionContainer nodes={nodes}>
+      <VisualProgrammingFlow 
+        isSimpleMode={isSimpleMode}
+        nodes={nodes}
+        setNodes={setNodes}
+        onNodesChange={onNodesChange}
+      />
+    </RobotConnectionContainer>
+  );
+};
+
 export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   isSimpleMode,
 }) => {
   return (
     <ReactFlowProvider>
       <LabelsProvider>
-        <VisualProgrammingFlow isSimpleMode={isSimpleMode} />
+        <VisualProgrammingWithRobotConnection isSimpleMode={isSimpleMode} />
       </LabelsProvider>
     </ReactFlowProvider>
   );
