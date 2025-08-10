@@ -40,7 +40,9 @@
   "age": {
     "title": "Quel Âge Avez-Vous?",
     "subtitle": "Cela nous aide à personnaliser l'interface juste pour vous",
-    "yearsOld": "ans"
+    "yearsOld": "ans",
+    "increment": "Augmenter l'âge",
+    "decrement": "Diminuer l'âge"
   },
   "robot": {
     "title": "Sélectionnez Votre Robot",

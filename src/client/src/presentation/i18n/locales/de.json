@@ -40,7 +40,9 @@
   "age": {
     "title": "Wie alt sind Sie?",
     "subtitle": "Dies hilft uns, die Benutzeroberfläche speziell für Sie anzupassen",
-    "yearsOld": "Jahre alt"
+    "yearsOld": "Jahre alt",
+    "increment": "Alter erhöhen",
+    "decrement": "Alter verringern"
   },
   "robot": {
     "title": "Wählen Sie Ihren Roboter",

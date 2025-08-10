@@ -40,7 +40,9 @@
   "age": {
     "title": "Wat is Uw Leeftijd?",
     "subtitle": "Dit helpt ons de interface speciaal voor u aan te passen",
-    "yearsOld": "jaar oud"
+    "yearsOld": "jaar oud",
+    "increment": "Leeftijd verhogen",
+    "decrement": "Leeftijd verlagen"
   },
   "robot": {
     "title": "Selecteer Uw Robot",

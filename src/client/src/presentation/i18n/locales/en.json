@@ -40,7 +40,9 @@
   "age": {
     "title": "What's Your Age?",
     "subtitle": "This helps us customize the interface just for you",
-    "yearsOld": "years old"
+    "yearsOld": "years old",
+    "increment": "Increase age",
+    "decrement": "Decrease age"
   },
   "robot": {
     "title": "Select Your Robot",

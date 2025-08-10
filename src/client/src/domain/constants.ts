@@ -14,3 +14,6 @@ if (!defaultRobotResult.success) {
 }
 
 export const DEFAULT_ROBOT = defaultRobotResult.data;
+export const MIN_AGE = 1;
+export const MAX_AGE = 99;
+export const DEFAULT_AGE = 10;
