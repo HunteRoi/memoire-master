@@ -9,6 +9,10 @@ interface PageLayoutProps {
   children: ReactNode;
   onBack?: () => void;
   onContinue?: () => void;
+  onNavigateLeft?: () => void;
+  onNavigateRight?: () => void;
+  onNavigateUp?: () => void;
+  onNavigateDown?: () => void;
   continueDisabled?: boolean;
   continueText?: string | null;
   backText?: string;
@@ -26,6 +30,10 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   children,
   onBack,
   onContinue,
+  onNavigateLeft,
+  onNavigateRight,
+  onNavigateUp,
+  onNavigateDown,
   continueDisabled = false,
   continueText,
   backText,
@@ -48,6 +56,18 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       } else if (event.key === 'Backspace' && onBack && !isInputElement) {
         event.preventDefault();
         onBack();
+      } else if (event.key === 'ArrowLeft' && onNavigateLeft && !isInputElement) {
+        event.preventDefault();
+        onNavigateLeft();
+      } else if (event.key === 'ArrowRight' && onNavigateRight && !isInputElement) {
+        event.preventDefault();
+        onNavigateRight();
+      } else if (event.key === 'ArrowUp' && onNavigateUp && !isInputElement) {
+        event.preventDefault();
+        onNavigateUp();
+      } else if (event.key === 'ArrowDown' && onNavigateDown && !isInputElement) {
+        event.preventDefault();
+        onNavigateDown();
       }
     };
 
@@ -56,7 +76,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onBack, onContinue, continueDisabled]);
+  }, [onBack, onContinue, onNavigateLeft, onNavigateRight, onNavigateUp, onNavigateDown, continueDisabled]);
 
   return (
     <Box

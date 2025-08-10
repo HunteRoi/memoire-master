@@ -17,6 +17,7 @@ import {
   useNodesState,
   useReactFlow,
 } from 'reactflow';
+
 import {
   BlocksPanel,
   type BlocksPanelLabels,
@@ -30,15 +31,14 @@ import {
   type ScriptPanelLabels,
 } from '../components/visualProgramming/scriptPanel';
 import { useAppContext } from '../hooks/useAppContext';
+import type { RobotFeedback } from '../../domain/robot';
+import type { ConsoleMessage } from '../models/ConsoleMessage';
 
 enum ScriptExecutionState {
   IDLE = 'idle',
   RUNNING = 'running',
   PAUSED = 'paused',
 }
-
-import type { RobotFeedback } from '../../domain/robot';
-import type { ConsoleMessage } from '../models/ConsoleMessage';
 
 interface VisualProgrammingContentProps {
   isSimpleMode: boolean;

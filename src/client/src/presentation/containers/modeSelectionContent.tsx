@@ -1,12 +1,18 @@
 import { Explore, Navigation } from '@mui/icons-material';
 import { Box, Grid } from '@mui/material';
-import type { FC } from 'react';
+import { forwardRef, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { ModeCard } from '../components/modeCard';
 import { useAppContext } from '../hooks/useAppContext';
 import { ModeType } from '../models/Mode';
 
-export const ModeSelectionContent: FC = () => {
+export interface ModeSelectionContentRef {
+  navigateLeft: () => void;
+  navigateRight: () => void;
+}
+
+export const ModeSelectionContent = forwardRef<ModeSelectionContentRef>((_, ref) => {
   const { t } = useTranslation();
   const { selectedMode, setSelectedMode } = useAppContext();
 
@@ -22,6 +28,23 @@ export const ModeSelectionContent: FC = () => {
       icon: <Navigation sx={{ fontSize: '4rem' }} />,
     },
   ];
+
+  const navigateLeft = () => {
+    const currentIndex = modes.findIndex(mode => mode.title === selectedMode);
+    const previousIndex = (currentIndex - 1 + modes.length) % modes.length;
+    setSelectedMode(modes[previousIndex].title);
+  };
+
+  const navigateRight = () => {
+    const currentIndex = modes.findIndex(mode => mode.title === selectedMode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    setSelectedMode(modes[nextIndex].title);
+  };
+
+  useImperativeHandle(ref, () => ({
+    navigateLeft,
+    navigateRight,
+  }));
 
   return (
     <Box
@@ -52,4 +75,4 @@ export const ModeSelectionContent: FC = () => {
       </Grid>
     </Box>
   );
-};
+});

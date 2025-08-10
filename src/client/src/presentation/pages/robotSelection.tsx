@@ -45,12 +45,22 @@ export const RobotSelection: FC = () => {
     }
   };
 
+  const handleNavigateLeft = () => {
+    robotSelectionContentRef.current?.navigateLeft();
+  };
+
+  const handleNavigateRight = () => {
+    robotSelectionContentRef.current?.navigateRight();
+  };
+
   return (
     <PageLayout
       title={t('robot.title')}
       subtitle={t('robot.subtitle')}
       onBack={handleBack}
       onContinue={handleContinue}
+      onNavigateLeft={handleNavigateLeft}
+      onNavigateRight={handleNavigateRight}
       continueDisabled={!selectedRobotData}
       maxWidth='lg'
       defaultLabels={defaultLabels}

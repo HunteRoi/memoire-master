@@ -1,4 +1,4 @@
-import { type FC, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppContext } from '../hooks/useAppContext';
@@ -8,7 +8,12 @@ import { AgeCard } from '../components/age/ageCard';
 import { AgeInput } from '../components/age/ageInput';
 import { AgeControls } from '../components/age/ageControls';
 
-export const AgeSelectionContent: FC = () => {
+export interface AgeSelectionContentRef {
+  navigateUp: () => void;
+  navigateDown: () => void;
+}
+
+export const AgeSelectionContent = forwardRef<AgeSelectionContentRef>((_, ref) => {
   const { t } = useTranslation();
   const { userAge, setUserAge } = useAppContext();
   const [currentAge, setCurrentAge] = useState<number>(userAge?.value || DEFAULT_AGE);
@@ -52,6 +57,19 @@ export const AgeSelectionContent: FC = () => {
     saveAge(newAge);
   };
 
+  const navigateUp = () => {
+    handleIncrementAge();
+  };
+
+  const navigateDown = () => {
+    handleDecrementAge();
+  };
+
+  useImperativeHandle(ref, () => ({
+    navigateUp,
+    navigateDown,
+  }));
+
   return (
     <AgeCard>
       <AgeInput
@@ -73,4 +91,4 @@ export const AgeSelectionContent: FC = () => {
       </AgeInput>
     </AgeCard>
   );
-};
+});

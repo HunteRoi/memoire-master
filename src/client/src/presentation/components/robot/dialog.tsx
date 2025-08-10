@@ -71,6 +71,10 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
 
   useEffect(() => {
     const debounceTimeoutId = setTimeout(() => {
+      if (!ip.trim()) {
+        return;
+      }
+
       const result = Robot.create().setIpAddress(ip).setPort(port).build();
 
       if (result.success) {

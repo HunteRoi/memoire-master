@@ -1,4 +1,4 @@
-import { type FC, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DEFAULT_PORT } from '../../domain/constants';
@@ -14,6 +14,8 @@ import { useRobotManagement } from '../hooks/useRobotManagement';
 
 export interface RobotSelectionContentRef {
   handleEnterKey: () => void;
+  navigateLeft: () => void;
+  navigateRight: () => void;
 }
 
 interface RobotSelectionContentProps {
@@ -71,7 +73,6 @@ export const RobotSelectionContent = forwardRef<RobotSelectionContentRef, RobotS
 
     const robotConnected = isRobotConnected(selectedRobot);
     if (!robotConnected) {
-      // Find the selected robot data and prompt for connection
       const selectedRobotData = robots.find(robot => robot.id === selectedRobot);
       if (selectedRobotData) {
         setRobotToConnect(selectedRobotData);
@@ -81,8 +82,26 @@ export const RobotSelectionContent = forwardRef<RobotSelectionContentRef, RobotS
     // If robot is already connected, let the page handle navigation
   };
 
+  const navigateLeft = () => {
+    if (robots.length === 0) return;
+
+    const currentIndex = robots.findIndex(robot => robot.id === selectedRobot);
+    const previousIndex = (currentIndex - 1 + robots.length) % robots.length;
+    setSelectedRobot(robots[previousIndex].id);
+  };
+
+  const navigateRight = () => {
+    if (robots.length === 0) return;
+
+    const currentIndex = robots.findIndex(robot => robot.id === selectedRobot);
+    const nextIndex = (currentIndex + 1) % robots.length;
+    setSelectedRobot(robots[nextIndex].id);
+  };
+
   useImperativeHandle(ref, () => ({
     handleEnterKey,
+    navigateLeft,
+    navigateRight,
   }));
 
   const handleSaveRobotWithDialog = async (robot: Robot) => {
@@ -108,7 +127,6 @@ export const RobotSelectionContent = forwardRef<RobotSelectionContentRef, RobotS
         t('alerts.robotConnectedSuccess', { robotId: robotToConnect.id }),
         'success'
       );
-      // Call success callback if provided (for navigation)
       onConnectionSuccess?.();
     } else {
       showAlert(
