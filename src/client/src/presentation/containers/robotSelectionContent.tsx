@@ -200,6 +200,7 @@ export const RobotSelectionContent: FC = () => {
         onSave={handleSaveRobotWithDialog}
         onTest={handleRobotConnectionTest}
         labels={robotDialogLabels}
+        ipFieldDisabled={!!robotToEdit}
       />
 
       {robotToConnect && (
