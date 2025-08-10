@@ -23,6 +23,7 @@ import { ConsolePanel } from '../components/visualProgramming/consolePanel';
 import { ScriptPanel } from '../components/visualProgramming/scriptPanel';
 import { LabelsProvider, useVisualProgrammingLabels } from '../providers/visualProgramming/labelsProvider';
 import { RobotConnectionContainer, useRobotConnection } from './visualProgramming/robotConnectionContainer';
+import { CodeGenerationContainer, useCodeGeneration } from './visualProgramming/codeGenerationContainer';
 import type { RobotFeedback } from '../../domain/robot';
 import type { ConsoleMessage } from '../models/ConsoleMessage';
 
@@ -52,11 +53,20 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   const { t } = useTranslation();
   const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels } = useVisualProgrammingLabels();
   const { selectedRobotData, hasConnectedRobot, canExecuteScript, showAlert } = useRobotConnection();
+  const { handleViewPythonCode, handleUpdateCode } = useCodeGeneration();
   const { screenToFlowPosition } = useReactFlow();
 
   // State management
   const [showConsole, setShowConsole] = useState(!isSimpleMode);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  // Update code when nodes change (including deletions)
+  useEffect(() => {
+    const updateCode = async () => {
+      await handleUpdateCode();
+    };
+    updateCode();
+  }, [nodes, handleUpdateCode]);
   const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([
     {
       timestamp: Date.now(),
@@ -79,17 +89,17 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
 
   const onNodesChangeWithCodeUpdate: OnNodesChange = async changes => {
     onNodesChange(changes);
-    await handleUpdateCode();
+    // Code update will be triggered by useEffect when nodes change
   };
   const onEdgesChanges: OnEdgesChange = async changes => {
     onEdgesChange(changes);
     await handleUpdateCode();
   };
   const onNodesDelete: OnNodesDelete = async _ => {
-    await handleUpdateCode();
+    // Code update will be triggered by useEffect when nodes change
   };
   const onEdgesDelete: OnEdgesDelete = async _ => {
-    await handleUpdateCode();
+    // Code update will be triggered by useEffect when nodes change
   };
 
   // Computed values
@@ -215,93 +225,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     [setEdges]
   );
 
-  // Python code generation logic
-  const generatePythonCode = useCallback(() => {
-    if (nodes.length === 0) {
-      const generatedComment = t('visualProgramming.pythonViewer.generatedComment');
-      const basedOnComment = t('visualProgramming.pythonViewer.basedOnComment');
-      const completedComment = t('visualProgramming.pythonViewer.completedComment');
-
-      return `# ${generatedComment}
-# ${basedOnComment}
-
-import robot
-
-# No blocks in script
-print("${completedComment}")`;
-    }
-
-    const generatedComment = t('visualProgramming.pythonViewer.generatedComment');
-    const basedOnComment = t('visualProgramming.pythonViewer.basedOnComment');
-
-    let pythonCode = `# ${generatedComment}
-# ${basedOnComment}
-
-import robot
-import time
-
-def execute_block(block_type, block_name):
-    """Execute a single block based on its type"""
-    print(f"Executing: {block_name}")
-
-    if block_type == 'move_forward':
-        robot.move_forward()
-    elif block_type == 'move_backward':
-        robot.move_backward()
-    elif block_type == 'turn_left':
-        robot.turn_left()
-    elif block_type == 'turn_right':
-        robot.turn_right()
-    elif block_type == 'distance_sensor':
-        distance = robot.get_distance()
-        print(f"Distance reading: {distance}")
-        return distance
-    elif block_type == 'light_sensor':
-        light = robot.get_light_level()
-        print(f"Light level: {light}")
-        return light
-    elif block_type == 'camera':
-        image = robot.take_photo()
-        print("Photo taken")
-        return image
-    elif block_type == 'wait':
-        print("Waiting...")
-        time.sleep(1)
-    else:
-        print(f"Unknown block type: {block_type}")
-
-def main():
-    """Main execution function"""
-    print("Starting script execution...")
-
-    # Execute all blocks independently
-`;
-
-    nodes.forEach(node => {
-      pythonCode += `    execute_block("${node.data.blockType}", "${node.data.blockName}")  # ${node.data.blockIcon} ${node.data.blockName}\n`;
-    });
-
-    const completedComment = t('visualProgramming.pythonViewer.completedComment');
-    pythonCode += `    print("${completedComment}")
-
-if __name__ == "__main__":
-    main()`;
-
-    return pythonCode;
-  }, [nodes, t]);
-
-  const handleViewPythonCode = useCallback(async () => {
-    const pythonCode = generatePythonCode();
-    await window.electronAPI.pythonCodeViewer.openWindow(
-      pythonCode,
-      t('visualProgramming.pythonViewer.title') as string
-    );
-  }, [generatePythonCode, t]);
-
-  const handleUpdateCode = useCallback(async () => {
-    const pythonCode = generatePythonCode();
-    await window.electronAPI.pythonCodeViewer.updateCode(pythonCode);
-  }, [generatePythonCode]);
 
   // Helper function for cancellable delay
   const cancellableDelay = useCallback((ms: number, abortController: AbortController): Promise<void> => {
@@ -553,12 +476,14 @@ const VisualProgrammingWithRobotConnection: FC<VisualProgrammingContentProps> = 
 
   return (
     <RobotConnectionContainer nodes={nodes}>
-      <VisualProgrammingFlow 
-        isSimpleMode={isSimpleMode}
-        nodes={nodes}
-        setNodes={setNodes}
-        onNodesChange={onNodesChange}
-      />
+      <CodeGenerationContainer nodes={nodes}>
+        <VisualProgrammingFlow 
+          isSimpleMode={isSimpleMode}
+          nodes={nodes}
+          setNodes={setNodes}
+          onNodesChange={onNodesChange}
+        />
+      </CodeGenerationContainer>
     </RobotConnectionContainer>
   );
 };
