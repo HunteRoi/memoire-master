@@ -263,6 +263,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
             connectionMode={ConnectionMode.Loose}
             fitView
             deleteKeyCode={['Backspace', 'Delete']}
+            proOptions={{ hideAttribution: true }}
           >
             <Background />
             <Controls />
