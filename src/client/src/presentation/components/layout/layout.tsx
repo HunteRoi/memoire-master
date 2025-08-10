@@ -41,8 +41,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       if (
         (event.key === 'Enter' || event.key === 'NumpadEnter') &&
         onContinue &&
-        !continueDisabled &&
-        !isInputElement
+        !continueDisabled
       ) {
         event.preventDefault();
         onContinue();
