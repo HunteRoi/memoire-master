@@ -1,10 +1,12 @@
-import { Failure, type Result, Success } from './result';
+import type WebSocket from 'ws';
+
+import { Failure, type Result, Success, type ValidationResult } from './result';
 
 export class Robot {
   constructor(
     public readonly ipAddress: string,
     public readonly port: number
-  ) {}
+  ) { }
 
   get id(): string {
     const value = this.ipAddress.split('.');
@@ -21,11 +23,6 @@ export class Robot {
 }
 
 export type RobotConfig = Pick<Robot, 'ipAddress' | 'port'>;
-
-interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
-}
 
 export class RobotBuilder {
   private ipAddress?: string;
@@ -134,4 +131,35 @@ export class RobotBuilder {
 
     return { isValid: errors.length === 0, errors };
   }
+}
+
+export interface RobotFeedback {
+  robotId: string;
+  timestamp: number;
+  type: 'info' | 'success' | 'warning' | 'error';
+  message: string;
+  data?: unknown;
+}
+
+export type RobotFeedbackCallback = (feedback: RobotFeedback) => void;
+
+export interface ConnectedRobot {
+  robot: Robot;
+  websocket: WebSocket; // design decision to let external package blood into the domain layer
+  connected: boolean;
+  lastPing: number;
+  feedbackCallback?: RobotFeedbackCallback;
+}
+
+export interface RobotMessage {
+  type: 'command' | 'ping' | 'status';
+  data: unknown;
+  timestamp: number;
+}
+
+export interface RobotResponse {
+  type: 'success' | 'error' | 'status' | 'pong';
+  data?: unknown;
+  message?: string;
+  timestamp: number;
 }
