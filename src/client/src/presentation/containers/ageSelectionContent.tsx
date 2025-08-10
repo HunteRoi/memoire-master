@@ -19,6 +19,7 @@ export const AgeSelectionContent: FC = () => {
   const [age, setAge] = useState<number>(userAge?.value || 10);
 
   const handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation();
     const newAge = parseInt(event.target.value);
     if (!Number.isNaN(newAge) && newAge >= 1) {
       setAge(newAge);

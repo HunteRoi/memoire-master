@@ -10,7 +10,7 @@ import {
   TextField,
 } from '@mui/material';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { ChangeEventHandler, useEffect, useState } from 'react';
 import { DEFAULT_PORT, DEFAULT_ROBOT } from '../../../domain/constants';
 import { Robot } from '../../../domain/robot';
 
@@ -37,6 +37,7 @@ interface RobotDialogProps {
   onSave: (robot: Robot) => void;
   onTest: (robot: Robot) => Promise<boolean>;
   labels: RobotDialogLabels;
+  ipFieldDisabled?: boolean
 }
 
 export const RobotDialog: React.FC<RobotDialogProps> = ({
@@ -46,6 +47,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
   onSave,
   onTest,
   labels,
+  ipFieldDisabled = false
 }) => {
   const [ip, setIp] = useState('');
   const [port, setPort] = useState(DEFAULT_PORT);
@@ -67,7 +69,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
   }, [robot]);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    const debounceTimeoutId = setTimeout(() => {
       const result = Robot.create().setIpAddress(ip).setPort(port).build();
 
       if (result.success) {
@@ -78,7 +80,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
       }
     }, 300);
 
-    return () => clearTimeout(timeoutId);
+    return () => clearTimeout(debounceTimeoutId);
   }, [ip, port]);
 
   const handleTest = async () => {
@@ -98,6 +100,16 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
 
   const handleSave = () => {
     onSave(currentRobot);
+  };
+
+  const onIpChange: ChangeEventHandler<HTMLInputElement> = e => {
+    e.stopPropagation();
+    setIp(e.target.value);
+  };
+
+  const onPortChange: ChangeEventHandler<HTMLInputElement> = e => {
+    e.stopPropagation();
+    setPort(parseInt(e.target.value) || DEFAULT_PORT);
   };
 
   return (
@@ -127,9 +139,10 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
             fullWidth
             variant='outlined'
             value={ip}
-            onChange={e => setIp(e.target.value)}
+            onChange={onIpChange}
             placeholder='192.168.1.121'
             sx={{ mb: 2 }}
+            disabled={ipFieldDisabled}
           />
 
           <Alert severity='info' sx={{ mb: 2 }}>
@@ -143,10 +156,12 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
             fullWidth
             variant='outlined'
             value={port}
-            onChange={e => setPort(parseInt(e.target.value) || DEFAULT_PORT)}
+            onChange={onPortChange}
             sx={{ mb: 2 }}
-            inputProps={{
-              'aria-describedby': 'robot-port-description',
+            slotProps={{
+              htmlInput: {
+                'aria-describedby': 'robot-port-description',
+              }
             }}
           />
           <Box id='robot-port-description' sx={{ display: 'none' }}>
