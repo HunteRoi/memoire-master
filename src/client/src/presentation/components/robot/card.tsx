@@ -1,10 +1,11 @@
-import { Delete, Edit, LinkOff, Wifi, WifiOff } from '@mui/icons-material';
+import { Delete, Edit, LinkOff, Wifi, WifiOff, RadioButtonUnchecked, CheckCircle, Link } from '@mui/icons-material';
 import {
   Box,
   Card,
   CardContent,
   Chip,
   IconButton,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import type { FC, MouseEventHandler } from 'react';
@@ -13,10 +14,10 @@ import { DEFAULT_ROBOT } from '../../../domain/constants';
 import type { Robot } from '../../../domain/robot';
 
 interface RobotCardLabels {
-  select: (robotName: string) => string;
+  connect: (robotName: string) => string;
+  disconnect: (robotName: string) => string;
   edit: (robotName: string) => string;
   delete: (robotName: string) => string;
-  disconnect: (robotName: string) => string;
   connected: string;
   disconnected: string;
 }
@@ -24,6 +25,7 @@ interface RobotCardLabels {
 interface RobotCardProps {
   robot: Robot;
   onSelect: (robot: Robot) => void;
+  onConnect: (robot: Robot) => void;
   onEdit: (robot: Robot) => void;
   onDelete: (robotId: string) => void;
   onDisconnect: (robot: Robot) => void;
@@ -35,6 +37,7 @@ interface RobotCardProps {
 const RobotCardComponent: FC<RobotCardProps> = ({
   robot,
   onSelect,
+  onConnect,
   onEdit,
   onDelete,
   onDisconnect,
@@ -42,7 +45,6 @@ const RobotCardComponent: FC<RobotCardProps> = ({
   connected,
   labels,
 }) => {
-  // Memoize event handlers to prevent unnecessary re-renders
   const onEditClick: MouseEventHandler<HTMLButtonElement> = useCallback(
     event => {
       event.stopPropagation();
@@ -67,21 +69,14 @@ const RobotCardComponent: FC<RobotCardProps> = ({
     [onDisconnect, robot]
   );
 
-  const handleCardClick = useCallback(() => {
-    onSelect(robot);
-  }, [onSelect, robot]);
-
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        onSelect(robot);
-      }
+  const onConnectClick: MouseEventHandler<HTMLButtonElement> = useCallback(
+    event => {
+      event.stopPropagation();
+      onConnect(robot);
     },
-    [onSelect, robot]
+    [onConnect, robot]
   );
 
-  // Memoize computed values
   const isDefaultRobot = useMemo(
     () => robot.id === DEFAULT_ROBOT.id,
     [robot.id]
@@ -90,30 +85,24 @@ const RobotCardComponent: FC<RobotCardProps> = ({
   const cardSx = useMemo(
     () => ({
       height: '100%',
-      minHeight: 140,
-      cursor: 'pointer',
+      minHeight: 200,
       border: selected ? 2 : 1,
       borderColor: selected ? 'primary.main' : 'divider',
-      position: 'relative',
       display: 'flex',
       flexDirection: 'column',
+      cursor: 'pointer',
       '&:hover': {
         borderColor: 'primary.main',
         elevation: 4,
-      },
-      '&:focus': {
-        outline: '2px solid',
-        outlineColor: 'primary.main',
-        outlineOffset: '2px',
       },
     }),
     [selected]
   );
 
-  const selectAriaLabel = useMemo(
-    () => labels.select(robot.name),
-    [labels, robot.name]
-  );
+  const handleCardClick = useCallback(() => {
+    onSelect(robot);
+  }, [onSelect, robot]);
+
 
   const editAriaLabel = useMemo(
     () => labels.edit(robot.name),
@@ -125,20 +114,18 @@ const RobotCardComponent: FC<RobotCardProps> = ({
     [labels, robot.name]
   );
 
-  const disconnectAriaLabel = useMemo(
+  const connectTooltip = useMemo(
+    () => labels.connect(robot.name),
+    [labels, robot.name]
+  );
+
+  const disconnectTooltip = useMemo(
     () => labels.disconnect(robot.name),
     [labels, robot.name]
   );
 
   return (
-    <Card
-      tabIndex={0}
-      aria-pressed={selected}
-      aria-label={selectAriaLabel}
-      sx={cardSx}
-      onClick={handleCardClick}
-      onKeyDown={handleKeyDown}
-    >
+    <Card sx={cardSx} onClick={handleCardClick}>
       <CardContent
         sx={{
           flex: 1,
@@ -163,31 +150,48 @@ const RobotCardComponent: FC<RobotCardProps> = ({
             />
           </Box>
           <Box>
-            {connected && (
-              <IconButton
-                size='small'
-                onClick={onDisconnectClick}
-                color='warning'
-                aria-label={disconnectAriaLabel}
-              >
-                <LinkOff />
-              </IconButton>
+            {connected ? (
+              <Tooltip title={disconnectTooltip}>
+                <IconButton
+                  size='small'
+                  onClick={onDisconnectClick}
+                  color='warning'
+                  aria-label={disconnectTooltip}
+                >
+                  <LinkOff />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Tooltip title={connectTooltip}>
+                <IconButton
+                  size='small'
+                  onClick={onConnectClick}
+                  color='primary'
+                  aria-label={connectTooltip}
+                >
+                  <Link />
+                </IconButton>
+              </Tooltip>
             )}
-            <IconButton
-              size='small'
-              onClick={onEditClick}
-              aria-label={editAriaLabel}
-            >
-              <Edit />
-            </IconButton>
-            {!isDefaultRobot && (
+            <Tooltip title={editAriaLabel}>
               <IconButton
                 size='small'
-                onClick={onDeleteClick}
-                aria-label={deleteAriaLabel}
+                onClick={onEditClick}
+                aria-label={editAriaLabel}
               >
-                <Delete />
+                <Edit />
               </IconButton>
+            </Tooltip>
+            {!isDefaultRobot && (
+              <Tooltip title={deleteAriaLabel}>
+                <IconButton
+                  size='small'
+                  onClick={onDeleteClick}
+                  aria-label={deleteAriaLabel}
+                >
+                  <Delete />
+                </IconButton>
+              </Tooltip>
             )}
           </Box>
         </Box>
@@ -196,6 +200,7 @@ const RobotCardComponent: FC<RobotCardProps> = ({
           IP: {robot.ipAddress}:{robot.port}
         </Typography>
       </CardContent>
+
     </Card>
   );
 };
@@ -210,6 +215,7 @@ export const RobotCard = memo(RobotCardComponent, (prevProps, nextProps) => {
     prevProps.selected === nextProps.selected &&
     prevProps.connected === nextProps.connected &&
     prevProps.onSelect === nextProps.onSelect &&
+    prevProps.onConnect === nextProps.onConnect &&
     prevProps.onEdit === nextProps.onEdit &&
     prevProps.onDelete === nextProps.onDelete &&
     prevProps.onDisconnect === nextProps.onDisconnect &&

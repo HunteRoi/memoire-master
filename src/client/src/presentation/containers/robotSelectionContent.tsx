@@ -1,4 +1,4 @@
-import { type FC, useMemo, useState } from 'react';
+import { type FC, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DEFAULT_PORT } from '../../domain/constants';
@@ -12,7 +12,15 @@ import { RobotGrid } from '../components/robot/robotGrid';
 import { useAppContext } from '../hooks/useAppContext';
 import { useRobotManagement } from '../hooks/useRobotManagement';
 
-export const RobotSelectionContent: FC = () => {
+export interface RobotSelectionContentRef {
+  handleEnterKey: () => void;
+}
+
+interface RobotSelectionContentProps {
+  onConnectionSuccess?: () => void;
+}
+
+export const RobotSelectionContent = forwardRef<RobotSelectionContentRef, RobotSelectionContentProps>(({ onConnectionSuccess }, ref) => {
   const { t } = useTranslation();
   const { setSelectedRobot, showAlert } = useAppContext();
 
@@ -44,19 +52,38 @@ export const RobotSelectionContent: FC = () => {
   };
 
   const handleRobotSelection = (robot: Robot) => {
-    const robotConnected = isRobotConnected(robot.id);
-
-    if (robotConnected) {
-      setSelectedRobot(robot.id);
-      showAlert(
-        t('alerts.robotAlreadyConnected', { robotId: robot.id }),
-        'info'
-      );
-    } else {
-      setRobotToConnect(robot);
-      setConfirmDialogOpen(true);
-    }
+    setSelectedRobot(robot.id);
   };
+
+  const handleRobotConnect = (robot: Robot) => {
+    setRobotToConnect(robot);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleEnterKey = () => {
+    if (!selectedRobot) {
+      showAlert(
+        t('alerts.noRobotSelected', 'You have to select a robot to connect to in order to continue'),
+        'error'
+      );
+      return;
+    }
+
+    const robotConnected = isRobotConnected(selectedRobot);
+    if (!robotConnected) {
+      // Find the selected robot data and prompt for connection
+      const selectedRobotData = robots.find(robot => robot.id === selectedRobot);
+      if (selectedRobotData) {
+        setRobotToConnect(selectedRobotData);
+        setConfirmDialogOpen(true);
+      }
+    }
+    // If robot is already connected, let the page handle navigation
+  };
+
+  useImperativeHandle(ref, () => ({
+    handleEnterKey,
+  }));
 
   const handleSaveRobotWithDialog = async (robot: Robot) => {
     const success = await handleSaveRobot(robot, !!robotToEdit);
@@ -81,6 +108,8 @@ export const RobotSelectionContent: FC = () => {
         t('alerts.robotConnectedSuccess', { robotId: robotToConnect.id }),
         'success'
       );
+      // Call success callback if provided (for navigation)
+      onConnectionSuccess?.();
     } else {
       showAlert(
         t('alerts.robotConnectionFailed', { robotId: robotToConnect.id }),
@@ -158,18 +187,14 @@ export const RobotSelectionContent: FC = () => {
 
   const robotCardLabels = useMemo(
     () => ({
-      select: (robotName: string) =>
-        t('robot.card.select', `Select robot ${robotName}`, {
-          name: robotName,
-        }),
+      connect: (robotName: string) =>
+        t('robot.card.connect', `Connect to robot ${robotName}`, { name: robotName }),
+      disconnect: (robotName: string) =>
+        t('robot.card.disconnect', `Disconnect from robot ${robotName}`, { name: robotName }),
       edit: (robotName: string) =>
         t('robot.card.edit', `Edit robot ${robotName}`, { name: robotName }),
       delete: (robotName: string) =>
         t('robot.card.delete', `Delete robot ${robotName}`, {
-          name: robotName,
-        }),
-      disconnect: (robotName: string) =>
-        t('robot.card.disconnect', `Disconnect from robot ${robotName}`, {
           name: robotName,
         }),
       connected: t('robot.connected'),
@@ -185,6 +210,7 @@ export const RobotSelectionContent: FC = () => {
         selectedRobotId={selectedRobot}
         isRobotConnected={isRobotConnected}
         onRobotSelect={handleRobotSelection}
+        onRobotConnect={handleRobotConnect}
         onRobotEdit={handleEditRobot}
         onRobotDelete={handleDeleteRobot}
         onRobotDisconnect={handleDisconnectRobot}
@@ -214,4 +240,4 @@ export const RobotSelectionContent: FC = () => {
       )}
     </>
   );
-};
+});

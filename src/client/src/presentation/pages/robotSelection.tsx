@@ -1,17 +1,18 @@
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import type { Robot } from '../../domain/robot';
 import { PageLayout } from '../components/layout/layout';
-import { RobotSelectionContent } from '../containers/robotSelectionContent';
+import { RobotSelectionContent, type RobotSelectionContentRef } from '../containers/robotSelectionContent';
 import { useAppContext } from '../hooks/useAppContext';
 import { useRobotManagement } from '../hooks/useRobotManagement';
 
 export const RobotSelection: FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { setError, setSelectedRobot } = useAppContext();
+  const { setError } = useAppContext();
+  const robotSelectionContentRef = useRef<RobotSelectionContentRef>(null);
 
   const { robots, selectedRobot, isRobotConnected } = useRobotManagement();
 
@@ -39,10 +40,8 @@ export const RobotSelection: FC = () => {
     if (robotConnected) {
       navigate('/mode-selection');
     } else {
-      setError(
-        'The selected robot is not connected. Please connect to it first.'
-      );
-      setSelectedRobot(null);
+      // Delegate to container to show connection dialog
+      robotSelectionContentRef.current?.handleEnterKey();
     }
   };
 
@@ -52,13 +51,14 @@ export const RobotSelection: FC = () => {
       subtitle={t('robot.subtitle')}
       onBack={handleBack}
       onContinue={handleContinue}
-      continueDisabled={
-        !selectedRobotData || !isRobotConnected(selectedRobot || '')
-      }
+      continueDisabled={!selectedRobotData}
       maxWidth='lg'
       defaultLabels={defaultLabels}
     >
-      <RobotSelectionContent />
+      <RobotSelectionContent 
+        ref={robotSelectionContentRef} 
+        onConnectionSuccess={() => navigate('/mode-selection')}
+      />
     </PageLayout>
   );
 };

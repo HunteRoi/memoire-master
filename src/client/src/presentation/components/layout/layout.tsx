@@ -1,6 +1,6 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import type React from 'react';
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 import { LanguageSelector } from '../languageSelector';
 
 interface PageLayoutProps {

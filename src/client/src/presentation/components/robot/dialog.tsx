@@ -10,7 +10,8 @@ import {
   TextField,
 } from '@mui/material';
 import type React from 'react';
-import { ChangeEventHandler, useEffect, useState } from 'react';
+import { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
+
 import { DEFAULT_PORT, DEFAULT_ROBOT } from '../../../domain/constants';
 import { Robot } from '../../../domain/robot';
 
@@ -112,10 +113,28 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
     setPort(parseInt(e.target.value) || DEFAULT_PORT);
   };
 
+  const handleDialogKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === 'NumpadEnter') {
+      if (testResult === 'success') {
+        event.preventDefault();
+        handleSave();
+      }
+    } else if (event.key === 'Backspace' || event.key === 'Escape') {
+      // Only handle backspace/escape if not focused on an input
+      const target = event.target as HTMLElement;
+      const isInputElement = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+      if (!isInputElement) {
+        event.preventDefault();
+        onClose();
+      }
+    }
+  }, [testResult, handleSave, onClose]);
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
+      onKeyDown={handleDialogKeyDown}
       maxWidth='sm'
       fullWidth
       aria-labelledby='robot-dialog-title'

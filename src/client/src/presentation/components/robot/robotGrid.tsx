@@ -5,10 +5,10 @@ import { AddRobotCard } from './addRobotCard';
 import { RobotCard } from './card';
 
 interface RobotCardLabels {
-  select: (robotName: string) => string;
+  connect: (robotName: string) => string;
+  disconnect: (robotName: string) => string;
   edit: (robotName: string) => string;
   delete: (robotName: string) => string;
-  disconnect: (robotName: string) => string;
   connected: string;
   disconnected: string;
 }
@@ -18,6 +18,7 @@ interface RobotGridProps {
   selectedRobotId: string | null | undefined;
   isRobotConnected: (robotId: string) => boolean;
   onRobotSelect: (robot: Robot) => void;
+  onRobotConnect: (robot: Robot) => void;
   onRobotEdit: (robot: Robot) => void;
   onRobotDelete: (robotId: string) => void;
   onRobotDisconnect: (robot: Robot) => void;
@@ -31,6 +32,7 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
   selectedRobotId,
   isRobotConnected,
   onRobotSelect,
+  onRobotConnect,
   onRobotEdit,
   onRobotDelete,
   onRobotDisconnect,
@@ -45,6 +47,7 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
           <RobotCard
             robot={robot}
             onSelect={onRobotSelect}
+            onConnect={onRobotConnect}
             onEdit={onRobotEdit}
             onDelete={onRobotDelete}
             onDisconnect={onRobotDisconnect}
