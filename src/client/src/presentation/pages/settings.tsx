@@ -12,6 +12,7 @@ import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
+import { LanguageSelector } from '../components/languageSelector';
 import { TabPanel } from '../components/tabPanel';
 import { AgeSelectionContent } from '../containers/ageSelectionContent';
 import { ModeSelectionContent } from '../containers/modeSelectionContent';
@@ -50,6 +51,7 @@ export const Settings: FC = () => {
         <Typography variant='h5' component='h1' sx={{ flexGrow: 1 }}>
           {t('settings.title')}
         </Typography>
+        <LanguageSelector />
       </Box>
 
       {/* Tabs */}
