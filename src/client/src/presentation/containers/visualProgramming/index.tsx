@@ -86,6 +86,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   } = useConsole();
   const {
     executionState,
+    currentlyExecutingNodeId,
     enhancedNodes,
     handlePlayScript,
     handlePauseScript,
@@ -331,6 +332,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
             nodes={enhancedNodes}
             edges={edges}
             executionState={executionState}
+            currentlyExecutingNodeId={currentlyExecutingNodeId}
             canExecuteScript={canExecuteScript}
             labels={scriptPanelLabels}
             onSettings={handleSettings}

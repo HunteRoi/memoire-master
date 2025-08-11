@@ -7,7 +7,7 @@ import {
   Stop,
 } from '@mui/icons-material';
 import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
-import type { DragEvent, FC } from 'react';
+import { type DragEvent, type FC, useEffect } from 'react';
 import ReactFlow, {
   Background,
   type Connection,
@@ -17,6 +17,7 @@ import ReactFlow, {
   type Node,
   type OnEdgesChange,
   type OnNodesChange,
+  useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -41,6 +42,7 @@ interface ScriptPanelProps {
   isSimpleMode: boolean;
   nodes: Node[];
   executionState: 'idle' | 'running' | 'paused';
+  currentlyExecutingNodeId: string | null;
   canExecuteScript: boolean;
   labels: ScriptPanelLabels;
   onSettings: () => void;
@@ -61,6 +63,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
   isSimpleMode,
   nodes,
   executionState,
+  currentlyExecutingNodeId,
   canExecuteScript,
   labels,
   onSettings,
@@ -75,6 +78,26 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
   onClearScript,
   edges,
 }) => {
+  const { fitView, setCenter } = useReactFlow();
+
+  // Focus on the currently executing node
+  useEffect(() => {
+    if (currentlyExecutingNodeId) {
+      const executingNode = nodes.find(node => node.id === currentlyExecutingNodeId);
+      if (executingNode && executingNode.position) {
+        // Center the view on the executing node with smooth animation
+        setCenter(
+          executingNode.position.x + (executingNode.width || 150) / 2,
+          executingNode.position.y + (executingNode.height || 40) / 2,
+          {
+            zoom: 1.2,
+            duration: 800
+          }
+        );
+      }
+    }
+  }, [currentlyExecutingNodeId, nodes, setCenter]);
+
   return (
     <Box sx={{ position: 'relative', height, width: '100%' }}>
       <Paper
