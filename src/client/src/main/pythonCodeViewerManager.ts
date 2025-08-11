@@ -1,7 +1,6 @@
 import { BrowserWindow, ipcMain } from 'electron';
 
 declare const PYTHON_VIEWER_WEBPACK_ENTRY: string;
-declare const PYTHON_VIEWER_PRELOAD_WEBPACK_ENTRY: string;
 
 /**
  * A wrapper for the Python code viewer management methods
@@ -49,9 +48,6 @@ export class PythonCodeViewerManager {
       width: 900,
       height: 700,
       title: title || 'Generated Python Code',
-      webPreferences: {
-        preload: PYTHON_VIEWER_PRELOAD_WEBPACK_ENTRY,
-      },
       parent: BrowserWindow.getFocusedWindow() || undefined
     });
 
