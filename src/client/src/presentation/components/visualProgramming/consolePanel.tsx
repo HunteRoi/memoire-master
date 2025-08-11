@@ -28,6 +28,7 @@ interface ConsolePanelProps {
   onFeedback: (feedback: RobotFeedback) => void;
   onAddMessage: (type: string, message: string) => void;
   onClearConsole: () => void;
+  'data-tutorial'?: string;
 }
 
 export const ConsolePanel: FC<ConsolePanelProps> = ({
@@ -40,6 +41,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
   onFeedback,
   onAddMessage,
   onClearConsole,
+  'data-tutorial': dataTutorial,
 }) => {
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
@@ -118,6 +120,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
         display: 'flex',
         flexDirection: 'column',
       }}
+      data-tutorial={dataTutorial}
     >
       <Box
         sx={{

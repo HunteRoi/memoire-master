@@ -362,6 +362,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
               onFeedback={handleFeedback}
               onAddMessage={addConsoleMessage}
               onClearConsole={handleClearConsole}
+              data-tutorial='console'
             />
           </Panel.BottomPanel>
         )}
@@ -371,7 +372,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         <Panel.FloatingButton
           icon={<Visibility />}
           onClick={handleToggleConsole}
-          data-tutorial='show-console-button'
+          data-tutorial='console'
         >
           {consolePanelLabels.showConsole}
         </Panel.FloatingButton>

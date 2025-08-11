@@ -78,7 +78,7 @@ export const getVisualProgrammingTutorialSteps = (): TutorialStep[] => [
     id: 'console-panel',
     title: 'tutorial.visualProgramming.consolePanel.title',
     content: 'tutorial.visualProgramming.consolePanel.content',
-    targetSelector: '[data-tutorial="show-console-button"]',
+    targetSelector: '[data-tutorial="console"]',
     placement: 'top',
   },
   {
