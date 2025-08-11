@@ -227,6 +227,15 @@
       "executingBlock": "Ausführung: {{blockName}}",
       "scriptStoppedByUser": "Skriptausführung vom Benutzer gestoppt"
     },
+    "errors": {
+      "invalidBlockData": "Ungültige Blockdaten empfangen",
+      "invalidBlockStructure": "Ungültige Blockstruktur",
+      "failedToAddBlock": "Fehler beim Hinzufügen des Blocks"
+    },
+    "success": {
+      "blockAdded": "Block hinzugefügt: {{blockName}}",
+      "blockDeleted": "Block gelöscht: {{blockName}}"
+    },
     "alerts": {
       "noRobotConnected": "Kein Roboter verbunden. Bitte verbinden Sie zuerst einen Roboter.",
       "noBlocksInScript": "Keine Blöcke im Skript. Bitte fügen Sie zuerst Blöcke hinzu.",

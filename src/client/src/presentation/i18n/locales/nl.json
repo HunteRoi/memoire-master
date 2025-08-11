@@ -227,6 +227,15 @@
       "executingBlock": "Uitvoeren: {{blockName}}",
       "scriptStoppedByUser": "Script uitvoering gestopt door gebruiker"
     },
+    "errors": {
+      "invalidBlockData": "Ongeldige blokgegevens ontvangen",
+      "invalidBlockStructure": "Ongeldige blokstructuur",
+      "failedToAddBlock": "Kan blok niet toevoegen"
+    },
+    "success": {
+      "blockAdded": "Blok toegevoegd: {{blockName}}",
+      "blockDeleted": "Blok verwijderd: {{blockName}}"
+    },
     "alerts": {
       "noRobotConnected": "Geen robot verbonden. Maak eerst verbinding met een robot.",
       "noBlocksInScript": "Geen blokken in script. Voeg eerst wat blokken toe.",

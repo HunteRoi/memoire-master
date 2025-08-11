@@ -103,31 +103,12 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
     }
   };
 
-  // Show toggle button when console is closed (in both modes)
-  if (!isVisible) {
-    return (
-      <Button
-        variant='contained'
-        onClick={onToggle}
-        startIcon={<Visibility />}
-        sx={{
-          position: 'fixed',
-          bottom: 16,
-          right: 16,
-          zIndex: 998,
-        }}
-      >
-        {labels.showConsole}
-      </Button>
-    );
-  }
-
   return (
     <Paper
       elevation={2}
       sx={{
         width: '100%',
-        height: isSimpleMode ? '40%' : '33%',
+        height: '100%',
         borderRadius: 0,
         borderTop: 1,
         borderColor: 'divider',

@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import { type FC, useCallback, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { useNavigate } from 'react-router';
 import {
@@ -14,9 +13,11 @@ import {
   useNodesState,
   useReactFlow,
 } from 'reactflow';
+import { Visibility } from '@mui/icons-material';
 
 import { BlocksPanel } from '../components/visualProgramming/blocksPanel';
 import { ConsolePanel } from '../components/visualProgramming/consolePanel';
+import { Panel } from '../components/visualProgramming/panel';
 import { ScriptPanel } from '../components/visualProgramming/scriptPanel';
 import { LabelsProvider, useVisualProgrammingLabels } from '../providers/visualProgramming/labelsProvider';
 import { RobotConnectionContainer, useRobotConnection } from './visualProgramming/robotConnectionContainer';
@@ -41,12 +42,12 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   onNodesChange,
 }) => {
   const navigate = useNavigate();
-  const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels } = useVisualProgrammingLabels();
+  const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels, errorMessages, successMessages } = useVisualProgrammingLabels();
   const { selectedRobotData, hasConnectedRobot, canExecuteScript, showAlert } = useRobotConnection();
   const { handleViewPythonCode, handleUpdateCode } = useCodeGeneration();
   const { consoleMessages, showConsole, handleFeedback, addConsoleMessage, handleToggleConsole } = useConsole();
   const { executionState, enhancedNodes, handlePlayScript, handlePauseScript, handleStopScript } = useScriptExecution();
-  const scriptHeight = showConsole ? '67%' : '100%';
+  const scriptHeight = showConsole ? '60%' : '100%';
   const handleSettings = useCallback(() => {
     navigate('/settings');
   }, [navigate]);
@@ -62,6 +63,16 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   const { screenToFlowPosition } = useReactFlow();
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const onNodesChangeWithCodeUpdate: OnNodesChange = async changes => {
+    // Detect node deletions and add console messages
+    changes.forEach(change => {
+      if (change.type === 'remove') {
+        const nodeToRemove = nodes.find(node => node.id === change.id);
+        if (nodeToRemove && nodeToRemove.data?.blockName) {
+          addConsoleMessage('info', successMessages.blockDeleted(nodeToRemove.data.blockName));
+        }
+      }
+    });
+    
     onNodesChange(changes);
   };
   const onEdgesChanges: OnEdgesChange = async changes => {
@@ -86,14 +97,14 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           blockData = JSON.parse(rawData);
         } catch (parseError) {
           console.error('Invalid JSON in drag data:', parseError, 'Raw data:', rawData);
-          showAlert('Invalid block data received', 'error');
+          showAlert(errorMessages.invalidBlockData, 'error');
           return;
         }
 
         // Validate block data structure
         if (!blockData || typeof blockData !== 'object' || !blockData.id || !blockData.name) {
           console.error('Invalid block data structure:', blockData);
-          showAlert('Invalid block structure', 'error');
+          showAlert(errorMessages.invalidBlockStructure, 'error');
           return;
         }
 
@@ -120,11 +131,11 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         setNodes(n => [...n, newNode]);
 
         // Add console message for successful block addition
-        addConsoleMessage('info', `Added block: ${blockData.name}`);
+        addConsoleMessage('info', successMessages.blockAdded(blockData.name));
 
       } catch (error) {
         console.error('Error handling drop:', error);
-        showAlert('Failed to add block', 'error');
+        showAlert(errorMessages.failedToAddBlock, 'error');
       }
     },
     [setNodes, screenToFlowPosition, showAlert, addConsoleMessage]
@@ -150,55 +161,63 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   );
 
   return (
-    <>
-      {/* Blocks Panel - Left Side (20% width) */}
-      <BlocksPanel isSimpleMode={isSimpleMode} labels={blocksPanelLabels} />
+    <Panel>
+      <Panel.LeftPanel>
+        <BlocksPanel isSimpleMode={isSimpleMode} labels={blocksPanelLabels} />
+      </Panel.LeftPanel>
 
-      {/* Right Side Container */}
-      <Box
-        sx={{
-          width: '80%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <ScriptPanel
-          height={scriptHeight}
-          isSimpleMode={isSimpleMode}
-          nodes={enhancedNodes}
-          edges={edges}
-          executionState={executionState}
-          canExecuteScript={canExecuteScript}
-          labels={scriptPanelLabels}
-          onSettings={handleSettings}
-          onPlayPause={
-            executionState === ScriptExecutionState.RUNNING
-              ? handlePauseScript
-              : handlePlayScript
-          }
-          onStop={handleStopScript}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onConnect={onConnect}
-          onViewPythonCode={handleViewPythonCode}
-          onNodesChange={onNodesChangeWithCodeUpdate}
-          onEdgesChange={onEdgesChanges}
-        />
+      <Panel.RightPanel>
+        <Panel.TopPanel height={scriptHeight}>
+          <ScriptPanel
+            height="100%"
+            isSimpleMode={isSimpleMode}
+            nodes={enhancedNodes}
+            edges={edges}
+            executionState={executionState}
+            canExecuteScript={canExecuteScript}
+            labels={scriptPanelLabels}
+            onSettings={handleSettings}
+            onPlayPause={
+              executionState === ScriptExecutionState.RUNNING
+                ? handlePauseScript
+                : handlePlayScript
+            }
+            onStop={handleStopScript}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onConnect={onConnect}
+            onViewPythonCode={handleViewPythonCode}
+            onNodesChange={onNodesChangeWithCodeUpdate}
+            onEdgesChange={onEdgesChanges}
+          />
+        </Panel.TopPanel>
 
-        <ConsolePanel
-          isSimpleMode={isSimpleMode}
-          isVisible={showConsole}
-          selectedRobotData={selectedRobotData}
-          hasConnectedRobot={hasConnectedRobot}
-          consoleMessages={consoleMessages}
-          labels={consolePanelLabels}
-          onToggle={handleToggleConsole}
-          onFeedback={handleFeedback}
-          onAddMessage={addConsoleMessage}
-        />
-      </Box>
-    </>
+        {showConsole && (
+          <Panel.BottomPanel height="40%">
+            <ConsolePanel
+              isSimpleMode={isSimpleMode}
+              isVisible={showConsole}
+              selectedRobotData={selectedRobotData}
+              hasConnectedRobot={hasConnectedRobot}
+              consoleMessages={consoleMessages}
+              labels={consolePanelLabels}
+              onToggle={handleToggleConsole}
+              onFeedback={handleFeedback}
+              onAddMessage={addConsoleMessage}
+            />
+          </Panel.BottomPanel>
+        )}
+      </Panel.RightPanel>
+
+      {!showConsole && (
+        <Panel.FloatingButton
+          icon={<Visibility />}
+          onClick={handleToggleConsole}
+        >
+          {consolePanelLabels.showConsole}
+        </Panel.FloatingButton>
+      )}
+    </Panel>
   );
 };
 

@@ -9,6 +9,15 @@ export interface VisualProgrammingLabels {
   blocksPanelLabels: BlocksPanelLabels;
   consolePanelLabels: ConsolePanelLabels;
   scriptPanelLabels: ScriptPanelLabels;
+  errorMessages: {
+    invalidBlockData: string;
+    invalidBlockStructure: string;
+    failedToAddBlock: string;
+  };
+  successMessages: {
+    blockAdded: (blockName: string) => string;
+    blockDeleted: (blockName: string) => string;
+  };
 }
 
 const LabelsContext = createContext<VisualProgrammingLabels | null>(null);
@@ -110,13 +119,32 @@ export const LabelsProvider: React.FC<LabelsProviderProps> = ({ children }) => {
     [t]
   );
 
+  const errorMessages = useMemo(
+    () => ({
+      invalidBlockData: t('visualProgramming.errors.invalidBlockData'),
+      invalidBlockStructure: t('visualProgramming.errors.invalidBlockStructure'),
+      failedToAddBlock: t('visualProgramming.errors.failedToAddBlock'),
+    }),
+    [t]
+  );
+
+  const successMessages = useMemo(
+    () => ({
+      blockAdded: (blockName: string) => t('visualProgramming.success.blockAdded', { blockName }),
+      blockDeleted: (blockName: string) => t('visualProgramming.success.blockDeleted', { blockName }),
+    }),
+    [t]
+  );
+
   const labels = useMemo<VisualProgrammingLabels>(
     () => ({
       blocksPanelLabels,
       consolePanelLabels,
       scriptPanelLabels,
+      errorMessages,
+      successMessages,
     }),
-    [blocksPanelLabels, consolePanelLabels, scriptPanelLabels]
+    [blocksPanelLabels, consolePanelLabels, scriptPanelLabels, errorMessages, successMessages]
   );
 
   return (

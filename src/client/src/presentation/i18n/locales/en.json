@@ -227,6 +227,15 @@
       "executingBlock": "Executing: {{blockName}}",
       "scriptStoppedByUser": "Script execution stopped by user"
     },
+    "errors": {
+      "invalidBlockData": "Invalid block data received",
+      "invalidBlockStructure": "Invalid block structure",
+      "failedToAddBlock": "Failed to add block"
+    },
+    "success": {
+      "blockAdded": "Added block: {{blockName}}",
+      "blockDeleted": "Deleted block: {{blockName}}"
+    },
     "alerts": {
       "noRobotConnected": "No robot connected. Please connect a robot first.",
       "noBlocksInScript": "No blocks in script. Please add some blocks first.",

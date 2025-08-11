@@ -36,7 +36,7 @@ export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels }) => {
     <Paper
       elevation={2}
       sx={{
-        width: '20%',
+        width: '100%',
         height: '100%',
         overflow: 'auto',
         borderRadius: 0,
