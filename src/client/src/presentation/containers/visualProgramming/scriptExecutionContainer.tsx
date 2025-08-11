@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Node } from 'reactflow';
+import type { Node, Edge } from 'reactflow';
 import { useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
 import { useConsole } from './consoleContainer';
 import { useRobotConnection } from './robotConnectionContainer';
@@ -52,11 +52,12 @@ export const useScriptExecution = (): ScriptExecutionContextType => {
 interface ScriptExecutionContainerProps {
   children: ReactNode;
   nodes: Node[];
+  edges: Edge[];
 }
 
 export const ScriptExecutionContainer: React.FC<
   ScriptExecutionContainerProps
-> = ({ children, nodes }) => {
+> = ({ children, nodes, edges }) => {
   const { t } = useTranslation();
   const { hasConnectedRobot, showAlert } = useRobotConnection();
   const { blocksPanelLabels } = useVisualProgrammingLabels();
@@ -76,6 +77,71 @@ export const ScriptExecutionContainer: React.FC<
     shouldPause: false,
     currentIndex: 0,
   });
+
+  // Function to get execution order based on connections (topological sort)
+  const getExecutionOrder = useCallback((nodes: Node[], edges: Edge[]): Node[] => {
+    if (nodes.length === 0) return [];
+    
+    // Build adjacency list from edges
+    const adjacencyList = new Map<string, string[]>();
+    const inDegree = new Map<string, number>();
+    
+    // Initialize all nodes
+    nodes.forEach(node => {
+      adjacencyList.set(node.id, []);
+      inDegree.set(node.id, 0);
+    });
+    
+    // Build graph from edges
+    edges.forEach(edge => {
+      if (edge.source && edge.target && adjacencyList.has(edge.source) && inDegree.has(edge.target)) {
+        adjacencyList.get(edge.source)!.push(edge.target);
+        inDegree.set(edge.target, inDegree.get(edge.target)! + 1);
+      }
+    });
+    
+    // Find starting nodes (nodes with no incoming edges)
+    const queue: string[] = [];
+    inDegree.forEach((degree, nodeId) => {
+      if (degree === 0) {
+        queue.push(nodeId);
+      }
+    });
+    
+    // If no starting nodes, use the first node from the original array
+    if (queue.length === 0 && nodes.length > 0) {
+      queue.push(nodes[0].id);
+    }
+    
+    // Topological sort
+    const sortedIds: string[] = [];
+    
+    while (queue.length > 0) {
+      const currentId = queue.shift()!;
+      sortedIds.push(currentId);
+      
+      // Process neighbors
+      const neighbors = adjacencyList.get(currentId) || [];
+      neighbors.forEach(neighborId => {
+        const newInDegree = inDegree.get(neighborId)! - 1;
+        inDegree.set(neighborId, newInDegree);
+        
+        if (newInDegree === 0) {
+          queue.push(neighborId);
+        }
+      });
+    }
+    
+    // Convert sorted IDs back to nodes
+    const nodeMap = new Map(nodes.map(node => [node.id, node]));
+    const sortedNodes = sortedIds.map(id => nodeMap.get(id)!).filter(node => node);
+    
+    // Add any disconnected nodes at the end
+    const processedIds = new Set(sortedIds);
+    const disconnectedNodes = nodes.filter(node => !processedIds.has(node.id));
+    
+    return [...sortedNodes, ...disconnectedNodes];
+  }, []);
 
   // Enhanced nodes with execution highlighting
   const enhancedNodes = useMemo(() => {
@@ -249,7 +315,10 @@ export const ScriptExecutionContainer: React.FC<
   // Main execution loop
   const executeNodes = useCallback(
     async (startIndex: number, control: ExecutionControl) => {
-      for (let i = startIndex; i < nodes.length; i++) {
+      // Get execution order based on connections
+      const executionOrder = getExecutionOrder(nodes, edges);
+      
+      for (let i = startIndex; i < executionOrder.length; i++) {
         // Check for stop signal
         if (control.shouldStop) {
           break;
@@ -262,7 +331,7 @@ export const ScriptExecutionContainer: React.FC<
           return;
         }
 
-        const node = nodes[i];
+        const node = executionOrder[i];
         if (!validateNode(node, i)) {
           continue;
         }
@@ -271,7 +340,7 @@ export const ScriptExecutionContainer: React.FC<
         await executeNode(node, control);
       }
     },
-    [nodes, validateNode, executeNode, pauseExecution]
+    [nodes, edges, getExecutionOrder, validateNode, executeNode, pauseExecution]
   );
 
   // Main execution handlers

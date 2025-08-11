@@ -183,11 +183,25 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
             blockName: translatedBlockName,
             blockIcon: blockData.icon || '🔧',
           },
-          sourcePosition: Position.Bottom,
-          targetPosition: Position.Top,
+          sourcePosition: Position.Right,
+          targetPosition: Position.Left,
         };
 
         setNodes(n => [...n, newNode]);
+
+        // Auto-connect to the latest existing block (if any blocks exist)
+        if (nodes.length > 0) {
+          const latestNode = nodes[nodes.length - 1];
+          const newEdge: Edge = {
+            source: latestNode.id,
+            target: newNode.id,
+            id: `${latestNode.id}-${newNode.id}-${Date.now()}`,
+            type: 'smoothstep',
+            animated: true,
+            style: { stroke: '#8b5cf6', strokeWidth: 2 },
+          };
+          setEdges(edges => [...edges, newEdge]);
+        }
 
         // Add console message for successful block addition
         addConsoleMessage('info', 'visualProgramming.success.blockAdded', {
@@ -200,6 +214,8 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     },
     [
       setNodes,
+      setEdges,
+      nodes,
       screenToFlowPosition,
       showAlert,
       addConsoleMessage,
@@ -250,11 +266,25 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
             blockName: translatedBlockName,
             blockIcon: blockData.icon || '🔧',
           },
-          sourcePosition: Position.Bottom,
-          targetPosition: Position.Top,
+          sourcePosition: Position.Right,
+          targetPosition: Position.Left,
         };
 
         setNodes(n => [...n, newNode]);
+
+        // Auto-connect to the latest existing block (if any blocks exist)
+        if (nodes.length > 0) {
+          const latestNode = nodes[nodes.length - 1];
+          const newEdge: Edge = {
+            source: latestNode.id,
+            target: newNode.id,
+            id: `${latestNode.id}-${newNode.id}-${Date.now()}`,
+            type: 'smoothstep',
+            animated: true,
+            style: { stroke: '#8b5cf6', strokeWidth: 2 },
+          };
+          setEdges(edges => [...edges, newEdge]);
+        }
 
         // Add console message for successful block addition
         addConsoleMessage('info', 'visualProgramming.success.blockAdded', {
@@ -267,6 +297,8 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     },
     [
       setNodes,
+      setEdges,
+      nodes,
       showAlert,
       addConsoleMessage,
       blocksPanelLabels,
@@ -354,7 +386,7 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
         <RobotConnectionContainer nodes={nodes}>
           <CodeGenerationContainer nodes={nodes}>
             <ConsoleContainer isSimpleMode={isSimpleMode}>
-              <ScriptExecutionContainer nodes={nodes}>
+              <ScriptExecutionContainer nodes={nodes} edges={edges}>
                 <VisualProgrammingFlow
                   isSimpleMode={isSimpleMode}
                   nodes={nodes}
