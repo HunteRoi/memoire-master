@@ -1,5 +1,7 @@
-import * as path from 'node:path';
 import { BrowserWindow, ipcMain } from 'electron';
+
+declare const PYTHON_VIEWER_WEBPACK_ENTRY: string;
+declare const PYTHON_VIEWER_PRELOAD_WEBPACK_ENTRY: string;
 
 /**
  * A wrapper for the Python code viewer management methods
@@ -48,18 +50,11 @@ export class PythonCodeViewerManager {
       height: 700,
       title: title || 'Generated Python Code',
       webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true,
-        preload: path.join(__dirname, '../preload/index.js'),
+        preload: PYTHON_VIEWER_PRELOAD_WEBPACK_ENTRY,
       },
-      parent: BrowserWindow.getFocusedWindow() || undefined,
-      modal: false,
-      show: false,
-      icon: path.join(__dirname, '../assets/icon.png'), // Add app icon if available
+      parent: BrowserWindow.getFocusedWindow() || undefined
     });
 
-    // Load the webpack-bundled Python viewer entry point
-    // @ts-ignore - Webpack will define this global
     PythonCodeViewerManager.pythonCodeViewerWindow.loadURL(
       PYTHON_VIEWER_WEBPACK_ENTRY
     );

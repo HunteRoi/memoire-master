@@ -42,6 +42,9 @@ const config: ForgeConfig = {
             html: './src/static/pythonCodeViewer.html',
             js: './src/static/pythonCodeViewer.ts',
             name: 'python_viewer',
+            preload: {
+              js: './src/preload.ts'
+            }
           },
         ],
       },

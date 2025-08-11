@@ -38,7 +38,4 @@ declare global {
   interface Window {
     electronAPI: ElectronAPI;
   }
-
-  // Webpack entry point constants
-  const PYTHON_VIEWER_WEBPACK_ENTRY: string;
 }
