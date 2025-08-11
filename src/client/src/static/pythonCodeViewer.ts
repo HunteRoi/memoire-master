@@ -4,13 +4,12 @@ import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import 'prismjs/themes/prism-tomorrow.css';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 
-// Import the Python code viewer specific CSS
 import './pythonCodeViewer.css';
 
-// Import translation files
+import deTranslations from '../presentation/i18n/locales/de.json';
 import enTranslations from '../presentation/i18n/locales/en.json';
 import frTranslations from '../presentation/i18n/locales/fr.json';
-import deTranslations from '../presentation/i18n/locales/de.json';
+import itTranslations from '../presentation/i18n/locales/it.json';
 import nlTranslations from '../presentation/i18n/locales/nl.json';
 
 const translations = {
@@ -18,6 +17,7 @@ const translations = {
   fr: frTranslations,
   de: deTranslations,
   nl: nlTranslations,
+  it: itTranslations,
 };
 
 let currentLanguage = 'en';

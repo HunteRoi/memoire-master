@@ -63,7 +63,11 @@ export const BlocksPanel: FC<BlocksPanelProps> = ({
 
         <div data-tutorial='block-categories'>
           {blockCategories.map((category, index) => (
-            <Accordion key={category.id} defaultExpanded={index===0} sx={{ mb: 1 }}>
+            <Accordion
+              key={category.id}
+              defaultExpanded={index === 0}
+              sx={{ mb: 1 }}
+            >
               <AccordionSummary
                 expandIcon={<ExpandMore />}
                 sx={{

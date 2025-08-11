@@ -40,7 +40,10 @@ export const Settings: FC = () => {
     },
     {
       title: t('settings.sections.clearCache.title', 'Clear Cache'),
-      description: t('settings.section.clearCache.description', 'Clear all stored data including your workspace, console history, and preferences. This action cannot be undone.'),
+      description: t(
+        'settings.section.clearCache.description',
+        'Clear all stored data including your workspace, console history, and preferences. This action cannot be undone.'
+      ),
       content: <ClearCacheContent />,
     },
   ];

@@ -7,8 +7,8 @@ import { initReactI18next } from 'react-i18next';
 import de from './locales/de.json';
 import en from './locales/en.json';
 import fr from './locales/fr.json';
-import nl from './locales/nl.json';
 import it from './locales/it.json';
+import nl from './locales/nl.json';
 
 // const backend = new Backend({
 //   loadPath: './locales/{{lng}}.json'
@@ -19,7 +19,7 @@ export const languages = [
   { code: 'fr', name: 'Français' },
   { code: 'nl', name: 'Nederlands' },
   { code: 'de', name: 'Deutsch' },
-  { code: 'it', name: 'Italiano' }
+  { code: 'it', name: 'Italiano' },
 ];
 
 // We'll initialize with debug disabled, and enable it after checking isPackaged

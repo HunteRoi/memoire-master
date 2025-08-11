@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Typography,
 } from '@mui/material';
 import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';

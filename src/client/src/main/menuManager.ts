@@ -122,8 +122,8 @@ export class ApplicationMenuManager {
                   mainWindow?.webContents.executeJavaScript(`
                     window.dispatchEvent(new CustomEvent('languageChange', { detail: 'it' }));
                   `);
-                }
-              }
+                },
+              },
             ],
           },
         ],
