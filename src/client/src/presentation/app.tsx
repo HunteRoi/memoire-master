@@ -1,5 +1,4 @@
-import type React from 'react';
-import { useEffect } from 'react';
+import { type FC, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useTranslation } from 'react-i18next';
 import { HashRouter, Route, Routes } from 'react-router';
@@ -20,7 +19,7 @@ import { VisualProgramming } from './pages/visualProgramming';
 import { AppProvider } from './providers/appProvider';
 import { ThemeProvider } from './providers/themeProvider';
 
-const AppRoutes: React.FC = () => {
+const AppRoutes: FC = () => {
   const { alert, language, setLanguage } = useAppContext();
   const { i18n } = useTranslation();
 
@@ -70,7 +69,7 @@ const AppRoutes: React.FC = () => {
   );
 };
 
-const App: React.FC = () => {
+const App: FC = () => {
   return (
     <AppProvider>
       <ThemeProvider>
