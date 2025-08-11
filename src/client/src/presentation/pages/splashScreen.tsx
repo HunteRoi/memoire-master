@@ -1,12 +1,12 @@
 import { Box, Typography } from '@mui/material';
-import type React from 'react';
-import { useEffect } from 'react';
+import { type FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+
 import { EPuck2Robot } from '../components/EPuck2Robot';
 import { useAppContext } from '../hooks/useAppContext';
 
-export const SplashScreen: React.FC = () => {
+export const SplashScreen: FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { isLoading, error } = useAppContext();
