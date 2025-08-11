@@ -212,6 +212,13 @@
         "running": "Running",
         "paused": "Paused",
         "idle": "Idle"
+      },
+      "tooltips": {
+        "settings": "Open settings",
+        "playPause": "Run or pause the script",
+        "stop": "Stop script execution",
+        "clear": "Clear all blocks from script",
+        "viewCode": "View generated Python code"
       }
     },
     "console": {
@@ -222,6 +229,10 @@
         "connecting": "Connecting to robot...",
         "connectionEstablished": "Connection established",
         "readyForCommands": "Ready for commands"
+      },
+      "tooltips": {
+        "clear": "Clear console messages",
+        "close": "Close console"
       },
       "scriptCompleted": "Script execution completed",
       "scriptFailed": "Script execution failed",

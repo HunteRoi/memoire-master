@@ -212,6 +212,13 @@
         "running": "Läuft",
         "paused": "Pausiert",
         "idle": "Inaktiv"
+      },
+      "tooltips": {
+        "settings": "Einstellungen öffnen",
+        "playPause": "Skript ausführen oder pausieren",
+        "stop": "Skriptausführung stoppen",
+        "clear": "Alle Blöcke aus dem Skript löschen",
+        "viewCode": "Generierten Python-Code anzeigen"
       }
     },
     "console": {
@@ -222,6 +229,10 @@
         "connecting": "Verbindung zum Roboter...",
         "connectionEstablished": "Verbindung hergestellt",
         "readyForCommands": "Bereit für Befehle"
+      },
+      "tooltips": {
+        "clear": "Konsolennachrichten löschen",
+        "close": "Konsole schließen"
       },
       "scriptCompleted": "Skriptausführung abgeschlossen",
       "scriptFailed": "Skriptausführung fehlgeschlagen",

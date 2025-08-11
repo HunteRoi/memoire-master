@@ -1,6 +1,7 @@
-import { VisibilityOff } from '@mui/icons-material';
-import { Box, IconButton, Paper, Typography } from '@mui/material';
+import { Clear, VisibilityOff } from '@mui/icons-material';
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import { type FC, useCallback, useEffect, useRef } from 'react';
+
 import type { Robot, RobotFeedback } from '../../../domain/robot';
 import type { ConsoleMessage } from '../../models/ConsoleMessage';
 
@@ -10,6 +11,10 @@ export interface ConsolePanelLabels {
   messages: {
     robotInitialized: string;
     connecting: string;
+  };
+  tooltips: {
+    clear: string;
+    close: string;
   };
 }
 
@@ -22,6 +27,7 @@ interface ConsolePanelProps {
   onToggle: () => void;
   onFeedback: (feedback: RobotFeedback) => void;
   onAddMessage: (type: string, message: string) => void;
+  onClearConsole: () => void;
 }
 
 export const ConsolePanel: FC<ConsolePanelProps> = ({
@@ -33,6 +39,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
   onToggle,
   onFeedback,
   onAddMessage,
+  onClearConsole,
 }) => {
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
@@ -131,9 +138,18 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
         >
           🖥️ {labels.title}
         </Typography>
-        <IconButton onClick={onToggle} title='Close console'>
-          <VisibilityOff />
-        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Tooltip title={labels.tooltips.clear}>
+            <IconButton onClick={onClearConsole}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={labels.tooltips.close}>
+            <IconButton onClick={onToggle}>
+              <VisibilityOff />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
       <Box

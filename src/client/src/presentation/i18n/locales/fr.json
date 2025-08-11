@@ -212,6 +212,13 @@
         "running": "En cours",
         "paused": "En pause",
         "idle": "Inactif"
+      },
+      "tooltips": {
+        "settings": "Ouvrir les paramètres",
+        "playPause": "Exécuter ou mettre en pause le script",
+        "stop": "Arrêter l'exécution du script",
+        "clear": "Effacer tous les blocs du script",
+        "viewCode": "Voir le code Python généré"
       }
     },
     "console": {
@@ -222,6 +229,10 @@
         "connecting": "Connexion au robot...",
         "connectionEstablished": "Connexion établie",
         "readyForCommands": "Prêt pour les commandes"
+      },
+      "tooltips": {
+        "clear": "Effacer les messages de la console",
+        "close": "Fermer la console"
       },
       "scriptCompleted": "Exécution du script terminée",
       "scriptFailed": "Échec de l'exécution du script",

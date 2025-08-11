@@ -81,6 +81,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     handleFeedback,
     addConsoleMessage,
     handleToggleConsole,
+    handleClearConsole,
   } = useConsole();
   const {
     executionState,
@@ -226,10 +227,63 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     [setEdges]
   );
 
+  const onBlockClick = useCallback(
+    (blockData: any) => {
+      try {
+        // Find a good position for the new block (centered with some randomization to avoid overlap)
+        const baseX = 200 + Math.random() * 300; // Random X between 200-500
+        const baseY = 100 + Math.random() * 200; // Random Y between 100-300
+        
+        const position = { x: baseX, y: baseY };
+
+        // Get translated block name
+        const translatedBlockName =
+          blocksPanelLabels.blockNames[blockData.id] || blockData.name;
+
+        const newNode: Node = {
+          id: `${blockData.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: 'default',
+          position,
+          data: {
+            label: `${blockData.icon || '🔧'} ${translatedBlockName}`,
+            blockType: blockData.id,
+            blockName: translatedBlockName,
+            blockIcon: blockData.icon || '🔧',
+          },
+          sourcePosition: Position.Bottom,
+          targetPosition: Position.Top,
+        };
+
+        setNodes(n => [...n, newNode]);
+
+        // Add console message for successful block addition
+        addConsoleMessage('info', 'visualProgramming.success.blockAdded', {
+          blockId: blockData.id,
+        });
+      } catch (error) {
+        console.error('Error handling block click:', error);
+        showAlert(errorMessages.failedToAddBlock, 'error');
+      }
+    },
+    [
+      setNodes,
+      showAlert,
+      addConsoleMessage,
+      blocksPanelLabels,
+      errorMessages,
+    ]
+  );
+
+  const onClearScript = useCallback(() => {
+    setNodes([]);
+    setEdges([]);
+    addConsoleMessage('info', 'Script cleared successfully');
+  }, [setNodes, setEdges, addConsoleMessage]);
+
   return (
     <Panel>
       <Panel.LeftPanel>
-        <BlocksPanel isSimpleMode={isSimpleMode} labels={blocksPanelLabels} />
+        <BlocksPanel isSimpleMode={isSimpleMode} labels={blocksPanelLabels} onBlockClick={onBlockClick} />
       </Panel.LeftPanel>
 
       <Panel.RightPanel>
@@ -253,6 +307,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
             onDragOver={onDragOver}
             onConnect={onConnect}
             onViewPythonCode={handleViewPythonCode}
+            onClearScript={onClearScript}
             onNodesChange={onNodesChangeWithCodeUpdate}
             onEdgesChange={onEdgesChangeWithCodeUpdate}
           />
@@ -269,6 +324,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
               onToggle={handleToggleConsole}
               onFeedback={handleFeedback}
               onAddMessage={addConsoleMessage}
+              onClearConsole={handleClearConsole}
             />
           </Panel.BottomPanel>
         )}

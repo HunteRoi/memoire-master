@@ -212,6 +212,13 @@
         "running": "Actief",
         "paused": "Gepauzeerd",
         "idle": "Inactief"
+      },
+      "tooltips": {
+        "settings": "Instellingen openen",
+        "playPause": "Script uitvoeren of pauzeren",
+        "stop": "Script uitvoering stoppen",
+        "clear": "Alle blokken uit script wissen",
+        "viewCode": "Gegenereerde Python-code bekijken"
       }
     },
     "console": {
@@ -222,6 +229,10 @@
         "connecting": "Verbinding maken met robot...",
         "connectionEstablished": "Verbinding tot stand gebracht",
         "readyForCommands": "Klaar voor commando's"
+      },
+      "tooltips": {
+        "clear": "Console berichten wissen",
+        "close": "Console sluiten"
       },
       "scriptCompleted": "Script uitvoering voltooid",
       "scriptFailed": "Script uitvoering mislukt",

@@ -29,9 +29,10 @@ export interface BlocksPanelLabels {
 interface BlocksPanelProps {
   isSimpleMode: boolean;
   labels: BlocksPanelLabels;
+  onBlockClick?: (block: Block) => void;
 }
 
-export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels }) => {
+export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels, onBlockClick }) => {
   return (
     <Paper
       elevation={2}
@@ -57,7 +58,7 @@ export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels }) => {
         </Typography>
 
         {blockCategories.map(category => (
-          <Accordion key={category.id} defaultExpanded sx={{ mb: 1 }}>
+          <Accordion key={category.id} sx={{ mb: 1 }}>
             <AccordionSummary
               expandIcon={<ExpandMore />}
               sx={{
@@ -111,6 +112,7 @@ export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels }) => {
                   }
                   isSimpleMode={isSimpleMode}
                   categoryColor={category.color}
+                  onBlockClick={onBlockClick}
                 />
               ))}
             </AccordionDetails>
@@ -125,8 +127,9 @@ const BlockItem: FC<
   {
     isSimpleMode: boolean;
     categoryColor: string;
+    onBlockClick?: (block: Block) => void;
   } & Block
-> = ({ isSimpleMode, categoryColor, ...block }) => {
+> = ({ isSimpleMode, categoryColor, onBlockClick, ...block }) => {
   return (
     <Paper
       elevation={1}
@@ -151,6 +154,7 @@ const BlockItem: FC<
       onDragStart={e => {
         e.dataTransfer.setData('application/reactflow', JSON.stringify(block));
       }}
+      onClick={() => onBlockClick?.(block)}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Typography

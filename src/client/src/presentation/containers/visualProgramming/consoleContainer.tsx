@@ -24,6 +24,7 @@ export interface ConsoleContextType {
     translationParams?: Record<string, any>
   ) => void;
   handleToggleConsole: () => void;
+  handleClearConsole: () => void;
 }
 
 const ConsoleContext = createContext<ConsoleContextType | null>(null);
@@ -135,6 +136,10 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
     setShowConsole(prev => !prev);
   }, [setShowConsole]);
 
+  const handleClearConsole = useCallback(() => {
+    setConsoleMessages([]);
+  }, [setConsoleMessages]);
+
   const contextValue = useMemo<ConsoleContextType>(
     () => ({
       consoleMessages,
@@ -142,6 +147,7 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
       handleFeedback,
       addConsoleMessage,
       handleToggleConsole,
+      handleClearConsole,
     }),
     [
       consoleMessages,
@@ -149,6 +155,7 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
       handleFeedback,
       addConsoleMessage,
       handleToggleConsole,
+      handleClearConsole,
     ]
   );
 

@@ -33,7 +33,6 @@ export const blockCategoryIds = [
   'sound',
   'leds',
   'sensors',
-  'control',
 ] as const;
 
 // Movement blocks
@@ -233,6 +232,14 @@ export const soundBlocks: Block[] = [
       },
     ],
     pythonTemplate: 'robot.set_volume({{volume}})',
+  },
+  {
+    id: 'stop_melody',
+    name: 'Stop Melody',
+    icon: '🔇',
+    category: 'sound',
+    description: 'Stop any currently playing melody or sound',
+    pythonTemplate: 'robot.stop_melody()',
   },
 ];
 
@@ -538,7 +545,6 @@ export const blockIds = [
   ...soundBlocks.map(b => b.id),
   ...ledBlocks.map(b => b.id),
   ...sensorBlocks.map(b => b.id),
-  ...controlBlocks.map(b => b.id),
 ] as const;
 
 // Block categories with their blocks (using translation keys)
@@ -570,12 +576,5 @@ export const blockCategories: BlockCategory[] = [
     icon: '🔍',
     color: '#9C27B0',
     blocks: sensorBlocks,
-  },
-  {
-    id: 'control',
-    name: 'visualProgramming.blocks.categories.control',
-    icon: '⚙️',
-    color: '#607D8B',
-    blocks: controlBlocks,
   },
 ];

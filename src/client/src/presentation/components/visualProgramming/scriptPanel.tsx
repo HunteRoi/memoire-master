@@ -1,5 +1,5 @@
-import { Code, Pause, PlayArrow, Settings, Stop } from '@mui/icons-material';
-import { Box, IconButton, Paper, Typography } from '@mui/material';
+import { Clear, Code, Pause, PlayArrow, Settings, Stop } from '@mui/icons-material';
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import type { DragEvent, FC } from 'react';
 import ReactFlow, {
   Background,
@@ -20,6 +20,13 @@ export interface ScriptPanelLabels {
     paused: string;
     idle: string;
   };
+  tooltips: {
+    settings: string;
+    playPause: string;
+    stop: string;
+    clear: string;
+    viewCode: string;
+  };
 }
 
 interface ScriptPanelProps {
@@ -38,6 +45,7 @@ interface ScriptPanelProps {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onViewPythonCode: () => void;
+  onClearScript: () => void;
   edges: Edge[];
 }
 
@@ -57,6 +65,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
   onNodesChange,
   onEdgesChange,
   onViewPythonCode,
+  onClearScript,
   edges,
 }) => {
   return (
@@ -139,105 +148,137 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
           {/* Control Buttons */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {/* Settings Button */}
-            <IconButton
-              onClick={onSettings}
-              size={isSimpleMode ? 'medium' : 'small'}
-              sx={{
-                backgroundColor: 'background.paper',
-                color: 'text.secondary',
-                boxShadow: 1,
-                '&:hover': {
-                  backgroundColor: 'action.hover',
-                  color: 'text.primary',
-                  boxShadow: 2,
-                },
-                transition: 'all 0.2s ease-in-out',
-              }}
-            >
-              <Settings fontSize={isSimpleMode ? 'medium' : 'small'} />
-            </IconButton>
+            <Tooltip title={labels.tooltips.settings}>
+              <IconButton
+                onClick={onSettings}
+                size={isSimpleMode ? 'medium' : 'small'}
+                sx={{
+                  backgroundColor: 'background.paper',
+                  color: 'text.secondary',
+                  boxShadow: 1,
+                  '&:hover': {
+                    backgroundColor: 'action.hover',
+                    color: 'text.primary',
+                    boxShadow: 2,
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                }}
+              >
+                <Settings fontSize={isSimpleMode ? 'medium' : 'small'} />
+              </IconButton>
+            </Tooltip>
 
             {/* Play/Pause Button */}
-            <IconButton
-              onClick={onPlayPause}
-              disabled={!canExecuteScript && executionState === 'idle'}
-              size={isSimpleMode ? 'medium' : 'small'}
-              sx={{
-                backgroundColor:
-                  canExecuteScript || executionState !== 'idle'
-                    ? 'success.main'
-                    : 'background.paper',
-                color:
-                  canExecuteScript || executionState !== 'idle'
-                    ? 'success.contrastText'
-                    : 'text.disabled',
-                boxShadow: 1,
-                '&:hover': {
-                  backgroundColor:
-                    canExecuteScript || executionState !== 'idle'
-                      ? 'success.dark'
-                      : 'action.hover',
-                  boxShadow: 2,
-                },
-                '&:disabled': {
-                  backgroundColor: 'background.paper',
-                  color: 'text.disabled',
-                },
-                transition: 'all 0.2s ease-in-out',
-              }}
-            >
-              {executionState === 'running' ? (
-                <Pause fontSize={isSimpleMode ? 'medium' : 'small'} />
-              ) : (
-                <PlayArrow fontSize={isSimpleMode ? 'medium' : 'small'} />
-              )}
-            </IconButton>
+            <Tooltip title={labels.tooltips.playPause}>
+              <span>
+                <IconButton
+                  onClick={onPlayPause}
+                  disabled={!canExecuteScript && executionState === 'idle'}
+                  size={isSimpleMode ? 'medium' : 'small'}
+                  sx={{
+                    backgroundColor:
+                      canExecuteScript || executionState !== 'idle'
+                        ? 'success.main'
+                        : 'background.paper',
+                    color:
+                      canExecuteScript || executionState !== 'idle'
+                        ? 'success.contrastText'
+                        : 'text.disabled',
+                    boxShadow: 1,
+                    '&:hover': {
+                      backgroundColor:
+                        canExecuteScript || executionState !== 'idle'
+                          ? 'success.dark'
+                          : 'action.hover',
+                      boxShadow: 2,
+                    },
+                    '&:disabled': {
+                      backgroundColor: 'background.paper',
+                      color: 'text.disabled',
+                    },
+                    transition: 'all 0.2s ease-in-out',
+                  }}
+                >
+                  {executionState === 'running' ? (
+                    <Pause fontSize={isSimpleMode ? 'medium' : 'small'} />
+                  ) : (
+                    <PlayArrow fontSize={isSimpleMode ? 'medium' : 'small'} />
+                  )}
+                </IconButton>
+              </span>
+            </Tooltip>
 
             {/* Stop Button */}
-            <IconButton
-              onClick={onStop}
-              disabled={executionState === 'idle'}
-              size={isSimpleMode ? 'medium' : 'small'}
-              sx={{
-                backgroundColor:
-                  executionState !== 'idle' ? 'error.main' : 'background.paper',
-                color:
-                  executionState !== 'idle'
-                    ? 'error.contrastText'
-                    : 'text.disabled',
-                boxShadow: 1,
-                '&:hover': {
-                  backgroundColor:
-                    executionState !== 'idle' ? 'error.dark' : 'action.hover',
-                  boxShadow: 2,
-                },
-                '&:disabled': {
-                  backgroundColor: 'background.paper',
-                  color: 'text.disabled',
-                },
-                transition: 'all 0.2s ease-in-out',
-              }}
-            >
-              <Stop fontSize={isSimpleMode ? 'medium' : 'small'} />
-            </IconButton>
+            <Tooltip title={labels.tooltips.stop}>
+              <span>
+                <IconButton
+                  onClick={onStop}
+                  disabled={executionState === 'idle'}
+                  size={isSimpleMode ? 'medium' : 'small'}
+                  sx={{
+                    backgroundColor:
+                      executionState !== 'idle' ? 'error.main' : 'background.paper',
+                    color:
+                      executionState !== 'idle'
+                        ? 'error.contrastText'
+                        : 'text.disabled',
+                    boxShadow: 1,
+                    '&:hover': {
+                      backgroundColor:
+                        executionState !== 'idle' ? 'error.dark' : 'action.hover',
+                      boxShadow: 2,
+                    },
+                    '&:disabled': {
+                      backgroundColor: 'background.paper',
+                      color: 'text.disabled',
+                    },
+                    transition: 'all 0.2s ease-in-out',
+                  }}
+                >
+                  <Stop fontSize={isSimpleMode ? 'medium' : 'small'} />
+                </IconButton>
+              </span>
+            </Tooltip>
+
+            {/* Clear Script Button */}
+            <Tooltip title={labels.tooltips.clear}>
+              <IconButton
+                onClick={onClearScript}
+                size={isSimpleMode ? 'medium' : 'small'}
+                sx={{
+                  backgroundColor: 'warning.main',
+                  color: 'warning.contrastText',
+                  boxShadow: 1,
+                  '&:hover': {
+                    backgroundColor: 'warning.dark',
+                    boxShadow: 2,
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                }}
+              >
+                <Clear fontSize={isSimpleMode ? 'medium' : 'small'} />
+              </IconButton>
+            </Tooltip>
 
             {/* Python Code View Button */}
-            <IconButton
-              onClick={onViewPythonCode}
-              size={isSimpleMode ? 'medium' : 'small'}
-              sx={{
-                backgroundColor: 'secondary.main',
-                color: 'secondary.contrastText',
-                boxShadow: 1,
-                '&:hover': {
-                  backgroundColor: 'secondary.dark',
-                  boxShadow: 2,
-                },
-                transition: 'all 0.2s ease-in-out',
-              }}
-            >
-              <Code fontSize={isSimpleMode ? 'medium' : 'small'} />
-            </IconButton>
+            <Tooltip title={labels.tooltips.viewCode}>
+              <IconButton
+                onClick={onViewPythonCode}
+                size={isSimpleMode ? 'medium' : 'small'}
+                sx={{
+                  backgroundColor: 'secondary.main',
+                  color: 'secondary.contrastText',
+                  boxShadow: 1,
+                  '&:hover': {
+                    backgroundColor: 'secondary.dark',
+                    boxShadow: 2,
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                }}
+              >
+                <Code fontSize={isSimpleMode ? 'medium' : 'small'} />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
 

@@ -105,6 +105,10 @@ export const LabelsProvider: React.FC<LabelsProviderProps> = ({ children }) => {
         ),
         connecting: t('visualProgramming.console.messages.connecting'),
       },
+      tooltips: {
+        clear: t('visualProgramming.console.tooltips.clear'),
+        close: t('visualProgramming.console.tooltips.close'),
+      },
     }),
     [t]
   );
@@ -116,6 +120,13 @@ export const LabelsProvider: React.FC<LabelsProviderProps> = ({ children }) => {
         running: t('visualProgramming.script.status.running'),
         paused: t('visualProgramming.script.status.paused'),
         idle: t('visualProgramming.script.status.idle'),
+      },
+      tooltips: {
+        settings: t('visualProgramming.script.tooltips.settings'),
+        playPause: t('visualProgramming.script.tooltips.playPause'),
+        stop: t('visualProgramming.script.tooltips.stop'),
+        clear: t('visualProgramming.script.tooltips.clear'),
+        viewCode: t('visualProgramming.script.tooltips.viewCode'),
       },
     }),
     [t]
