@@ -1,16 +1,16 @@
 import { Language } from '@mui/icons-material';
 import { Box, Button, Menu, MenuItem, Typography } from '@mui/material';
-import React from 'react';
+import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import 'flag-icons/css/flag-icons.min.css';
 
 import { useAppContext } from '../hooks/useAppContext';
 import { languages } from '../i18n';
 
-export const LanguageSelector: React.FC = () => {
+export const LanguageSelector: FC = () => {
   const { i18n } = useTranslation();
   const { language, setLanguage } = useAppContext();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
   const currentLanguage =
