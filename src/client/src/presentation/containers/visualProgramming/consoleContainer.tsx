@@ -1,9 +1,10 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { RobotFeedback } from '../../../domain/robot';
 import type { ConsoleMessage } from '../../models/ConsoleMessage';
 import { useRobotTranslations } from '../../hooks/useRobotTranslations';
+import { usePersistedConsoleState } from '../../hooks/usePersistedConsoleState';
 import { useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
 
 export interface ConsoleContextType {
@@ -36,15 +37,14 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
   const { t } = useTranslation();
   const { translateFeedbackMessage } = useRobotTranslations();
   const { blocksPanelLabels } = useVisualProgrammingLabels();
-  const [showConsole, setShowConsole] = useState(!isSimpleMode);
-  const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([]);
+  const { consoleMessages, setConsoleMessages, showConsole, setShowConsole } = usePersistedConsoleState({ isSimpleMode });
 
   // Re-translate all messages when language changes
   useEffect(() => {
     setConsoleMessages(prevMessages =>
       prevMessages.map(msg => {
         let finalTranslationParams = msg.translationParams || {};
-        
+
         // Handle block ID translation for re-translation
         if (msg.translationParams?.blockId) {
           const translatedBlockName = blocksPanelLabels.blockNames[msg.translationParams.blockId];
@@ -53,7 +53,7 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
             blockName: translatedBlockName || msg.translationParams.blockId
           };
         }
-        
+
         return {
           ...msg,
           translationParams: finalTranslationParams,
@@ -74,7 +74,7 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
       {
         timestamp: feedback.timestamp,
         type: feedback.type,
-        translationKey: 'robotFeedback.message',
+        translationKey: feedback.message,
         translationParams: messageParams,
         message: translatedMessage,
       },
@@ -107,10 +107,6 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
   const handleToggleConsole = useCallback(() => {
     setShowConsole(prev => !prev);
   }, []);
-
-  useEffect(() => {
-    addConsoleMessage('info', 'visualProgramming.console.messages.robotInitialized');
-  }, [addConsoleMessage]);
 
   const contextValue = useMemo<ConsoleContextType>(
     () => ({

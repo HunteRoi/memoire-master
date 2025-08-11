@@ -17,7 +17,6 @@ export interface ConsolePanelLabels {
 
 interface ConsolePanelProps {
   isSimpleMode: boolean;
-  isVisible: boolean;
   selectedRobotData?: Robot | null;
   hasConnectedRobot: boolean;
   consoleMessages: ConsoleMessage[];
@@ -29,7 +28,6 @@ interface ConsolePanelProps {
 
 export const ConsolePanel: FC<ConsolePanelProps> = ({
   isSimpleMode,
-  isVisible,
   selectedRobotData,
   hasConnectedRobot,
   consoleMessages,
@@ -47,12 +45,11 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [scrollToBottom]);
+  }, [consoleMessages, scrollToBottom]);
 
   // Set up robot feedback subscription
   useEffect(() => {
     if (!hasConnectedRobot || !selectedRobotData) {
-      onAddMessage('info', labels.messages.robotInitialized);
       return;
     }
 

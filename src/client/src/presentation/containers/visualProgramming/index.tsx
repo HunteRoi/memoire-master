@@ -9,8 +9,6 @@ import {
   type OnNodesChange,
   Position,
   ReactFlowProvider,
-  useEdgesState,
-  useNodesState,
   useReactFlow,
 } from 'reactflow';
 import { Visibility } from '@mui/icons-material';
@@ -20,6 +18,7 @@ import { ConsolePanel } from '../../components/visualProgramming/consolePanel';
 import { Panel } from '../../components/visualProgramming/panel';
 import { ScriptPanel } from '../../components/visualProgramming/scriptPanel';
 import { LabelsProvider, useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
+import { usePersistedNodesState } from '../../hooks/usePersistedNodesState';
 import { RobotConnectionContainer, useRobotConnection } from './robotConnectionContainer';
 import { CodeGenerationContainer, useCodeGeneration } from './codeGenerationContainer';
 import { ConsoleContainer, useConsole } from './consoleContainer';
@@ -33,6 +32,9 @@ interface VisualProgrammingFlowProps extends VisualProgrammingContentProps {
   nodes: Node<any, string | undefined>[];
   setNodes: Dispatch<SetStateAction<Node<any, string | undefined>[]>>;
   onNodesChange: OnNodesChange;
+  edges: Edge[];
+  setEdges: Dispatch<SetStateAction<Edge[]>>;
+  onEdgesChange: OnEdgesChange;
 }
 
 const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
@@ -40,6 +42,9 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   nodes,
   setNodes,
   onNodesChange,
+  edges,
+  setEdges,
+  onEdgesChange,
 }) => {
   const navigate = useNavigate();
   const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels, errorMessages } = useVisualProgrammingLabels();
@@ -61,7 +66,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
 
   // React Flow
   const { screenToFlowPosition } = useReactFlow();
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const onNodesChangeWithCodeUpdate: OnNodesChange = async changes => {
     // Detect node deletions and add console messages
     changes.forEach(change => {
@@ -75,7 +79,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
 
     onNodesChange(changes);
   };
-  const onEdgesChanges: OnEdgesChange = async changes => {
+  const onEdgesChangeWithCodeUpdate: OnEdgesChange = async changes => {
     onEdgesChange(changes);
     await handleUpdateCode();
   };
@@ -191,7 +195,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
             onConnect={onConnect}
             onViewPythonCode={handleViewPythonCode}
             onNodesChange={onNodesChangeWithCodeUpdate}
-            onEdgesChange={onEdgesChanges}
+            onEdgesChange={onEdgesChangeWithCodeUpdate}
           />
         </Panel.TopPanel>
 
@@ -199,7 +203,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           <Panel.BottomPanel height="40%">
             <ConsolePanel
               isSimpleMode={isSimpleMode}
-              isVisible={showConsole}
               selectedRobotData={selectedRobotData}
               hasConnectedRobot={hasConnectedRobot}
               consoleMessages={consoleMessages}
@@ -227,7 +230,8 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
 export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   isSimpleMode,
 }) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const { nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange } = usePersistedNodesState();
+
   return (
     <ReactFlowProvider>
       <LabelsProvider>
@@ -240,6 +244,9 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
                   nodes={nodes}
                   setNodes={setNodes}
                   onNodesChange={onNodesChange}
+                  edges={edges}
+                  setEdges={setEdges}
+                  onEdgesChange={onEdgesChange}
                   />
               </ScriptExecutionContainer>
             </ConsoleContainer>
