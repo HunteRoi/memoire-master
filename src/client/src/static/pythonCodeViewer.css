@@ -25,13 +25,15 @@ body {
 }
 
 .readonly-badge {
-  background-color: #f39c12;
-  color: #1e1e1e;
-  padding: 4px 8px;
-  border-radius: 4px;
+  background: none;
+  color: #858585;
+  padding: 0;
+  border: none;
   font-size: 12px;
-  font-weight: bold;
+  font-weight: normal;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-style: italic;
 }
 
 .close-btn {

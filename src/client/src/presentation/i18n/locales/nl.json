@@ -10,6 +10,7 @@
     "disconnect": "Verbinding verbreken",
     "yes": "Ja",
     "no": "Nee",
+    "close": "Sluiten",
     "loading": "Laden...",
     "error": "Fout",
     "success": "Succes"
@@ -245,7 +246,10 @@
       "scriptStopped": "Script uitvoering gestopt"
     },
     "pythonViewer": {
-      "title": "Gegenereerde Python Code",
+      "title": "Gegenereerde Python-code",
+      "readOnly": "Alleen lezen",
+      "emptyState": "Nog geen blokken in het script. Voeg blokken toe om de gegenereerde Python-code te zien.",
+      "updated": "Bijgewerkt",
       "generatedComment": "Gegenereerd Python Script",
       "basedOnComment": "Gebaseerd op visuele blokken in het script gebied",
       "completedComment": "Script uitvoering voltooid"

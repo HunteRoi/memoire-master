@@ -10,6 +10,7 @@
     "disconnect": "Verbindung trennen",
     "yes": "Ja",
     "no": "Nein",
+    "close": "Schließen",
     "loading": "Laden...",
     "error": "Fehler",
     "success": "Erfolgreich"
@@ -245,7 +246,10 @@
       "scriptStopped": "Skriptausführung gestoppt"
     },
     "pythonViewer": {
-      "title": "Generierter Python Code",
+      "title": "Generierter Python-Code",
+      "readOnly": "Schreibgeschützt",
+      "emptyState": "Noch keine Blöcke im Skript. Fügen Sie Blöcke hinzu, um den generierten Python-Code zu sehen.",
+      "updated": "Aktualisiert",
       "generatedComment": "Generiertes Python Skript",
       "basedOnComment": "Basierend auf visuellen Blöcken im Skriptbereich",
       "completedComment": "Skriptausführung abgeschlossen"

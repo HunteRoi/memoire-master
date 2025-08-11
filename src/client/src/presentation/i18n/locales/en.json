@@ -10,6 +10,7 @@
     "disconnect": "Disconnect",
     "yes": "Yes",
     "no": "No",
+    "close": "Close",
     "loading": "Loading...",
     "error": "Error",
     "success": "Success"
@@ -246,6 +247,9 @@
     },
     "pythonViewer": {
       "title": "Generated Python Code",
+      "readOnly": "Read Only",
+      "emptyState": "No blocks in script yet. Add some blocks to see the generated Python code.",
+      "updated": "Updated",
       "generatedComment": "Generated Python Script",
       "basedOnComment": "Based on visual blocks in the script area",
       "completedComment": "Script execution completed"

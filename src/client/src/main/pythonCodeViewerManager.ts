@@ -58,9 +58,9 @@ export class PythonCodeViewerManager {
       icon: path.join(__dirname, '../assets/icon.png'), // Add app icon if available
     });
 
-    PythonCodeViewerManager.pythonCodeViewerWindow.loadFile(
-      path.join(__dirname, '../static/pythonCodeViewer.html')
-    );
+    // Load the webpack-bundled Python viewer entry point
+    // @ts-ignore - Webpack will define this global
+    PythonCodeViewerManager.pythonCodeViewerWindow.loadURL(PYTHON_VIEWER_WEBPACK_ENTRY);
 
     PythonCodeViewerManager.pythonCodeViewerWindow.once('ready-to-show', () => {
       PythonCodeViewerManager.pythonCodeViewerWindow?.show();
