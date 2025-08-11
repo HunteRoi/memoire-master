@@ -20,8 +20,9 @@ export const AlertSnackbar: React.FC<AlertSnackbarProps> = ({
       autoHideDuration={4000}
       onClose={onClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      role='status'
     >
-      <Alert onClose={onClose} severity={severity} sx={{ width: '100%' }}>
+      <Alert onClose={onClose} severity={severity} sx={{ width: '100%' }} role='alert'>
         {message}
       </Alert>
     </Snackbar>

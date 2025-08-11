@@ -52,10 +52,13 @@ export const RobotConnectionDialog: React.FC<RobotConnectionDialogProps> = ({
       onKeyDown={handleDialogKeyDown}
       maxWidth='sm'
       fullWidth
+      role='dialog'
+      aria-labelledby='robot-connection-dialog-title'
+      aria-describedby='robot-connection-dialog-description'
     >
-      <DialogTitle>{labels.title}</DialogTitle>
+      <DialogTitle id='robot-connection-dialog-title'>{labels.title}</DialogTitle>
       <DialogContent>
-        <Typography variant='body1'>{labels.confirmMessage}</Typography>
+        <Typography variant='body1' id='robot-connection-dialog-description'>{labels.confirmMessage}</Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel} disabled={loading}>

@@ -290,20 +290,20 @@ export const ScriptExecutionContainer: React.FC<
       if (!wasStopped) {
         addConsoleMessage(
           'success',
-          t('visualProgramming.console.scriptCompleted')
+          'visualProgramming.console.scriptCompleted'
         );
       }
     },
-    [stopExecution, addConsoleMessage, t]
+    [stopExecution, addConsoleMessage]
   );
 
   const handleExecutionError = useCallback(
     (error: any) => {
       console.error('Script execution error:', error);
       stopExecution();
-      addConsoleMessage('error', t('visualProgramming.console.scriptFailed'));
+      addConsoleMessage('error', 'visualProgramming.console.scriptFailed');
     },
-    [stopExecution, addConsoleMessage, t]
+    [stopExecution, addConsoleMessage]
   );
 
   // Node execution
@@ -315,13 +315,14 @@ export const ScriptExecutionContainer: React.FC<
       setCurrentlyExecutingNodeId(node.id);
       addConsoleMessage(
         'info',
-        t('visualProgramming.console.executingBlock', { blockName })
+        'visualProgramming.console.executingBlock', 
+        { blockName }
       );
 
       // Simulate block execution
       await cancellableDelay(1000, control.abortController);
     },
-    [addConsoleMessage, cancellableDelay, t]
+    [addConsoleMessage, cancellableDelay]
   );
 
   // Main execution loop
@@ -406,7 +407,7 @@ export const ScriptExecutionContainer: React.FC<
       showAlert(t('visualProgramming.alerts.scriptStopped'), 'info');
       addConsoleMessage(
         'info',
-        t('visualProgramming.console.scriptStoppedByUser')
+        'visualProgramming.console.scriptStoppedByUser'
       );
     }
   }, [executionState, stopExecution, showAlert, t, addConsoleMessage]);

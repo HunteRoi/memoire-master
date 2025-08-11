@@ -49,6 +49,15 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable;
 
+      // Check if there's an open dialog or modal that should handle the event
+      const isDialogOpen = document.querySelector('[role="dialog"]') !== null;
+      const isModalOpen = document.querySelector('[role="presentation"]') !== null;
+
+      // Don't handle global shortcuts if a dialog/modal is open
+      if (isDialogOpen || isModalOpen) {
+        return;
+      }
+
       if (
         (event.key === 'Enter' || event.key === 'NumpadEnter') &&
         onContinue &&
@@ -130,7 +139,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         <LanguageSelector />
       </Box>
 
-      <Container 
+      <Container
         maxWidth={maxWidth}
         sx={{
           height: '100%',
@@ -159,7 +168,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
             component='h1'
             gutterBottom
             align={centered ? 'center' : 'left'}
-            sx={{ 
+            sx={{
               mb: {
                 xs: 1,
                 sm: 2,
@@ -182,7 +191,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
               gutterBottom
               align={centered ? 'center' : 'left'}
               color='text.secondary'
-              sx={{ 
+              sx={{
                 mb: {
                   xs: 2,
                   sm: 3,
@@ -225,7 +234,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
               sm: 2,
             }}
             justifyContent='center'
-            sx={{ 
+            sx={{
               mt: 'auto',
               pt: {
                 xs: 1,
@@ -239,7 +248,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 variant='outlined'
                 size='large'
                 onClick={onBack}
-                sx={{ 
+                sx={{
                   minWidth: {
                     xs: 140,
                     sm: 240,
@@ -263,7 +272,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 size='large'
                 onClick={onContinue}
                 disabled={continueDisabled}
-                sx={{ 
+                sx={{
                   minWidth: {
                     xs: 140,
                     sm: 240,

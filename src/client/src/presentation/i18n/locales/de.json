@@ -110,6 +110,13 @@
     "robotDisconnectedSuccess": "Von Roboter {{robotId}} getrennt",
     "robotDisconnectionFailed": "Trennung von Roboter {{robotId}} fehlgeschlagen"
   },
+  "errors": {
+    "robotSelectionRequired": "Sie müssen einen Roboter auswählen, um eine Verbindung herzustellen",
+    "robotDeleteFailed": "Roboter konnte nicht gelöscht werden",
+    "robotConnectFailed": "Verbindung zu diesem Roboter nicht möglich",
+    "robotDisconnectFailed": "Trennung von diesem Roboter nicht möglich",
+    "robotSaveFailed": "Speichern von {{robotName}} fehlgeschlagen"
+  },
   "settings": {
     "title": "Einstellungen",
     "tabs": {

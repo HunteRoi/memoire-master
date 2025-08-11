@@ -12,6 +12,7 @@ export const TutorialBackdrop: FC<TutorialBackdropProps> = ({
 }) => {
   return (
     <Box
+      role='presentation'
       sx={{
         position: 'fixed',
         top: 0,

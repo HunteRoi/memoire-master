@@ -60,6 +60,7 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
       open={Boolean(anchorEl)}
       anchorEl={anchorEl}
       placement={placement}
+      role='tooltip'
       modifiers={[
         {
           name: 'offset',

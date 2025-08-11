@@ -110,6 +110,13 @@
     "robotDisconnectedSuccess": "Verbinding met robot {{robotId}} verbroken",
     "robotDisconnectionFailed": "Verbreken van verbinding met robot {{robotId}} mislukt"
   },
+  "errors": {
+    "robotSelectionRequired": "Je moet een robot selecteren om verbinding mee te maken om door te gaan",
+    "robotDeleteFailed": "Robot kon niet worden verwijderd",
+    "robotConnectFailed": "Kon geen verbinding maken met deze robot",
+    "robotDisconnectFailed": "Kon verbinding met deze robot niet verbreken",
+    "robotSaveFailed": "Opslaan van {{robotName}} mislukt"
+  },
   "settings": {
     "title": "Instellingen",
     "tabs": {

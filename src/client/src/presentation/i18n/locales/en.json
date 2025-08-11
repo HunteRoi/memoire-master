@@ -110,6 +110,13 @@
     "robotDisconnectedSuccess": "Disconnected from Robot {{robotId}}",
     "robotDisconnectionFailed": "Failed to disconnect from Robot {{robotId}}"
   },
+  "errors": {
+    "robotSelectionRequired": "You have to select a robot to connect to in order to continue",
+    "robotDeleteFailed": "Failed to delete the robot",
+    "robotConnectFailed": "Could not connect to this robot",
+    "robotDisconnectFailed": "Could not disconnect from this robot",
+    "robotSaveFailed": "Failed to save {{robotName}}"
+  },
   "settings": {
     "title": "Settings",
     "tabs": {

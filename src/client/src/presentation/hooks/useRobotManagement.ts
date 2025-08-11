@@ -1,9 +1,12 @@
 import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { isSuccess } from '../../domain/result';
 import type { Robot, RobotConfig } from '../../domain/robot';
 import { useAppContext } from './useAppContext';
 
 export const useRobotManagement = () => {
+  const { t } = useTranslation();
   const {
     robots,
     setRobotsList,
@@ -26,11 +29,11 @@ export const useRobotManagement = () => {
           setRobotsList(transformRobotData(result.data as RobotConfig[]));
         } else {
           console.error('Delete robot failed:', result.error);
-          setError('Failed to delete the robot');
+          setError(t('errors.robotDeleteFailed'));
         }
       } catch (error) {
         console.error('Delete robot error:', error);
-        setError('Failed to delete the robot');
+        setError(t('errors.robotDeleteFailed'));
       }
     },
     [transformRobotData, setRobotsList, setError]
@@ -48,12 +51,12 @@ export const useRobotManagement = () => {
           return true;
         } else {
           console.error('Save robot failed:', result.error);
-          setError(`Failed to save ${robot.name}`);
+          setError(t('errors.robotSaveFailed', { robotName: robot.name }));
           return false;
         }
       } catch (error) {
         console.error('Save robot error:', error);
-        setError(`Failed to save ${robot.name}`);
+        setError(t('errors.robotSaveFailed', { robotName: robot.name }));
         return false;
       }
     },
@@ -73,12 +76,12 @@ export const useRobotManagement = () => {
           return true;
         } else {
           console.error('Connect to robot failed:', result.error);
-          setError('Could not connect to this robot');
+          setError(t('errors.robotConnectFailed'));
           return false;
         }
       } catch (error) {
         console.error('Connect to robot error:', error);
-        setError('Could not connect to this robot');
+        setError(t('errors.robotConnectFailed'));
         return false;
       } finally {
         setLoading(false);
@@ -100,12 +103,12 @@ export const useRobotManagement = () => {
           return true;
         } else {
           console.error('Disconnect from robot failed:', result.error);
-          setError('Could not disconnect from this robot');
+          setError(t('errors.robotDisconnectFailed'));
           return false;
         }
       } catch (error) {
         console.error('Disconnect from robot error:', error);
-        setError('Could not disconnect from this robot');
+        setError(t('errors.robotDisconnectFailed'));
         return false;
       }
     },

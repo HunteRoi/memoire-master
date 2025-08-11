@@ -35,7 +35,7 @@ export const RobotSelection: FC = () => {
   const handleBack = () => navigate('/age-selection');
   const handleContinue = async () => {
     if (!selectedRobot) {
-      setError('You have to select a robot to connect to in order to continue');
+      setError(t('errors.robotSelectionRequired'));
       return;
     }
 

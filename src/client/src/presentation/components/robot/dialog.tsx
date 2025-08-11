@@ -156,6 +156,7 @@ export const RobotDialog: FC<RobotDialogProps> = ({
       onKeyDown={handleDialogKeyDown}
       maxWidth='sm'
       fullWidth
+      role='dialog'
       aria-labelledby='robot-dialog-title'
       aria-describedby='robot-dialog-description'
     >
@@ -183,7 +184,7 @@ export const RobotDialog: FC<RobotDialogProps> = ({
             disabled={ipFieldDisabled}
           />
 
-          <Alert severity='info' sx={{ mb: 2 }}>
+          <Alert severity='info' sx={{ mb: 2 }} role='status'>
             {labels.robotIdWillBe.replace('{{id}}', currentRobot.id)}
           </Alert>
 
@@ -221,13 +222,13 @@ export const RobotDialog: FC<RobotDialogProps> = ({
         </Box>
 
         {testResult === 'success' && (
-          <Alert severity='success' sx={{ mb: 2 }}>
+          <Alert severity='success' sx={{ mb: 2 }} role='status'>
             {labels.connectionSuccessWithId.replace('{{id}}', currentRobot.id)}
           </Alert>
         )}
 
         {testResult === 'error' && (
-          <Alert severity='error' sx={{ mb: 2 }}>
+          <Alert severity='error' sx={{ mb: 2 }} role='alert'>
             {labels.connectionFailedDetails}
           </Alert>
         )}

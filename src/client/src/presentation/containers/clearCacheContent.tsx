@@ -49,6 +49,7 @@ export const ClearCacheContent: FC = () => {
       <Dialog
         open={clearCacheDialogOpen}
         onClose={handleCancelClearCache}
+        role='dialog'
         aria-labelledby='clear-cache-dialog-title'
         aria-describedby='clear-cache-dialog-description'
       >
