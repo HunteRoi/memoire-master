@@ -5,13 +5,13 @@ export interface ValidationResult {
 
 export type Result<T> =
   | {
-    readonly success: true;
-    readonly data: T;
-  }
+      readonly success: true;
+      readonly data: T;
+    }
   | {
-    readonly success: false;
-    readonly error: string;
-  };
+      readonly success: false;
+      readonly error: string;
+    };
 
 export const Success = <T>(data: T): Result<T> => ({
   success: true,

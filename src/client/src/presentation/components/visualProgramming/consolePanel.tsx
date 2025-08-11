@@ -1,9 +1,7 @@
 import { VisibilityOff } from '@mui/icons-material';
 import { Box, IconButton, Paper, Typography } from '@mui/material';
 import { type FC, useCallback, useEffect, useRef } from 'react';
-
-import type { Robot } from '../../../domain/robot';
-import type { RobotFeedback } from '../../../domain/robot';
+import type { Robot, RobotFeedback } from '../../../domain/robot';
 import type { ConsoleMessage } from '../../models/ConsoleMessage';
 
 export interface ConsolePanelLabels {
@@ -43,6 +41,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
     consoleEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want the scroll to happen on new messages too.
   useEffect(() => {
     scrollToBottom();
   }, [consoleMessages, scrollToBottom]);
@@ -132,7 +131,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
         >
           🖥️ {labels.title}
         </Typography>
-        <IconButton onClick={onToggle} title="Close console">
+        <IconButton onClick={onToggle} title='Close console'>
           <VisibilityOff />
         </IconButton>
       </Box>

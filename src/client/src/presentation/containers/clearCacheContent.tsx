@@ -38,7 +38,10 @@ export const ClearCacheContent: FC = () => {
   return (
     <>
       <Typography variant='body2' color='text.secondary' paragraph>
-        {t('settings.sections.clearCache.description', 'Clear all stored data including your workspace, console history, and preferences. This action cannot be undone.')}
+        {t(
+          'settings.sections.clearCache.description',
+          'Clear all stored data including your workspace, console history, and preferences. This action cannot be undone.'
+        )}
       </Typography>
       <Button
         variant='outlined'
@@ -61,14 +64,21 @@ export const ClearCacheContent: FC = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id='clear-cache-dialog-description'>
-            {t('settings.sections.clearCache.dialog.description', 'This will permanently delete all your workspace data, console history, and preferences. The application will restart after clearing. This action cannot be undone.')}
+            {t(
+              'settings.sections.clearCache.dialog.description',
+              'This will permanently delete all your workspace data, console history, and preferences. The application will restart after clearing. This action cannot be undone.'
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelClearCache}>
             {t('settings.sections.clearCache.dialog.cancel', 'Cancel')}
           </Button>
-          <Button onClick={handleConfirmClearCache} color='error' variant='contained'>
+          <Button
+            onClick={handleConfirmClearCache}
+            color='error'
+            variant='contained'
+          >
             {t('settings.sections.clearCache.dialog.confirm', 'Clear All Data')}
           </Button>
         </DialogActions>

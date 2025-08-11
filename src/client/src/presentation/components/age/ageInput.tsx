@@ -1,8 +1,13 @@
 import { FormControl, InputAdornment, TextField } from '@mui/material';
 import type React from 'react';
-import { type PropsWithChildren, Children, isValidElement, ReactElement } from 'react';
+import {
+  Children,
+  isValidElement,
+  type PropsWithChildren,
+  type ReactElement,
+} from 'react';
 
-type LeftAdornmentProps = PropsWithChildren<{}>;
+type LeftAdornmentProps = PropsWithChildren;
 
 const LeftAdornment: React.FC<LeftAdornmentProps> = ({ children }) => {
   return <>{children}</>;
@@ -26,7 +31,7 @@ const AgeInputComponent: React.FC<PropsWithChildren<AgeInputProps>> = ({
   children,
 }) => {
   const leftAdornmentChild = Children.toArray(children).find(
-    (child) => child && isValidElement(child) && child.type === LeftAdornment
+    child => child && isValidElement(child) && child.type === LeftAdornment
   ) as ReactElement<LeftAdornmentProps, typeof LeftAdornment> | undefined;
 
   return (

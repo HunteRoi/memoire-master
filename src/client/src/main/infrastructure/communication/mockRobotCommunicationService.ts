@@ -1,5 +1,5 @@
-import type { Robot } from '../../../domain/robot';
 import type {
+  Robot,
   RobotFeedback,
   RobotFeedbackCallback,
 } from '../../../domain/robot';
@@ -11,13 +11,14 @@ import type { RobotCommunicationService } from '../../application/interfaces/rob
  * Simulates robot connections without requiring actual hardware.
  */
 export class MockRobotCommunicationService
-  implements RobotCommunicationService {
+  implements RobotCommunicationService
+{
   private connectedRobots: Set<string> = new Set();
   private readonly simulatedDelay = 500; // 500ms simulation delay
   private feedbackCallbacks: Map<string, RobotFeedbackCallback> = new Map();
   private feedbackIntervals: Map<string, NodeJS.Timeout> = new Map();
 
-  constructor(private logger: Logger) { }
+  constructor(private logger: Logger) {}
 
   async connect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);
@@ -213,11 +214,20 @@ export class MockRobotCommunicationService
     const interval = setInterval(() => {
       if (this.connectedRobots.has(robotKey)) {
         const statusMessages = [
-          { key: 'robot.mockMessages.statusOperational', params: { status: 'operational' } },
-          { key: 'robot.mockMessages.sensorsWorking', params: { status: 'all functional' } },
+          {
+            key: 'robot.mockMessages.statusOperational',
+            params: { status: 'operational' },
+          },
+          {
+            key: 'robot.mockMessages.sensorsWorking',
+            params: { status: 'all functional' },
+          },
           { key: 'robot.mockMessages.batteryLevel', params: { level: 85 } },
           { key: 'robot.mockMessages.memoryUsage', params: { usage: 45 } },
-          { key: 'robot.mockMessages.wifiSignal', params: { strength: 'strong' } },
+          {
+            key: 'robot.mockMessages.wifiSignal',
+            params: { strength: 'strong' },
+          },
           { key: 'robot.mockMessages.readyForCommands', params: {} },
         ];
 

@@ -1,7 +1,7 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
-import { type FC } from 'react';
+import type { FC } from 'react';
 
-import { type SettingsSection } from './types';
+import type { SettingsSection } from './types';
 
 interface RobotsTabProps {
   sections: SettingsSection[];
@@ -10,8 +10,8 @@ interface RobotsTabProps {
 export const RobotsTab: FC<RobotsTabProps> = ({ sections }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      {sections.map((section, index) => (
-        <Card key={index}>
+      {sections.map(section => (
+        <Card key={section.title}>
           <CardContent>
             <Typography variant='h6' gutterBottom>
               {section.title}

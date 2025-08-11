@@ -3,7 +3,10 @@ import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { PageLayout } from '../components/layout/layout';
-import { AgeSelectionContent, type AgeSelectionContentRef } from '../containers/ageSelectionContent';
+import {
+  AgeSelectionContent,
+  type AgeSelectionContentRef,
+} from '../containers/ageSelectionContent';
 import { useAppContext } from '../hooks/useAppContext';
 
 export const AgeSelection: FC = () => {

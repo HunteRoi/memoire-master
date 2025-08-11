@@ -1,4 +1,11 @@
-import { type FC, useCallback, useEffect, type Dispatch, type SetStateAction } from 'react';
+import { Visibility } from '@mui/icons-material';
+import {
+  type Dispatch,
+  type FC,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+} from 'react';
 import { useNavigate } from 'react-router';
 import {
   addEdge,
@@ -11,18 +18,30 @@ import {
   ReactFlowProvider,
   useReactFlow,
 } from 'reactflow';
-import { Visibility } from '@mui/icons-material';
 
 import { BlocksPanel } from '../../components/visualProgramming/blocksPanel';
 import { ConsolePanel } from '../../components/visualProgramming/consolePanel';
 import { Panel } from '../../components/visualProgramming/panel';
 import { ScriptPanel } from '../../components/visualProgramming/scriptPanel';
-import { LabelsProvider, useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
 import { usePersistedNodesState } from '../../hooks/usePersistedNodesState';
-import { RobotConnectionContainer, useRobotConnection } from './robotConnectionContainer';
-import { CodeGenerationContainer, useCodeGeneration } from './codeGenerationContainer';
+import {
+  LabelsProvider,
+  useVisualProgrammingLabels,
+} from '../../providers/visualProgramming/labelsProvider';
+import {
+  CodeGenerationContainer,
+  useCodeGeneration,
+} from './codeGenerationContainer';
 import { ConsoleContainer, useConsole } from './consoleContainer';
-import { ScriptExecutionContainer, useScriptExecution, ScriptExecutionState } from './scriptExecutionContainer';
+import {
+  RobotConnectionContainer,
+  useRobotConnection,
+} from './robotConnectionContainer';
+import {
+  ScriptExecutionContainer,
+  ScriptExecutionState,
+  useScriptExecution,
+} from './scriptExecutionContainer';
 
 interface VisualProgrammingContentProps {
   isSimpleMode: boolean;
@@ -47,22 +66,41 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   onEdgesChange,
 }) => {
   const navigate = useNavigate();
-  const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels, errorMessages } = useVisualProgrammingLabels();
-  const { selectedRobotData, hasConnectedRobot, canExecuteScript, showAlert } = useRobotConnection();
+  const {
+    blocksPanelLabels,
+    consolePanelLabels,
+    scriptPanelLabels,
+    errorMessages,
+  } = useVisualProgrammingLabels();
+  const { selectedRobotData, hasConnectedRobot, canExecuteScript, showAlert } =
+    useRobotConnection();
   const { handleViewPythonCode, handleUpdateCode } = useCodeGeneration();
-  const { consoleMessages, showConsole, handleFeedback, addConsoleMessage, handleToggleConsole } = useConsole();
-  const { executionState, enhancedNodes, handlePlayScript, handlePauseScript, handleStopScript } = useScriptExecution();
+  const {
+    consoleMessages,
+    showConsole,
+    handleFeedback,
+    addConsoleMessage,
+    handleToggleConsole,
+  } = useConsole();
+  const {
+    executionState,
+    enhancedNodes,
+    handlePlayScript,
+    handlePauseScript,
+    handleStopScript,
+  } = useScriptExecution();
   const scriptHeight = showConsole ? '60%' : '100%';
   const handleSettings = useCallback(() => {
     navigate('/settings');
   }, [navigate]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to update the code whenever nodes change
   useEffect(() => {
     const updateCode = async () => {
       await handleUpdateCode();
     };
     updateCode();
-  }, [nodes]);
+  }, [nodes, handleUpdateCode]);
 
   // React Flow
   const { screenToFlowPosition } = useReactFlow();
@@ -71,8 +109,10 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     changes.forEach(change => {
       if (change.type === 'remove') {
         const nodeToRemove = nodes.find(node => node.id === change.id);
-        if (nodeToRemove && nodeToRemove.data?.blockType) {
-          addConsoleMessage('info', 'visualProgramming.success.blockDeleted', { blockId: nodeToRemove.data.blockType });
+        if (nodeToRemove?.data?.blockType) {
+          addConsoleMessage('info', 'visualProgramming.success.blockDeleted', {
+            blockId: nodeToRemove.data.blockType,
+          });
         }
       }
     });
@@ -96,17 +136,27 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           return;
         }
 
-        let blockData;
+        let blockData: any;
         try {
           blockData = JSON.parse(rawData);
         } catch (parseError) {
-          console.error('Invalid JSON in drag data:', parseError, 'Raw data:', rawData);
+          console.error(
+            'Invalid JSON in drag data:',
+            parseError,
+            'Raw data:',
+            rawData
+          );
           showAlert(errorMessages.invalidBlockData, 'error');
           return;
         }
 
         // Validate block data structure
-        if (!blockData || typeof blockData !== 'object' || !blockData.id || !blockData.name) {
+        if (
+          !blockData ||
+          typeof blockData !== 'object' ||
+          !blockData.id ||
+          !blockData.name
+        ) {
           console.error('Invalid block data structure:', blockData);
           showAlert(errorMessages.invalidBlockStructure, 'error');
           return;
@@ -119,7 +169,8 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         });
 
         // Get translated block name
-        const translatedBlockName = blocksPanelLabels.blockNames[blockData.id] || blockData.name;
+        const translatedBlockName =
+          blocksPanelLabels.blockNames[blockData.id] || blockData.name;
 
         const newNode: Node = {
           id: `${blockData.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -138,14 +189,22 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         setNodes(n => [...n, newNode]);
 
         // Add console message for successful block addition
-        addConsoleMessage('info', 'visualProgramming.success.blockAdded', { blockId: blockData.id });
-
+        addConsoleMessage('info', 'visualProgramming.success.blockAdded', {
+          blockId: blockData.id,
+        });
       } catch (error) {
         console.error('Error handling drop:', error);
         showAlert(errorMessages.failedToAddBlock, 'error');
       }
     },
-    [setNodes, screenToFlowPosition, showAlert, addConsoleMessage]
+    [
+      setNodes,
+      screenToFlowPosition,
+      showAlert,
+      addConsoleMessage,
+      blocksPanelLabels,
+      errorMessages,
+    ]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -176,7 +235,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
       <Panel.RightPanel>
         <Panel.TopPanel height={scriptHeight}>
           <ScriptPanel
-            height="100%"
+            height='100%'
             isSimpleMode={isSimpleMode}
             nodes={enhancedNodes}
             edges={edges}
@@ -200,7 +259,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         </Panel.TopPanel>
 
         {showConsole && (
-          <Panel.BottomPanel height="40%">
+          <Panel.BottomPanel height='40%'>
             <ConsolePanel
               isSimpleMode={isSimpleMode}
               selectedRobotData={selectedRobotData}
@@ -230,7 +289,8 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
 export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
   isSimpleMode,
 }) => {
-  const { nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange } = usePersistedNodesState();
+  const { nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange } =
+    usePersistedNodesState();
 
   return (
     <ReactFlowProvider>
@@ -247,7 +307,7 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
                   edges={edges}
                   setEdges={setEdges}
                   onEdgesChange={onEdgesChange}
-                  />
+                />
               </ScriptExecutionContainer>
             </ConsoleContainer>
           </CodeGenerationContainer>

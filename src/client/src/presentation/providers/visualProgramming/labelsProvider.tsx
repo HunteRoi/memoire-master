@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, type ReactNode, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BlocksPanelLabels } from '../../components/visualProgramming/blocksPanel';
@@ -25,7 +25,9 @@ const LabelsContext = createContext<VisualProgrammingLabels | null>(null);
 export const useVisualProgrammingLabels = (): VisualProgrammingLabels => {
   const context = useContext(LabelsContext);
   if (!context) {
-    throw new Error('useVisualProgrammingLabels must be used within a LabelsProvider');
+    throw new Error(
+      'useVisualProgrammingLabels must be used within a LabelsProvider'
+    );
   }
   return context;
 };
@@ -122,7 +124,9 @@ export const LabelsProvider: React.FC<LabelsProviderProps> = ({ children }) => {
   const errorMessages = useMemo(
     () => ({
       invalidBlockData: t('visualProgramming.errors.invalidBlockData'),
-      invalidBlockStructure: t('visualProgramming.errors.invalidBlockStructure'),
+      invalidBlockStructure: t(
+        'visualProgramming.errors.invalidBlockStructure'
+      ),
       failedToAddBlock: t('visualProgramming.errors.failedToAddBlock'),
     }),
     [t]
@@ -130,8 +134,10 @@ export const LabelsProvider: React.FC<LabelsProviderProps> = ({ children }) => {
 
   const successMessages = useMemo(
     () => ({
-      blockAdded: (blockName: string) => t('visualProgramming.success.blockAdded', { blockName }),
-      blockDeleted: (blockName: string) => t('visualProgramming.success.blockDeleted', { blockName }),
+      blockAdded: (blockName: string) =>
+        t('visualProgramming.success.blockAdded', { blockName }),
+      blockDeleted: (blockName: string) =>
+        t('visualProgramming.success.blockDeleted', { blockName }),
     }),
     [t]
   );
@@ -144,12 +150,16 @@ export const LabelsProvider: React.FC<LabelsProviderProps> = ({ children }) => {
       errorMessages,
       successMessages,
     }),
-    [blocksPanelLabels, consolePanelLabels, scriptPanelLabels, errorMessages, successMessages]
+    [
+      blocksPanelLabels,
+      consolePanelLabels,
+      scriptPanelLabels,
+      errorMessages,
+      successMessages,
+    ]
   );
 
   return (
-    <LabelsContext.Provider value={labels}>
-      {children}
-    </LabelsContext.Provider>
+    <LabelsContext.Provider value={labels}>{children}</LabelsContext.Provider>
   );
 };

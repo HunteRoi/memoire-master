@@ -9,7 +9,14 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import { type FC, type KeyboardEvent, type ChangeEventHandler, useCallback, useEffect, useState } from 'react';
+import {
+  type ChangeEventHandler,
+  type FC,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
 import { DEFAULT_PORT, DEFAULT_ROBOT } from '../../../domain/constants';
 import { Robot } from '../../../domain/robot';
@@ -37,7 +44,7 @@ interface RobotDialogProps {
   onSave: (robot: Robot) => void;
   onTest: (robot: Robot) => Promise<boolean>;
   labels: RobotDialogLabels;
-  ipFieldDisabled?: boolean
+  ipFieldDisabled?: boolean;
 }
 
 export const RobotDialog: FC<RobotDialogProps> = ({
@@ -47,7 +54,7 @@ export const RobotDialog: FC<RobotDialogProps> = ({
   onSave,
   onTest,
   labels,
-  ipFieldDisabled = false
+  ipFieldDisabled = false,
 }) => {
   const [ip, setIp] = useState('');
   const [port, setPort] = useState(DEFAULT_PORT);
@@ -91,7 +98,6 @@ export const RobotDialog: FC<RobotDialogProps> = ({
     setTesting(true);
     setTestResult(null);
 
-
     try {
       if (currentRobot === DEFAULT_ROBOT) {
         throw new Error('Cannot test with the default robot');
@@ -106,9 +112,9 @@ export const RobotDialog: FC<RobotDialogProps> = ({
     }
   };
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     onSave(currentRobot);
-  };
+  }, [onSave, currentRobot]);
 
   const onIpChange: ChangeEventHandler<HTMLInputElement> = e => {
     e.stopPropagation();
@@ -120,22 +126,28 @@ export const RobotDialog: FC<RobotDialogProps> = ({
     setPort(parseInt(e.target.value) || DEFAULT_PORT);
   };
 
-  const handleDialogKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === 'NumpadEnter') {
-      if (testResult === 'success') {
-        event.preventDefault();
-        handleSave();
+  const handleDialogKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === 'NumpadEnter') {
+        if (testResult === 'success') {
+          event.preventDefault();
+          handleSave();
+        }
+      } else if (event.key === 'Backspace' || event.key === 'Escape') {
+        // Only handle backspace/escape if not focused on an input
+        const target = event.target as HTMLElement;
+        const isInputElement =
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable;
+        if (!isInputElement) {
+          event.preventDefault();
+          onClose();
+        }
       }
-    } else if (event.key === 'Backspace' || event.key === 'Escape') {
-      // Only handle backspace/escape if not focused on an input
-      const target = event.target as HTMLElement;
-      const isInputElement = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
-      if (!isInputElement) {
-        event.preventDefault();
-        onClose();
-      }
-    }
-  }, [testResult, handleSave, onClose]);
+    },
+    [testResult, handleSave, onClose]
+  );
 
   return (
     <Dialog
@@ -187,7 +199,7 @@ export const RobotDialog: FC<RobotDialogProps> = ({
             slotProps={{
               htmlInput: {
                 'aria-describedby': 'robot-port-description',
-              }
+              },
             }}
           />
           <Box id='robot-port-description' sx={{ display: 'none' }}>

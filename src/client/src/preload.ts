@@ -2,9 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge, ipcRenderer } from 'electron';
-
-import type { RobotConfig } from './domain/robot';
-import type { RobotFeedback } from './domain/robot';
+import type { RobotConfig, RobotFeedback } from './domain/robot';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   app: {

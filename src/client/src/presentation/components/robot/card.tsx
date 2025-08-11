@@ -1,4 +1,11 @@
-import { Delete, Edit, LinkOff, Wifi, WifiOff, Link } from '@mui/icons-material';
+import {
+  Delete,
+  Edit,
+  Link,
+  LinkOff,
+  Wifi,
+  WifiOff,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -8,7 +15,13 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { type FC, type MouseEventHandler, memo, useCallback, useMemo } from 'react';
+import {
+  type FC,
+  type MouseEventHandler,
+  memo,
+  useCallback,
+  useMemo,
+} from 'react';
 
 import { DEFAULT_ROBOT } from '../../../domain/constants';
 import type { Robot } from '../../../domain/robot';
@@ -104,7 +117,6 @@ const RobotCardComponent: FC<RobotCardProps> = ({
   const handleCardClick = useCallback(() => {
     onSelect(robot);
   }, [onSelect, robot]);
-
 
   const robotDisplayName = useMemo(
     () => getRobotDisplayName(robot),
@@ -207,7 +219,6 @@ const RobotCardComponent: FC<RobotCardProps> = ({
           IP: {robot.ipAddress}:{robot.port}
         </Typography>
       </CardContent>
-
     </Card>
   );
 };

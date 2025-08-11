@@ -1,6 +1,6 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import type React from 'react';
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { LanguageSelector } from '../languageSelector';
 
 interface PageLayoutProps {
@@ -44,7 +44,10 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-      const isInputElement = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+      const isInputElement =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable;
 
       if (
         (event.key === 'Enter' || event.key === 'NumpadEnter') &&
@@ -56,16 +59,28 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       } else if (event.key === 'Backspace' && onBack && !isInputElement) {
         event.preventDefault();
         onBack();
-      } else if (event.key === 'ArrowLeft' && onNavigateLeft && !isInputElement) {
+      } else if (
+        event.key === 'ArrowLeft' &&
+        onNavigateLeft &&
+        !isInputElement
+      ) {
         event.preventDefault();
         onNavigateLeft();
-      } else if (event.key === 'ArrowRight' && onNavigateRight && !isInputElement) {
+      } else if (
+        event.key === 'ArrowRight' &&
+        onNavigateRight &&
+        !isInputElement
+      ) {
         event.preventDefault();
         onNavigateRight();
       } else if (event.key === 'ArrowUp' && onNavigateUp && !isInputElement) {
         event.preventDefault();
         onNavigateUp();
-      } else if (event.key === 'ArrowDown' && onNavigateDown && !isInputElement) {
+      } else if (
+        event.key === 'ArrowDown' &&
+        onNavigateDown &&
+        !isInputElement
+      ) {
         event.preventDefault();
         onNavigateDown();
       }
@@ -76,7 +91,15 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onBack, onContinue, onNavigateLeft, onNavigateRight, onNavigateUp, onNavigateDown, continueDisabled]);
+  }, [
+    onBack,
+    onContinue,
+    onNavigateLeft,
+    onNavigateRight,
+    onNavigateUp,
+    onNavigateDown,
+    continueDisabled,
+  ]);
 
   return (
     <Box

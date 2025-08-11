@@ -1,6 +1,6 @@
-import type { Robot } from '../../../domain/robot';
-import type { ConnectedRobot } from '../../../domain/robot';
 import type {
+  ConnectedRobot,
+  Robot,
   RobotFeedback,
   RobotFeedbackCallback,
 } from '../../../domain/robot';
@@ -12,7 +12,8 @@ import { RobotHealthMonitor } from './robotHealthMonitor';
 import { RobotMessageHandler } from './robotMessageHandler';
 
 export class WebsocketRobotCommunicationService
-  implements RobotCommunicationService, Disposable {
+  implements RobotCommunicationService, Disposable
+{
   private connectionManager: RobotConnectionManager;
   private messageHandler: RobotMessageHandler;
   private healthMonitor: RobotHealthMonitor;

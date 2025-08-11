@@ -49,7 +49,7 @@ export class Theme {
   constructor(
     public readonly type: ThemeType,
     public readonly colors: ThemeColors
-  ) { }
+  ) {}
 
   static createClassic(): Theme {
     return new Theme(ThemeType.CLASSIC, {

@@ -1,13 +1,10 @@
 import WebSocket from 'ws';
-
 import type {
   ConnectedRobot,
-  RobotMessage,
-  RobotResponse,
-} from '../../../domain/robot';
-import type {
   RobotFeedback,
   RobotFeedbackCallback,
+  RobotMessage,
+  RobotResponse,
 } from '../../../domain/robot';
 
 export class RobotMessageHandler {

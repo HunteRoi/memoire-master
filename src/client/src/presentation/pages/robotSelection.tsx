@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router';
 
 import type { Robot } from '../../domain/robot';
 import { PageLayout } from '../components/layout/layout';
-import { RobotSelectionContent, type RobotSelectionContentRef } from '../containers/robotSelectionContent';
+import {
+  RobotSelectionContent,
+  type RobotSelectionContentRef,
+} from '../containers/robotSelectionContent';
 import { useAppContext } from '../hooks/useAppContext';
 import { useRobotManagement } from '../hooks/useRobotManagement';
 
@@ -65,8 +68,8 @@ export const RobotSelection: FC = () => {
       maxWidth='lg'
       defaultLabels={defaultLabels}
     >
-      <RobotSelectionContent 
-        ref={robotSelectionContentRef} 
+      <RobotSelectionContent
+        ref={robotSelectionContentRef}
         onConnectionSuccess={() => navigate('/mode-selection')}
       />
     </PageLayout>

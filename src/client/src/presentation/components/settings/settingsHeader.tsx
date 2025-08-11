@@ -1,6 +1,6 @@
 import { ArrowBack } from '@mui/icons-material';
 import { Box, IconButton, Typography } from '@mui/material';
-import { type FC } from 'react';
+import type { FC } from 'react';
 
 import { LanguageSelector } from '../languageSelector';
 

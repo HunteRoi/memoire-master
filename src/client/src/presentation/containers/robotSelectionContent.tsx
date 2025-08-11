@@ -22,7 +22,10 @@ interface RobotSelectionContentProps {
   onConnectionSuccess?: () => void;
 }
 
-export const RobotSelectionContent = forwardRef<RobotSelectionContentRef, RobotSelectionContentProps>(({ onConnectionSuccess }, ref) => {
+export const RobotSelectionContent = forwardRef<
+  RobotSelectionContentRef,
+  RobotSelectionContentProps
+>(({ onConnectionSuccess }, ref) => {
   const { t } = useTranslation();
   const { setSelectedRobot, showAlert } = useAppContext();
 
@@ -65,7 +68,10 @@ export const RobotSelectionContent = forwardRef<RobotSelectionContentRef, RobotS
   const handleEnterKey = () => {
     if (!selectedRobot) {
       showAlert(
-        t('alerts.noRobotSelected', 'You have to select a robot to connect to in order to continue'),
+        t(
+          'alerts.noRobotSelected',
+          'You have to select a robot to connect to in order to continue'
+        ),
         'error'
       );
       return;
@@ -73,7 +79,9 @@ export const RobotSelectionContent = forwardRef<RobotSelectionContentRef, RobotS
 
     const robotConnected = isRobotConnected(selectedRobot);
     if (!robotConnected) {
-      const selectedRobotData = robots.find(robot => robot.id === selectedRobot);
+      const selectedRobotData = robots.find(
+        robot => robot.id === selectedRobot
+      );
       if (selectedRobotData) {
         setRobotToConnect(selectedRobotData);
         setConfirmDialogOpen(true);
@@ -206,9 +214,13 @@ export const RobotSelectionContent = forwardRef<RobotSelectionContentRef, RobotS
   const robotCardLabels = useMemo(
     () => ({
       connect: (robotName: string) =>
-        t('robot.card.connect', `Connect to robot ${robotName}`, { name: robotName }),
+        t('robot.card.connect', `Connect to robot ${robotName}`, {
+          name: robotName,
+        }),
       disconnect: (robotName: string) =>
-        t('robot.card.disconnect', `Disconnect from robot ${robotName}`, { name: robotName }),
+        t('robot.card.disconnect', `Disconnect from robot ${robotName}`, {
+          name: robotName,
+        }),
       edit: (robotName: string) =>
         t('robot.card.edit', `Edit robot ${robotName}`, { name: robotName }),
       delete: (robotName: string) =>

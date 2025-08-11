@@ -31,19 +31,28 @@ export const RobotConnectionDialog: React.FC<RobotConnectionDialogProps> = ({
   loading = false,
   labels,
 }) => {
-  const handleDialogKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (!loading) {
-      if (event.key === 'Enter' || event.key === 'NumpadEnter') {
-        event.preventDefault();
-        onConfirm();
-      } else if (event.key === 'Backspace' || event.key === 'Escape') {
-        event.preventDefault();
-        onCancel();
+  const handleDialogKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (!loading) {
+        if (event.key === 'Enter' || event.key === 'NumpadEnter') {
+          event.preventDefault();
+          onConfirm();
+        } else if (event.key === 'Backspace' || event.key === 'Escape') {
+          event.preventDefault();
+          onCancel();
+        }
       }
-    }
-  }, [loading, onConfirm, onCancel]);
+    },
+    [loading, onConfirm, onCancel]
+  );
   return (
-    <Dialog open={open} onClose={onCancel} onKeyDown={handleDialogKeyDown} maxWidth='sm' fullWidth>
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      onKeyDown={handleDialogKeyDown}
+      maxWidth='sm'
+      fullWidth
+    >
       <DialogTitle>{labels.title}</DialogTitle>
       <DialogContent>
         <Typography variant='body1'>{labels.confirmMessage}</Typography>

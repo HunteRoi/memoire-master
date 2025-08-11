@@ -1,10 +1,17 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Node } from 'reactflow';
-
-import { useRobotConnection } from './robotConnectionContainer';
-import { useConsole } from './consoleContainer';
 import { useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
+import { useConsole } from './consoleContainer';
+import { useRobotConnection } from './robotConnectionContainer';
 
 export enum ScriptExecutionState {
   IDLE = 'idle',
@@ -28,12 +35,16 @@ export interface ScriptExecutionContextType {
   handleStopScript: () => void;
 }
 
-const ScriptExecutionContext = createContext<ScriptExecutionContextType | null>(null);
+const ScriptExecutionContext = createContext<ScriptExecutionContextType | null>(
+  null
+);
 
 export const useScriptExecution = (): ScriptExecutionContextType => {
   const context = useContext(ScriptExecutionContext);
   if (!context) {
-    throw new Error('useScriptExecution must be used within a ScriptExecutionContainer');
+    throw new Error(
+      'useScriptExecution must be used within a ScriptExecutionContainer'
+    );
   }
   return context;
 };
@@ -43,10 +54,9 @@ interface ScriptExecutionContainerProps {
   nodes: Node[];
 }
 
-export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> = ({
-  children,
-  nodes,
-}) => {
+export const ScriptExecutionContainer: React.FC<
+  ScriptExecutionContainerProps
+> = ({ children, nodes }) => {
   const { t } = useTranslation();
   const { hasConnectedRobot, showAlert } = useRobotConnection();
   const { blocksPanelLabels } = useVisualProgrammingLabels();
@@ -56,13 +66,15 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
   const [executionState, setExecutionState] = useState<ScriptExecutionState>(
     ScriptExecutionState.IDLE
   );
-  const [currentlyExecutingNodeId, setCurrentlyExecutingNodeId] = useState<string | null>(null);
+  const [currentlyExecutingNodeId, setCurrentlyExecutingNodeId] = useState<
+    string | null
+  >(null);
 
   // Execution control ref
   const executionControlRef = useRef<ExecutionControl>({
     shouldStop: false,
     shouldPause: false,
-    currentIndex: 0
+    currentIndex: 0,
   });
 
   // Enhanced nodes with execution highlighting
@@ -71,7 +83,8 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
       // Re-translate node label when language changes
       let updatedLabel = node.data?.label;
       if (node.data?.blockType && node.data?.blockIcon) {
-        const translatedBlockName = blocksPanelLabels.blockNames[node.data.blockType];
+        const translatedBlockName =
+          blocksPanelLabels.blockNames[node.data.blockType];
         if (translatedBlockName) {
           updatedLabel = `${node.data.blockIcon} ${translatedBlockName}`;
         }
@@ -82,14 +95,25 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
         data: {
           ...node.data,
           label: updatedLabel,
-          blockName: blocksPanelLabels.blockNames[node.data?.blockType] || node.data?.blockName,
+          blockName:
+            blocksPanelLabels.blockNames[node.data?.blockType] ||
+            node.data?.blockName,
         },
         style: {
           ...node.style,
-          backgroundColor: node.id === currentlyExecutingNodeId ? '#ffd54f' : node.style?.backgroundColor,
-          border: node.id === currentlyExecutingNodeId ? '2px solid #ff9800' : node.style?.border,
-          boxShadow: node.id === currentlyExecutingNodeId ? '0 4px 8px rgba(255, 152, 0, 0.3)' : node.style?.boxShadow,
-        }
+          backgroundColor:
+            node.id === currentlyExecutingNodeId
+              ? '#ffd54f'
+              : node.style?.backgroundColor,
+          border:
+            node.id === currentlyExecutingNodeId
+              ? '2px solid #ff9800'
+              : node.style?.border,
+          boxShadow:
+            node.id === currentlyExecutingNodeId
+              ? '0 4px 8px rgba(255, 152, 0, 0.3)'
+              : node.style?.boxShadow,
+        },
       };
     });
   }, [nodes, currentlyExecutingNodeId, blocksPanelLabels.blockNames]);
@@ -114,52 +138,61 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
   }, []);
 
   // Execution utilities
-  const createExecutionControl = useCallback((startIndex: number): ExecutionControl => {
-    return {
-      shouldStop: false,
-      shouldPause: false,
-      currentIndex: startIndex,
-      abortController: new AbortController()
-    };
-  }, []);
+  const createExecutionControl = useCallback(
+    (startIndex: number): ExecutionControl => {
+      return {
+        shouldStop: false,
+        shouldPause: false,
+        currentIndex: startIndex,
+        abortController: new AbortController(),
+      };
+    },
+    []
+  );
 
-  const cancellableDelay = useCallback((ms: number, abortController: AbortController): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      if (ms < 0) {
-        reject(new Error('Delay must be non-negative'));
-        return;
-      }
+  const cancellableDelay = useCallback(
+    (ms: number, abortController?: AbortController): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        if (ms < 0) {
+          reject(new Error('Delay must be non-negative'));
+          return;
+        }
 
-      if (!abortController || abortController.signal.aborted) {
-        reject(new Error('Execution cancelled'));
-        return;
-      }
-
-      const timeoutId = setTimeout(() => {
-        if (abortController.signal.aborted) {
+        if (!abortController || abortController.signal.aborted) {
           reject(new Error('Execution cancelled'));
           return;
         }
-        resolve();
-      }, ms);
 
-      abortController.signal.addEventListener('abort', () => {
-        clearTimeout(timeoutId);
-        reject(new Error('Execution cancelled'));
+        const timeoutId = setTimeout(() => {
+          if (abortController.signal.aborted) {
+            reject(new Error('Execution cancelled'));
+            return;
+          }
+          resolve();
+        }, ms);
+
+        abortController.signal.addEventListener('abort', () => {
+          clearTimeout(timeoutId);
+          reject(new Error('Execution cancelled'));
+        });
       });
-    });
-  }, []);
+    },
+    []
+  );
 
   // Execution state management
-  const startExecution = useCallback((isResuming: boolean) => {
-    setExecutionState(ScriptExecutionState.RUNNING);
-    showAlert(
-      isResuming
-        ? t('visualProgramming.alerts.scriptResumed')
-        : t('visualProgramming.alerts.scriptStarted'),
-      'success'
-    );
-  }, [showAlert, t]);
+  const startExecution = useCallback(
+    (isResuming: boolean) => {
+      setExecutionState(ScriptExecutionState.RUNNING);
+      showAlert(
+        isResuming
+          ? t('visualProgramming.alerts.scriptResumed')
+          : t('visualProgramming.alerts.scriptStarted'),
+        'success'
+      );
+    },
+    [showAlert, t]
+  );
 
   const pauseExecution = useCallback(() => {
     setExecutionState(ScriptExecutionState.PAUSED);
@@ -173,55 +206,73 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
     executionControlRef.current.currentIndex = 0;
   }, []);
 
-  const completeExecution = useCallback((wasStopped: boolean) => {
-    stopExecution();
-    if (!wasStopped) {
-      addConsoleMessage('success', t('visualProgramming.console.scriptCompleted'));
-    }
-  }, [stopExecution, addConsoleMessage, t]);
+  const completeExecution = useCallback(
+    (wasStopped: boolean) => {
+      stopExecution();
+      if (!wasStopped) {
+        addConsoleMessage(
+          'success',
+          t('visualProgramming.console.scriptCompleted')
+        );
+      }
+    },
+    [stopExecution, addConsoleMessage, t]
+  );
 
-  const handleExecutionError = useCallback((error: any) => {
-    console.error('Script execution error:', error);
-    stopExecution();
-    addConsoleMessage('error', t('visualProgramming.console.scriptFailed'));
-  }, [stopExecution, addConsoleMessage, t]);
+  const handleExecutionError = useCallback(
+    (error: any) => {
+      console.error('Script execution error:', error);
+      stopExecution();
+      addConsoleMessage('error', t('visualProgramming.console.scriptFailed'));
+    },
+    [stopExecution, addConsoleMessage, t]
+  );
 
   // Node execution
-  const executeNode = useCallback(async (node: Node, control: ExecutionControl) => {
-    const { blockName } = node.data;
+  const executeNode = useCallback(
+    async (node: Node, control: ExecutionControl) => {
+      const { blockName } = node.data;
 
-    // Highlight current node
-    setCurrentlyExecutingNodeId(node.id);
-    addConsoleMessage('info', t('visualProgramming.console.executingBlock', { blockName }));
+      // Highlight current node
+      setCurrentlyExecutingNodeId(node.id);
+      addConsoleMessage(
+        'info',
+        t('visualProgramming.console.executingBlock', { blockName })
+      );
 
-    // Simulate block execution
-    await cancellableDelay(1000, control.abortController!);
-  }, [addConsoleMessage, cancellableDelay, t]);
+      // Simulate block execution
+      await cancellableDelay(1000, control.abortController);
+    },
+    [addConsoleMessage, cancellableDelay, t]
+  );
 
   // Main execution loop
-  const executeNodes = useCallback(async (startIndex: number, control: ExecutionControl) => {
-    for (let i = startIndex; i < nodes.length; i++) {
-      // Check for stop signal
-      if (control.shouldStop) {
-        break;
-      }
+  const executeNodes = useCallback(
+    async (startIndex: number, control: ExecutionControl) => {
+      for (let i = startIndex; i < nodes.length; i++) {
+        // Check for stop signal
+        if (control.shouldStop) {
+          break;
+        }
 
-      // Check for pause signal
-      if (control.shouldPause) {
+        // Check for pause signal
+        if (control.shouldPause) {
+          control.currentIndex = i;
+          pauseExecution();
+          return;
+        }
+
+        const node = nodes[i];
+        if (!validateNode(node, i)) {
+          continue;
+        }
+
         control.currentIndex = i;
-        pauseExecution();
-        return;
+        await executeNode(node, control);
       }
-
-      const node = nodes[i];
-      if (!validateNode(node, i)) {
-        continue;
-      }
-
-      control.currentIndex = i;
-      await executeNode(node, control);
-    }
-  }, [nodes, validateNode, executeNode, pauseExecution]);
+    },
+    [nodes, validateNode, executeNode, pauseExecution]
+  );
 
   // Main execution handlers
   const handlePlayScript = useCallback(async () => {
@@ -232,7 +283,9 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
     }
 
     const isResuming = executionState === ScriptExecutionState.PAUSED;
-    const startIndex = isResuming ? executionControlRef.current.currentIndex : 0;
+    const startIndex = isResuming
+      ? executionControlRef.current.currentIndex
+      : 0;
 
     // Setup execution control
     executionControlRef.current = createExecutionControl(startIndex);
@@ -254,7 +307,7 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
     startExecution,
     executeNodes,
     completeExecution,
-    handleExecutionError
+    handleExecutionError,
   ]);
 
   const handlePauseScript = useCallback(() => {
@@ -270,7 +323,10 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
       executionControlRef.current.abortController?.abort();
       stopExecution();
       showAlert(t('visualProgramming.alerts.scriptStopped'), 'info');
-      addConsoleMessage('info', t('visualProgramming.console.scriptStoppedByUser'));
+      addConsoleMessage(
+        'info',
+        t('visualProgramming.console.scriptStoppedByUser')
+      );
     }
   }, [executionState, stopExecution, showAlert, t, addConsoleMessage]);
 

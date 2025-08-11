@@ -8,7 +8,9 @@ interface UsePersistedConsoleStateProps {
   isSimpleMode: boolean;
 }
 
-export const usePersistedConsoleState = ({ isSimpleMode }: UsePersistedConsoleStateProps) => {
+export const usePersistedConsoleState = ({
+  isSimpleMode,
+}: UsePersistedConsoleStateProps) => {
   // Load initial console messages from localStorage
   const getInitialMessages = (): ConsoleMessage[] => {
     try {
@@ -30,24 +32,40 @@ export const usePersistedConsoleState = ({ isSimpleMode }: UsePersistedConsoleSt
   };
 
   // State hooks with persisted initial values
-  const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>(getInitialMessages());
-  const [showConsole, setShowConsole] = useState<boolean>(getInitialVisibility());
+  const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>(
+    getInitialMessages()
+  );
+  const [showConsole, setShowConsole] = useState<boolean>(
+    getInitialVisibility()
+  );
 
   // Persist console messages to localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem(CONSOLE_MESSAGES_STORAGE_KEY, JSON.stringify(consoleMessages));
+      localStorage.setItem(
+        CONSOLE_MESSAGES_STORAGE_KEY,
+        JSON.stringify(consoleMessages)
+      );
     } catch (error) {
-      console.warn('Failed to persist console messages to localStorage:', error);
+      console.warn(
+        'Failed to persist console messages to localStorage:',
+        error
+      );
     }
   }, [consoleMessages]);
 
   // Persist console visibility to localStorage whenever it changes
   useEffect(() => {
     try {
-      localStorage.setItem(CONSOLE_VISIBILITY_STORAGE_KEY, JSON.stringify(showConsole));
+      localStorage.setItem(
+        CONSOLE_VISIBILITY_STORAGE_KEY,
+        JSON.stringify(showConsole)
+      );
     } catch (error) {
-      console.warn('Failed to persist console visibility to localStorage:', error);
+      console.warn(
+        'Failed to persist console visibility to localStorage:',
+        error
+      );
     }
   }, [showConsole]);
 

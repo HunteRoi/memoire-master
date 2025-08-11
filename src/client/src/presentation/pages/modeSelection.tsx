@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { PageLayout } from '../components/layout/layout';
-import { ModeSelectionContent, type ModeSelectionContentRef } from '../containers/modeSelectionContent';
+import {
+  ModeSelectionContent,
+  type ModeSelectionContentRef,
+} from '../containers/modeSelectionContent';
 import { useAppContext } from '../hooks/useAppContext';
 
 export const ModeSelection: FC = () => {

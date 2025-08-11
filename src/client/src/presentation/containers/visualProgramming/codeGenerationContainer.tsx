@@ -1,4 +1,10 @@
-import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface CodeGenerationContextType {
@@ -7,12 +13,16 @@ export interface CodeGenerationContextType {
   handleUpdateCode: () => Promise<void>;
 }
 
-const CodeGenerationContext = createContext<CodeGenerationContextType | null>(null);
+const CodeGenerationContext = createContext<CodeGenerationContextType | null>(
+  null
+);
 
 export const useCodeGeneration = (): CodeGenerationContextType => {
   const context = useContext(CodeGenerationContext);
   if (!context) {
-    throw new Error('useCodeGeneration must be used within a CodeGenerationContainer');
+    throw new Error(
+      'useCodeGeneration must be used within a CodeGenerationContainer'
+    );
   }
   return context;
 };
@@ -22,18 +32,21 @@ interface CodeGenerationContainerProps {
   nodes: any[]; // React Flow nodes for code generation
 }
 
-export const CodeGenerationContainer: React.FC<CodeGenerationContainerProps> = ({ 
-  children, 
-  nodes 
-}) => {
+export const CodeGenerationContainer: React.FC<
+  CodeGenerationContainerProps
+> = ({ children, nodes }) => {
   const { t } = useTranslation();
 
   // Python code generation logic
   const generatePythonCode = useCallback(() => {
     if (nodes.length === 0) {
-      const generatedComment = t('visualProgramming.pythonViewer.generatedComment');
+      const generatedComment = t(
+        'visualProgramming.pythonViewer.generatedComment'
+      );
       const basedOnComment = t('visualProgramming.pythonViewer.basedOnComment');
-      const completedComment = t('visualProgramming.pythonViewer.completedComment');
+      const completedComment = t(
+        'visualProgramming.pythonViewer.completedComment'
+      );
 
       return `# ${generatedComment}
 # ${basedOnComment}
@@ -44,7 +57,9 @@ import robot
 print("${completedComment}")`;
     }
 
-    const generatedComment = t('visualProgramming.pythonViewer.generatedComment');
+    const generatedComment = t(
+      'visualProgramming.pythonViewer.generatedComment'
+    );
     const basedOnComment = t('visualProgramming.pythonViewer.basedOnComment');
 
     let pythonCode = `# ${generatedComment}
@@ -94,7 +109,9 @@ def main():
       pythonCode += `    execute_block("${node.data.blockType}", "${node.data.blockName}")  # ${node.data.blockIcon} ${node.data.blockName}\n`;
     });
 
-    const completedComment = t('visualProgramming.pythonViewer.completedComment');
+    const completedComment = t(
+      'visualProgramming.pythonViewer.completedComment'
+    );
     pythonCode += `    print("${completedComment}")
 
 if __name__ == "__main__":

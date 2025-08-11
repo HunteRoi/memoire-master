@@ -1,5 +1,5 @@
 import { Box, Button } from '@mui/material';
-import { type FC, type PropsWithChildren, type ReactNode } from 'react';
+import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 const PanelComponent: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -46,7 +46,10 @@ const RightPanel: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-const TopPanel: FC<PropsWithChildren<{ height?: string }>> = ({ children, height = '100%' }) => {
+const TopPanel: FC<PropsWithChildren<{ height?: string }>> = ({
+  children,
+  height = '100%',
+}) => {
   return (
     <Box
       sx={{
@@ -61,7 +64,10 @@ const TopPanel: FC<PropsWithChildren<{ height?: string }>> = ({ children, height
   );
 };
 
-const BottomPanel: FC<PropsWithChildren<{ height?: string }>> = ({ children, height = '33%' }) => {
+const BottomPanel: FC<PropsWithChildren<{ height?: string }>> = ({
+  children,
+  height = '33%',
+}) => {
   return (
     <Box
       sx={{
@@ -82,7 +88,11 @@ interface FloatingButtonProps {
   children: ReactNode;
 }
 
-const FloatingButton: FC<FloatingButtonProps> = ({ icon, onClick, children }) => {
+const FloatingButton: FC<FloatingButtonProps> = ({
+  icon,
+  onClick,
+  children,
+}) => {
   return (
     <Button
       variant='contained'

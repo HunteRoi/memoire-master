@@ -2,10 +2,10 @@ export const clearAllCache = () => {
   try {
     // Clear all localStorage items
     localStorage.clear();
-    
+
     // Clear sessionStorage items
     sessionStorage.clear();
-    
+
     // Reload the page to reset application state
     window.location.reload();
   } catch (error) {
@@ -23,11 +23,11 @@ export const clearApplicationDataOnly = () => {
       'visual-programming-console-messages',
       'visual-programming-console-visibility',
     ];
-    
+
     keysToRemove.forEach(key => {
       localStorage.removeItem(key);
     });
-    
+
     // Clear sessionStorage completely
     sessionStorage.clear();
   } catch (error) {

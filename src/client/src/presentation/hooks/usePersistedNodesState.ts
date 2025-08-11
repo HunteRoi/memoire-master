@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { type Node, type Edge, useNodesState, useEdgesState } from 'reactflow';
+import { type Edge, type Node, useEdgesState, useNodesState } from 'reactflow';
 
 const NODES_STORAGE_KEY = 'visual-programming-nodes';
 const EDGES_STORAGE_KEY = 'visual-programming-edges';

@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { PageLayout } from '../components/layout/layout';
-import { ThemeSelectionContent, type ThemeSelectionContentRef } from '../containers/themeSelectionContent';
+import {
+  ThemeSelectionContent,
+  type ThemeSelectionContentRef,
+} from '../containers/themeSelectionContent';
 
 export const ThemeSelection: FC = () => {
   const navigate = useNavigate();

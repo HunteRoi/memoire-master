@@ -1,5 +1,5 @@
-import type { Robot } from '../../../domain/robot';
 import type {
+  Robot,
   RobotFeedback,
   RobotFeedbackCallback,
 } from '../../../domain/robot';
