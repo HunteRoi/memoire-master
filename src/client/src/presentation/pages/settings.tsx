@@ -1,20 +1,15 @@
-import { ArrowBack, SmartToy, Tune } from '@mui/icons-material';
-import {
-  Box,
-  Card,
-  CardContent,
-  IconButton,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
+import { Box } from '@mui/material';
 import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
-import { LanguageSelector } from '../components/languageSelector';
+import { CustomizationTab } from '../components/settings/customizationTab';
+import { RobotsTab } from '../components/settings/robotsTab';
+import { SettingsHeader } from '../components/settings/settingsHeader';
+import { SettingsTabs } from '../components/settings/settingsTabs';
 import { TabPanel } from '../components/tabPanel';
 import { AgeSelectionContent } from '../containers/ageSelectionContent';
+import { ClearCacheContent } from '../containers/clearCacheContent';
 import { ModeSelectionContent } from '../containers/modeSelectionContent';
 import { RobotSelectionContent } from '../containers/robotSelectionContent';
 import { ThemeSelectionContent } from '../containers/themeSelectionContent';
@@ -32,102 +27,54 @@ export const Settings: FC = () => {
     navigate('/programming');
   };
 
+  const customizationSections = [
+    {
+      title: t('settings.sections.themeSelection.title'),
+      description: t('settings.sections.themeSelection.description'),
+      content: <ThemeSelectionContent />,
+    },
+    {
+      title: t('settings.sections.ageConfiguration.title'),
+      description: t('settings.sections.ageConfiguration.description'),
+      content: <AgeSelectionContent />,
+    },
+    {
+      title: t('settings.sections.clearCache.title', 'Clear Cache'),
+      content: <ClearCacheContent />,
+    },
+  ];
+
+  const robotsSections = [
+    {
+      title: t('settings.sections.robotManagement.title'),
+      description: t('settings.sections.robotManagement.description'),
+      content: <RobotSelectionContent />,
+    },
+    {
+      title: t('settings.sections.robotMode.title'),
+      description: t('settings.sections.robotMode.description'),
+      content: <ModeSelectionContent />,
+    },
+  ];
+
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          p: 2,
-          borderBottom: 1,
-          borderColor: 'divider',
-          backgroundColor: 'background.paper',
-        }}
-      >
-        <IconButton onClick={handleBack} sx={{ mr: 2 }}>
-          <ArrowBack />
-        </IconButton>
-        <Typography variant='h5' component='h1' sx={{ flexGrow: 1 }}>
-          {t('settings.title')}
-        </Typography>
-        <LanguageSelector />
-      </Box>
+      <SettingsHeader title={t('settings.title')} onBack={handleBack} />
 
-      {/* Tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tabValue} onChange={handleTabChange}>
-          <Tab
-            icon={<Tune />}
-            label={t('settings.tabs.customization')}
-            iconPosition='start'
-            sx={{ minHeight: 48 }}
-          />
-          <Tab
-            icon={<SmartToy />}
-            label={t('settings.tabs.robots')}
-            iconPosition='start'
-            sx={{ minHeight: 48 }}
-          />
-        </Tabs>
-      </Box>
+      <SettingsTabs
+        value={tabValue}
+        customizationLabel={t('settings.tabs.customization')}
+        robotsLabel={t('settings.tabs.robots')}
+        onChange={handleTabChange}
+      />
 
-      {/* Tab Content */}
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         <TabPanel value={tabValue} index={0}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <Card>
-              <CardContent>
-                <Typography variant='h6' gutterBottom>
-                  {t('settings.sections.themeSelection.title')}
-                </Typography>
-                <Typography variant='body2' color='text.secondary' paragraph>
-                  {t('settings.sections.themeSelection.description')}
-                </Typography>
-                <ThemeSelectionContent />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent>
-                <Typography variant='h6' gutterBottom>
-                  {t('settings.sections.ageConfiguration.title')}
-                </Typography>
-                <Typography variant='body2' color='text.secondary' paragraph>
-                  {t('settings.sections.ageConfiguration.description')}
-                </Typography>
-                <AgeSelectionContent />
-              </CardContent>
-            </Card>
-          </Box>
+          <CustomizationTab sections={customizationSections} />
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <Card>
-              <CardContent>
-                <Typography variant='h6' gutterBottom>
-                  {t('settings.sections.robotManagement.title')}
-                </Typography>
-                <Typography variant='body2' color='text.secondary' paragraph>
-                  {t('settings.sections.robotManagement.description')}
-                </Typography>
-                <RobotSelectionContent />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent>
-                <Typography variant='h6' gutterBottom>
-                  {t('settings.sections.robotMode.title')}
-                </Typography>
-                <Typography variant='body2' color='text.secondary' paragraph>
-                  {t('settings.sections.robotMode.description')}
-                </Typography>
-                <ModeSelectionContent />
-              </CardContent>
-            </Card>
-          </Box>
+          <RobotsTab sections={robotsSections} />
         </TabPanel>
       </Box>
     </Box>
