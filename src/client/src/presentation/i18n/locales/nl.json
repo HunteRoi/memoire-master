@@ -69,7 +69,21 @@
     "disconnected": "Niet verbonden",
     "connectToRobotName": "Verbinden met {{name}}",
     "connectConfirm": "Weet u zeker dat u verbinding wilt maken met {{name}}?",
-    "connecting": "Verbinding maken..."
+    "connecting": "Verbinding maken...",
+    "robotNameDefault": "Robot {{id}}",
+    "mockMessages": {
+      "connecting": "Verbinding maken met robot...",
+      "connected": "Robot succesvol verbonden",
+      "disconnecting": "Verbinding met robot verbreken...",
+      "disconnected": "Robot niet verbonden",
+      "statusOperational": "Robot status: {{status}}",
+      "sensorsWorking": "Sensoren: {{status}}",
+      "batteryLevel": "Batterijniveau: {{level}}%",
+      "memoryUsage": "Geheugengebruik: {{usage}}%",
+      "wifiSignal": "WiFi signaal: {{strength}}",
+      "readyForCommands": "Klaar voor commando's",
+      "commandExecuted": "Mock commando succesvol uitgevoerd"
+    }
   },
   "mode": {
     "title": "Kies Robot Modus",
@@ -207,7 +221,11 @@
         "connecting": "Verbinding maken met robot...",
         "connectionEstablished": "Verbinding tot stand gebracht",
         "readyForCommands": "Klaar voor commando's"
-      }
+      },
+      "scriptCompleted": "Script uitvoering voltooid",
+      "scriptFailed": "Script uitvoering mislukt",
+      "executingBlock": "Uitvoeren: {{blockName}}",
+      "scriptStoppedByUser": "Script uitvoering gestopt door gebruiker"
     },
     "alerts": {
       "noRobotConnected": "Geen robot verbonden. Maak eerst verbinding met een robot.",

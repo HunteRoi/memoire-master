@@ -32,7 +32,7 @@ export class MockRobotCommunicationService
       robotId: robot.id,
       timestamp: Date.now(),
       type: 'info',
-      message: 'Connecting to robot...',
+      message: 'robot.mockMessages.connecting',
     });
 
     await this.delay(this.simulatedDelay);
@@ -43,7 +43,7 @@ export class MockRobotCommunicationService
       robotId: robot.id,
       timestamp: Date.now(),
       type: 'success',
-      message: 'Robot connected successfully',
+      message: 'robot.mockMessages.connected',
     });
 
     this.startPeriodicFeedback(robot);
@@ -61,7 +61,7 @@ export class MockRobotCommunicationService
       robotId: robot.id,
       timestamp: Date.now(),
       type: 'info',
-      message: 'Disconnecting from robot...',
+      message: 'robot.mockMessages.disconnecting',
     });
 
     await this.delay(this.simulatedDelay);
@@ -74,7 +74,7 @@ export class MockRobotCommunicationService
       robotId: robot.id,
       timestamp: Date.now(),
       type: 'info',
-      message: 'Robot disconnected',
+      message: 'robot.mockMessages.disconnected',
     });
 
     this.logger.info('Mock robot disconnection completed', {
@@ -171,7 +171,7 @@ export class MockRobotCommunicationService
       responses[command.toLowerCase()] || {
         command,
         status: 'executed',
-        message: 'Mock command executed successfully',
+        message: 'robot.mockMessages.commandExecuted',
       }
     );
   }
@@ -213,12 +213,12 @@ export class MockRobotCommunicationService
     const interval = setInterval(() => {
       if (this.connectedRobots.has(robotKey)) {
         const statusMessages = [
-          'Robot status: operational',
-          'Sensors: all functional',
-          'Battery level: 85%',
-          'Memory usage: 45%',
-          'WiFi signal: strong',
-          'Ready for commands',
+          { key: 'robot.mockMessages.statusOperational', params: { status: 'operational' } },
+          { key: 'robot.mockMessages.sensorsWorking', params: { status: 'all functional' } },
+          { key: 'robot.mockMessages.batteryLevel', params: { level: 85 } },
+          { key: 'robot.mockMessages.memoryUsage', params: { usage: 45 } },
+          { key: 'robot.mockMessages.wifiSignal', params: { strength: 'strong' } },
+          { key: 'robot.mockMessages.readyForCommands', params: {} },
         ];
 
         const randomMessage =
@@ -228,11 +228,12 @@ export class MockRobotCommunicationService
           robotId: robot.id,
           timestamp: Date.now(),
           type: 'info',
-          message: randomMessage,
+          message: randomMessage.key,
           data: {
             battery: 85,
             sensors: this.generateRandomSensorData(),
             uptime: Math.floor(Math.random() * 3600),
+            messageParams: randomMessage.params,
           },
         });
       }

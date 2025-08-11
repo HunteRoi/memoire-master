@@ -9,8 +9,7 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import type React from 'react';
-import { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
+import { type FC, type KeyboardEvent, type ChangeEventHandler, useCallback, useEffect, useState } from 'react';
 
 import { DEFAULT_PORT, DEFAULT_ROBOT } from '../../../domain/constants';
 import { Robot } from '../../../domain/robot';
@@ -41,7 +40,7 @@ interface RobotDialogProps {
   ipFieldDisabled?: boolean
 }
 
-export const RobotDialog: React.FC<RobotDialogProps> = ({
+export const RobotDialog: FC<RobotDialogProps> = ({
   open,
   robot,
   onClose,
@@ -92,7 +91,11 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
     setTesting(true);
     setTestResult(null);
 
+
     try {
+      if (currentRobot === DEFAULT_ROBOT) {
+        throw new Error('Cannot test with the default robot');
+      }
       const result = await onTest(currentRobot);
       setTestResult(result ? 'success' : 'error');
     } catch (error) {
@@ -117,7 +120,7 @@ export const RobotDialog: React.FC<RobotDialogProps> = ({
     setPort(parseInt(e.target.value) || DEFAULT_PORT);
   };
 
-  const handleDialogKeyDown = useCallback((event: React.KeyboardEvent) => {
+  const handleDialogKeyDown = useCallback((event: KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === 'NumpadEnter') {
       if (testResult === 'success') {
         event.preventDefault();

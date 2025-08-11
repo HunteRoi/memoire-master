@@ -69,7 +69,21 @@
     "disconnected": "Getrennt",
     "connectToRobotName": "Mit {{name}} verbinden",
     "connectConfirm": "Sind Sie sicher, dass Sie sich mit {{name}} verbinden möchten?",
-    "connecting": "Verbinde..."
+    "connecting": "Verbinde...",
+    "robotNameDefault": "Roboter {{id}}",
+    "mockMessages": {
+      "connecting": "Verbindung zum Roboter...",
+      "connected": "Roboter erfolgreich verbunden",
+      "disconnecting": "Verbindung zum Roboter trennen...",
+      "disconnected": "Roboter getrennt",
+      "statusOperational": "Roboter-Status: {{status}}",
+      "sensorsWorking": "Sensoren: {{status}}",
+      "batteryLevel": "Batterielevel: {{level}}%",
+      "memoryUsage": "Speichernutzung: {{usage}}%",
+      "wifiSignal": "WiFi-Signal: {{strength}}",
+      "readyForCommands": "Bereit für Befehle",
+      "commandExecuted": "Mock-Befehl erfolgreich ausgeführt"
+    }
   },
   "mode": {
     "title": "Wählen Sie den Roboter-Modus",
@@ -207,7 +221,11 @@
         "connecting": "Verbindung zum Roboter...",
         "connectionEstablished": "Verbindung hergestellt",
         "readyForCommands": "Bereit für Befehle"
-      }
+      },
+      "scriptCompleted": "Skriptausführung abgeschlossen",
+      "scriptFailed": "Skriptausführung fehlgeschlagen",
+      "executingBlock": "Ausführung: {{blockName}}",
+      "scriptStoppedByUser": "Skriptausführung vom Benutzer gestoppt"
     },
     "alerts": {
       "noRobotConnected": "Kein Roboter verbunden. Bitte verbinden Sie zuerst einen Roboter.",

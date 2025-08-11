@@ -133,12 +133,22 @@ export class RobotBuilder {
   }
 }
 
+export interface RobotFeedbackData {
+  battery?: number;
+  sensors?: unknown;
+  uptime?: number;
+  messageParams?: Record<string, any>;
+  rawData?: string;
+  error?: any;
+  [key: string]: any;
+}
+
 export interface RobotFeedback {
   robotId: string;
   timestamp: number;
   type: 'info' | 'success' | 'warning' | 'error';
   message: string;
-  data?: unknown;
+  data?: RobotFeedbackData;
 }
 
 export type RobotFeedbackCallback = (feedback: RobotFeedback) => void;
@@ -151,15 +161,30 @@ export interface ConnectedRobot {
   feedbackCallback?: RobotFeedbackCallback;
 }
 
+export interface RobotMessageData {
+  command?: string;
+  source?: string;
+  [key: string]: any;
+}
+
 export interface RobotMessage {
   type: 'command' | 'ping' | 'status';
-  data: unknown;
+  data: RobotMessageData;
   timestamp: number;
+}
+
+export interface RobotResponseData {
+  battery?: number;
+  sensors?: unknown;
+  status?: string;
+  result?: any;
+  rawData?: string;
+  [key: string]: any;
 }
 
 export interface RobotResponse {
   type: 'success' | 'error' | 'status' | 'pong';
-  data?: unknown;
+  data?: RobotResponseData;
   message?: string;
   timestamp: number;
 }

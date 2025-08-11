@@ -1,4 +1,4 @@
-import { Delete, Edit, LinkOff, Wifi, WifiOff, RadioButtonUnchecked, CheckCircle, Link } from '@mui/icons-material';
+import { Delete, Edit, LinkOff, Wifi, WifiOff, Link } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -8,10 +8,11 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import type { FC, MouseEventHandler } from 'react';
-import { memo, useCallback, useMemo } from 'react';
+import { type FC, type MouseEventHandler, memo, useCallback, useMemo } from 'react';
+
 import { DEFAULT_ROBOT } from '../../../domain/constants';
 import type { Robot } from '../../../domain/robot';
+import { useRobotTranslations } from '../../hooks/useRobotTranslations';
 
 interface RobotCardLabels {
   connect: (robotName: string) => string;
@@ -45,6 +46,7 @@ const RobotCardComponent: FC<RobotCardProps> = ({
   connected,
   labels,
 }) => {
+  const { getRobotDisplayName } = useRobotTranslations();
   const onEditClick: MouseEventHandler<HTMLButtonElement> = useCallback(
     event => {
       event.stopPropagation();
@@ -104,24 +106,29 @@ const RobotCardComponent: FC<RobotCardProps> = ({
   }, [onSelect, robot]);
 
 
+  const robotDisplayName = useMemo(
+    () => getRobotDisplayName(robot),
+    [getRobotDisplayName, robot]
+  );
+
   const editAriaLabel = useMemo(
-    () => labels.edit(robot.name),
-    [labels, robot.name]
+    () => labels.edit(robotDisplayName),
+    [labels, robotDisplayName]
   );
 
   const deleteAriaLabel = useMemo(
-    () => labels.delete(robot.name),
-    [labels, robot.name]
+    () => labels.delete(robotDisplayName),
+    [labels, robotDisplayName]
   );
 
   const connectTooltip = useMemo(
-    () => labels.connect(robot.name),
-    [labels, robot.name]
+    () => labels.connect(robotDisplayName),
+    [labels, robotDisplayName]
   );
 
   const disconnectTooltip = useMemo(
-    () => labels.disconnect(robot.name),
-    [labels, robot.name]
+    () => labels.disconnect(robotDisplayName),
+    [labels, robotDisplayName]
   );
 
   return (
@@ -141,7 +148,7 @@ const RobotCardComponent: FC<RobotCardProps> = ({
           mb={2}
         >
           <Box display='flex' alignItems='center' gap={1}>
-            <Typography variant='h6'>Robot {robot.id}</Typography>
+            <Typography variant='h6'>{robotDisplayName}</Typography>
             <Chip
               icon={connected ? <Wifi /> : <WifiOff />}
               label={connected ? labels.connected : labels.disconnected}
@@ -211,7 +218,6 @@ export const RobotCard = memo(RobotCardComponent, (prevProps, nextProps) => {
     prevProps.robot.id === nextProps.robot.id &&
     prevProps.robot.ipAddress === nextProps.robot.ipAddress &&
     prevProps.robot.port === nextProps.robot.port &&
-    prevProps.robot.name === nextProps.robot.name &&
     prevProps.selected === nextProps.selected &&
     prevProps.connected === nextProps.connected &&
     prevProps.onSelect === nextProps.onSelect &&

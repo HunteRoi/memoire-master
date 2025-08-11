@@ -9,9 +9,7 @@ import ReactFlow, {
   type Edge,
   type Node,
   type OnEdgesChange,
-  type OnEdgesDelete,
   type OnNodesChange,
-  type OnNodesDelete,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -39,8 +37,6 @@ interface ScriptPanelProps {
   onConnect: (connection: Connection) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
-  onNodesDelete: OnNodesDelete;
-  onEdgesDelete: OnEdgesDelete;
   onViewPythonCode: () => void;
   edges: Edge[];
 }
@@ -60,8 +56,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
   onConnect,
   onNodesChange,
   onEdgesChange,
-  onNodesDelete,
-  onEdgesDelete,
   onViewPythonCode,
   edges,
 }) => {
@@ -257,8 +251,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
-            onNodesDelete={onNodesDelete}
-            onEdgesDelete={onEdgesDelete}
             onConnect={onConnect}
             connectionMode={ConnectionMode.Loose}
             fitView

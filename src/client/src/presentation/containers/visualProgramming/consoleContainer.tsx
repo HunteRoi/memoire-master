@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { RobotFeedback } from '../../../domain/robot';
 import type { ConsoleMessage } from '../../models/ConsoleMessage';
+import { useRobotTranslations } from '../../hooks/useRobotTranslations';
 
 export interface ConsoleContextType {
   consoleMessages: ConsoleMessage[];
@@ -32,31 +33,36 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
   isSimpleMode
 }) => {
   const { t } = useTranslation();
+  const { translateFeedbackMessage } = useRobotTranslations();
   const [showConsole, setShowConsole] = useState(!isSimpleMode);
   const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([]);
+  const initializationMessage = useMemo(() => t('visualProgramming.console.messages.robotInitialized'), [t]);
 
-  // Initialize console with translated message
   useEffect(() => {
     setConsoleMessages([
       {
         timestamp: Date.now(),
         type: 'info',
-        message: t('visualProgramming.console.messages.robotInitialized'),
+        message: initializationMessage,
       },
     ]);
-  }, [t]);
+  }, [initializationMessage]);
 
   // Console management functions
   const handleFeedback = useCallback((feedback: RobotFeedback) => {
+    // Extract message parameters if they exist in the feedback data
+    const messageParams = feedback.data?.messageParams || {};
+    const translatedMessage = translateFeedbackMessage(feedback.message, messageParams);
+
     setConsoleMessages(prev => [
       ...prev,
       {
         timestamp: feedback.timestamp,
         type: feedback.type,
-        message: feedback.message,
+        message: translatedMessage,
       },
     ]);
-  }, []);
+  }, [translateFeedbackMessage]);
 
   const addConsoleMessage = useCallback((type: string, message: string) => {
     setConsoleMessages(prev => [

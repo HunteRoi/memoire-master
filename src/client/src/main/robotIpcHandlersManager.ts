@@ -2,7 +2,7 @@ import { BrowserWindow, ipcMain } from 'electron';
 import { createErrorResponse, isRobotError } from '../domain/errors';
 import { isSuccess } from '../domain/result';
 import { Robot } from '../domain/robot';
-import type { RobotFeedback } from '../domain/robot';
+import type { RobotFeedback, RobotFeedbackData } from '../domain/robot';
 import { Container } from './container';
 import { IpcValidator } from './infrastructure/security/ipcValidator';
 
@@ -232,7 +232,7 @@ export class RobotIpcHandlersManager {
                 timestamp: Date.now(),
                 type: 'success',
                 message: `Command executed: ${validatedCommand.substring(0, 50)}`,
-                data: result.data,
+                data: result.data as RobotFeedbackData,
               };
 
               RobotIpcHandlersManager.container.robotConnection.sendFeedback(
