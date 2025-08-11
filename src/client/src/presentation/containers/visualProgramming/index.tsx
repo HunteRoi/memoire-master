@@ -15,15 +15,15 @@ import {
 } from 'reactflow';
 import { Visibility } from '@mui/icons-material';
 
-import { BlocksPanel } from '../components/visualProgramming/blocksPanel';
-import { ConsolePanel } from '../components/visualProgramming/consolePanel';
-import { Panel } from '../components/visualProgramming/panel';
-import { ScriptPanel } from '../components/visualProgramming/scriptPanel';
-import { LabelsProvider, useVisualProgrammingLabels } from '../providers/visualProgramming/labelsProvider';
-import { RobotConnectionContainer, useRobotConnection } from './visualProgramming/robotConnectionContainer';
-import { CodeGenerationContainer, useCodeGeneration } from './visualProgramming/codeGenerationContainer';
-import { ConsoleContainer, useConsole } from './visualProgramming/consoleContainer';
-import { ScriptExecutionContainer, useScriptExecution, ScriptExecutionState } from './visualProgramming/scriptExecutionContainer';
+import { BlocksPanel } from '../../components/visualProgramming/blocksPanel';
+import { ConsolePanel } from '../../components/visualProgramming/consolePanel';
+import { Panel } from '../../components/visualProgramming/panel';
+import { ScriptPanel } from '../../components/visualProgramming/scriptPanel';
+import { LabelsProvider, useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
+import { RobotConnectionContainer, useRobotConnection } from './robotConnectionContainer';
+import { CodeGenerationContainer, useCodeGeneration } from './codeGenerationContainer';
+import { ConsoleContainer, useConsole } from './consoleContainer';
+import { ScriptExecutionContainer, useScriptExecution, ScriptExecutionState } from './scriptExecutionContainer';
 
 interface VisualProgrammingContentProps {
   isSimpleMode: boolean;
@@ -42,7 +42,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   onNodesChange,
 }) => {
   const navigate = useNavigate();
-  const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels, errorMessages, successMessages } = useVisualProgrammingLabels();
+  const { blocksPanelLabels, consolePanelLabels, scriptPanelLabels, errorMessages } = useVisualProgrammingLabels();
   const { selectedRobotData, hasConnectedRobot, canExecuteScript, showAlert } = useRobotConnection();
   const { handleViewPythonCode, handleUpdateCode } = useCodeGeneration();
   const { consoleMessages, showConsole, handleFeedback, addConsoleMessage, handleToggleConsole } = useConsole();
@@ -67,12 +67,12 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     changes.forEach(change => {
       if (change.type === 'remove') {
         const nodeToRemove = nodes.find(node => node.id === change.id);
-        if (nodeToRemove && nodeToRemove.data?.blockName) {
-          addConsoleMessage('info', successMessages.blockDeleted(nodeToRemove.data.blockName));
+        if (nodeToRemove && nodeToRemove.data?.blockType) {
+          addConsoleMessage('info', 'visualProgramming.success.blockDeleted', { blockId: nodeToRemove.data.blockType });
         }
       }
     });
-    
+
     onNodesChange(changes);
   };
   const onEdgesChanges: OnEdgesChange = async changes => {
@@ -114,14 +114,17 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           y: event.clientY,
         });
 
+        // Get translated block name
+        const translatedBlockName = blocksPanelLabels.blockNames[blockData.id] || blockData.name;
+
         const newNode: Node = {
           id: `${blockData.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           type: 'default',
           position,
           data: {
-            label: `${blockData.icon || '🔧'} ${blockData.name}`,
+            label: `${blockData.icon || '🔧'} ${translatedBlockName}`,
             blockType: blockData.id,
-            blockName: blockData.name,
+            blockName: translatedBlockName,
             blockIcon: blockData.icon || '🔧',
           },
           sourcePosition: Position.Bottom,
@@ -131,7 +134,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         setNodes(n => [...n, newNode]);
 
         // Add console message for successful block addition
-        addConsoleMessage('info', successMessages.blockAdded(blockData.name));
+        addConsoleMessage('info', 'visualProgramming.success.blockAdded', { blockId: blockData.id });
 
       } catch (error) {
         console.error('Error handling drop:', error);

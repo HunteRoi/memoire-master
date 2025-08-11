@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import type { FC } from 'react';
-import { VisualProgrammingContent } from '../containers/visualProgrammingContent';
+
+import { VisualProgrammingContent } from '../containers/visualProgramming';
 import { useAppContext } from '../hooks/useAppContext';
 
 export const VisualProgramming: FC = () => {

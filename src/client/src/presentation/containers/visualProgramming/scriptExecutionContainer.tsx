@@ -4,6 +4,7 @@ import type { Node } from 'reactflow';
 
 import { useRobotConnection } from './robotConnectionContainer';
 import { useConsole } from './consoleContainer';
+import { useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
 
 export enum ScriptExecutionState {
   IDLE = 'idle',
@@ -48,6 +49,7 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
 }) => {
   const { t } = useTranslation();
   const { hasConnectedRobot, showAlert } = useRobotConnection();
+  const { blocksPanelLabels } = useVisualProgrammingLabels();
   const { addConsoleMessage } = useConsole();
 
   // Execution state management
@@ -65,16 +67,32 @@ export const ScriptExecutionContainer: React.FC<ScriptExecutionContainerProps> =
 
   // Enhanced nodes with execution highlighting
   const enhancedNodes = useMemo(() => {
-    return nodes.map(node => ({
-      ...node,
-      style: {
-        ...node.style,
-        backgroundColor: node.id === currentlyExecutingNodeId ? '#ffd54f' : node.style?.backgroundColor,
-        border: node.id === currentlyExecutingNodeId ? '2px solid #ff9800' : node.style?.border,
-        boxShadow: node.id === currentlyExecutingNodeId ? '0 4px 8px rgba(255, 152, 0, 0.3)' : node.style?.boxShadow,
+    return nodes.map(node => {
+      // Re-translate node label when language changes
+      let updatedLabel = node.data?.label;
+      if (node.data?.blockType && node.data?.blockIcon) {
+        const translatedBlockName = blocksPanelLabels.blockNames[node.data.blockType];
+        if (translatedBlockName) {
+          updatedLabel = `${node.data.blockIcon} ${translatedBlockName}`;
+        }
       }
-    }));
-  }, [nodes, currentlyExecutingNodeId]);
+
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          label: updatedLabel,
+          blockName: blocksPanelLabels.blockNames[node.data?.blockType] || node.data?.blockName,
+        },
+        style: {
+          ...node.style,
+          backgroundColor: node.id === currentlyExecutingNodeId ? '#ffd54f' : node.style?.backgroundColor,
+          border: node.id === currentlyExecutingNodeId ? '2px solid #ff9800' : node.style?.border,
+          boxShadow: node.id === currentlyExecutingNodeId ? '0 4px 8px rgba(255, 152, 0, 0.3)' : node.style?.boxShadow,
+        }
+      };
+    });
+  }, [nodes, currentlyExecutingNodeId, blocksPanelLabels.blockNames]);
 
   // Validation functions
   const validateExecution = useCallback((): string | null => {

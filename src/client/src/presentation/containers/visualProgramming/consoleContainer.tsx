@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next';
 import type { RobotFeedback } from '../../../domain/robot';
 import type { ConsoleMessage } from '../../models/ConsoleMessage';
 import { useRobotTranslations } from '../../hooks/useRobotTranslations';
+import { useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
 
 export interface ConsoleContextType {
   consoleMessages: ConsoleMessage[];
   showConsole: boolean;
   handleFeedback: (feedback: RobotFeedback) => void;
-  addConsoleMessage: (type: string, message: string) => void;
+  addConsoleMessage: (type: string, translationKey: string, translationParams?: Record<string, any>) => void;
   handleToggleConsole: () => void;
 }
 
@@ -34,19 +35,33 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
 }) => {
   const { t } = useTranslation();
   const { translateFeedbackMessage } = useRobotTranslations();
+  const { blocksPanelLabels } = useVisualProgrammingLabels();
   const [showConsole, setShowConsole] = useState(!isSimpleMode);
   const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([]);
-  const initializationMessage = useMemo(() => t('visualProgramming.console.messages.robotInitialized'), [t]);
 
+  // Re-translate all messages when language changes
   useEffect(() => {
-    setConsoleMessages([
-      {
-        timestamp: Date.now(),
-        type: 'info',
-        message: initializationMessage,
-      },
-    ]);
-  }, [initializationMessage]);
+    setConsoleMessages(prevMessages =>
+      prevMessages.map(msg => {
+        let finalTranslationParams = msg.translationParams || {};
+        
+        // Handle block ID translation for re-translation
+        if (msg.translationParams?.blockId) {
+          const translatedBlockName = blocksPanelLabels.blockNames[msg.translationParams.blockId];
+          finalTranslationParams = {
+            ...msg.translationParams,
+            blockName: translatedBlockName || msg.translationParams.blockId
+          };
+        }
+        
+        return {
+          ...msg,
+          translationParams: finalTranslationParams,
+          message: String(t(msg.translationKey, finalTranslationParams))
+        };
+      })
+    );
+  }, [t, blocksPanelLabels.blockNames]);
 
   // Console management functions
   const handleFeedback = useCallback((feedback: RobotFeedback) => {
@@ -59,25 +74,43 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
       {
         timestamp: feedback.timestamp,
         type: feedback.type,
+        translationKey: 'robotFeedback.message',
+        translationParams: messageParams,
         message: translatedMessage,
       },
     ]);
   }, [translateFeedbackMessage]);
 
-  const addConsoleMessage = useCallback((type: string, message: string) => {
+  const addConsoleMessage = useCallback((type: string, translationKey: string, translationParams?: Record<string, any>) => {
+    // Handle block ID translation for console messages
+    let finalTranslationParams = translationParams || {};
+    if (translationParams?.blockId) {
+      const translatedBlockName = blocksPanelLabels.blockNames[translationParams.blockId];
+      finalTranslationParams = {
+        ...translationParams,
+        blockName: translatedBlockName || translationParams.blockId
+      };
+    }
+
     setConsoleMessages(prev => [
       ...prev,
       {
         timestamp: Date.now(),
         type,
-        message,
+        translationKey,
+        translationParams: finalTranslationParams,
+        message: String(t(translationKey, finalTranslationParams))
       },
     ]);
-  }, []);
+  }, [t, blocksPanelLabels.blockNames]);
 
   const handleToggleConsole = useCallback(() => {
     setShowConsole(prev => !prev);
   }, []);
+
+  useEffect(() => {
+    addConsoleMessage('info', 'visualProgramming.console.messages.robotInitialized');
+  }, [addConsoleMessage]);
 
   const contextValue = useMemo<ConsoleContextType>(
     () => ({

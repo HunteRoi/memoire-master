@@ -1,5 +1,7 @@
 export interface ConsoleMessage {
   timestamp: number;
   type: string;
-  message: string;
+  translationKey: string;
+  translationParams?: Record<string, any>;
+  message?: string;
 }

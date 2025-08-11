@@ -1,5 +1,5 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Box, Button, IconButton, Paper, Typography } from '@mui/material';
+import { VisibilityOff } from '@mui/icons-material';
+import { Box, IconButton, Paper, Typography } from '@mui/material';
 import { type FC, useCallback, useEffect, useRef } from 'react';
 
 import type { Robot } from '../../../domain/robot';
@@ -150,9 +150,9 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
           fontFamily: 'monospace',
         }}
       >
-        {consoleMessages.map(message => (
+        {consoleMessages.map((message, index) => (
           <Box
-            key={message.timestamp}
+            key={`${message.timestamp}-${index}`}
             sx={{
               display: 'flex',
               alignItems: 'flex-start',
