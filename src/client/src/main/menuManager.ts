@@ -112,6 +112,18 @@ export class ApplicationMenuManager {
                   `);
                 },
               },
+              {
+                label: 'Italiano',
+                type: 'radio' as const,
+                click: () => {
+                  logger.debug('Language changed to Italian', {
+                    hasMainWindow: !!mainWindow,
+                  });
+                  mainWindow?.webContents.executeJavaScript(`
+                    window.dispatchEvent(new CustomEvent('languageChange', { detail: 'it' }));
+                  `);
+                }
+              }
             ],
           },
         ],
