@@ -26,7 +26,7 @@ export const LanguageSelector: FC = () => {
         return 'fi fi-nl'; // Dutch flag
       case 'de':
         return 'fi fi-de'; // German flag
-      case 'ut':
+      case 'it':
         return 'fi fi-it'; // Italian flag
       default:
         return '';
