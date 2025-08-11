@@ -37,12 +37,6 @@ export const ClearCacheContent: FC = () => {
 
   return (
     <>
-      <Typography variant='body2' color='text.secondary' paragraph>
-        {t(
-          'settings.sections.clearCache.description',
-          'Clear all stored data including your workspace, console history, and preferences. This action cannot be undone.'
-        )}
-      </Typography>
       <Button
         variant='outlined'
         color='error'

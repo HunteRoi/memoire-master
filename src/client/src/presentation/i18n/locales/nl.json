@@ -132,6 +132,17 @@
       "robotMode": {
         "title": "Robot Modus",
         "description": "Kies de bedrijfsmodus voor uw robot."
+      },
+      "clearCache": {
+        "title": "Cache wissen",
+        "description": "Wis alle opgeslagen gegevens, inclusief uw werkruimte, consolegeschiedenis en voorkeuren. Deze actie kan niet ongedaan worden gemaakt.",
+        "button": "Alle gegevens wissen",
+        "dialog": {
+          "title": "Alle gegevens wissen?",
+          "description": "Hiermee worden al uw werkruimtedata, consolegeschiedenis en voorkeuren permanent verwijderd. De applicatie wordt opnieuw opgestart na het wissen. Deze actie kan niet ongedaan worden gemaakt.",
+          "cancel": "Annuleren",
+          "confirm": "Alle gegevens wissen"
+        }
       }
     }
   },

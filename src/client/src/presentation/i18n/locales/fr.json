@@ -132,6 +132,17 @@
       "robotMode": {
         "title": "Mode Robot",
         "description": "Choisissez le mode de fonctionnement pour votre robot."
+      },
+      "clearCache": {
+        "title": "Vider le Cache",
+        "description": "Effacez toutes les données stockées, y compris votre espace de travail, l'historique de la console et vos préférences. Cette action est irréversible.",
+        "button": "Effacer toutes les données",
+        "dialog": {
+          "title": "Effacer toutes les données ?",
+          "description": "Cela supprimera définitivement toutes les données de votre espace de travail, l'historique de la console et vos préférences. L'application redémarrera après l'effacement. Cette action est irréversible.",
+          "cancel": "Annuler",
+          "confirm": "Effacer toutes les données"
+        }
       }
     }
   },

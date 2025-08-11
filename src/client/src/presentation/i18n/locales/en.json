@@ -132,6 +132,17 @@
       "robotMode": {
         "title": "Robot Mode",
         "description": "Choose the operating mode for your robot."
+      },
+      "clearCache": {
+        "title": "Clear Cache",
+        "description": "Clear all stored data including your workspace, console history, and preferences. This action cannot be undone.",
+        "button": "Clear All Data",
+        "dialog": {
+          "title": "Clear All Data?",
+          "description": "This will permanently delete all your workspace data, console history, and preferences. The application will restart after clearing. This action cannot be undone.",
+          "cancel": "Cancel",
+          "confirm": "Clear All Data"
+        }
       }
     }
   },

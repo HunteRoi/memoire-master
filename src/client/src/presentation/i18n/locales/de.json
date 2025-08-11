@@ -132,6 +132,17 @@
       "robotMode": {
         "title": "Roboter Modus",
         "description": "Wählen Sie den Betriebsmodus für Ihren Roboter."
+      },
+      "clearCache": {
+        "title": "Cache leeren",
+        "description": "Löschen Sie alle gespeicherten Daten, einschließlich Ihres Arbeitsbereichs, der Konsolenhistorie und der Einstellungen. Diese Aktion kann nicht rückgängig gemacht werden.",
+        "button": "Alle Daten löschen",
+        "dialog": {
+          "title": "Alle Daten löschen?",
+          "description": "Dadurch werden alle Ihre Arbeitsbereichsdaten, Konsolenverlauf und Einstellungen dauerhaft gelöscht. Die Anwendung wird nach dem Löschen neu gestartet. Diese Aktion kann nicht rückgängig gemacht werden.",
+          "cancel": "Abbrechen",
+          "confirm": "Alle Daten löschen"
+        }
       }
     }
   },
