@@ -16,19 +16,45 @@ export const SettingsTabs: FC<SettingsTabsProps> = ({
   onChange,
 }) => {
   return (
-    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <Tabs value={value} onChange={onChange}>
+    <Box sx={{ 
+      borderBottom: 1, 
+      borderColor: 'divider',
+      px: {
+        xs: 1,
+        sm: 2,
+      },
+    }}>
+      <Tabs 
+        value={value} 
+        onChange={onChange}
+        variant="scrollable"
+        scrollButtons="auto"
+        sx={{
+          '& .MuiTab-root': {
+            fontSize: {
+              xs: '0.8rem',
+              sm: '0.875rem',
+            },
+            minHeight: {
+              xs: 40,
+              sm: 48,
+            },
+            px: {
+              xs: 1,
+              sm: 2,
+            },
+          },
+        }}
+      >
         <Tab
           icon={<Tune />}
           label={customizationLabel}
           iconPosition='start'
-          sx={{ minHeight: 48 }}
         />
         <Tab
           icon={<SmartToy />}
           label={robotsLabel}
           iconPosition='start'
-          sx={{ minHeight: 48 }}
         />
       </Tabs>
     </Box>

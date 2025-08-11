@@ -62,7 +62,12 @@ export const Settings: FC = () => {
   ];
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ 
+      height: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column',
+      overflow: 'hidden',
+    }}>
       <SettingsHeader title={t('settings.title')} onBack={handleBack} />
 
       <SettingsTabs
@@ -72,7 +77,14 @@ export const Settings: FC = () => {
         onChange={handleTabChange}
       />
 
-      <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+      <Box sx={{ 
+        flexGrow: 1, 
+        overflow: 'auto',
+        p: {
+          xs: 1,
+          sm: 2,
+        },
+      }}>
         <TabPanel value={tabValue} index={0}>
           <CustomizationTab sections={customizationSections} />
         </TabPanel>

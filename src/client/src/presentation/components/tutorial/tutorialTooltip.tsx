@@ -71,7 +71,61 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
           name: 'preventOverflow',
           options: {
             boundary: 'viewport',
-            padding: 16,
+            padding: {
+              top: 20,
+              right: 20,
+              bottom: 20,
+              left: 20,
+            },
+            altBoundary: true,
+            mainAxis: true,
+            altAxis: true,
+          },
+        },
+        {
+          name: 'flip',
+          options: {
+            fallbackPlacements: ['top', 'bottom', 'right', 'left'],
+            boundary: 'viewport',
+            padding: 20,
+          },
+        },
+        {
+          name: 'computeStyles',
+          options: {
+            adaptive: true,
+            roundOffsets: true,
+          },
+        },
+        {
+          name: 'ensureVisibility',
+          enabled: true,
+          phase: 'beforeWrite',
+          fn: ({ state }) => {
+            const { x, y } = state.modifiersData.popperOffsets || { x: 0, y: 0 };
+            const { width: popperWidth, height: popperHeight } = state.rects.popper;
+            const { width: viewportWidth, height: viewportHeight } = document.documentElement.getBoundingClientRect();
+            
+            // Ensure tooltip doesn't go outside viewport bounds
+            let adjustedX = x;
+            let adjustedY = y;
+            
+            // Check horizontal bounds
+            if (x < 20) {
+              adjustedX = 20;
+            } else if (x + popperWidth > viewportWidth - 20) {
+              adjustedX = viewportWidth - popperWidth - 20;
+            }
+            
+            // Check vertical bounds  
+            if (y < 20) {
+              adjustedY = 20;
+            } else if (y + popperHeight > viewportHeight - 20) {
+              adjustedY = viewportHeight - popperHeight - 20;
+            }
+            
+            state.modifiersData.popperOffsets.x = adjustedX;
+            state.modifiersData.popperOffsets.y = adjustedY;
           },
         },
       ]}
@@ -80,13 +134,31 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
       <Card
         elevation={8}
         sx={{
-          maxWidth: 360,
-          minWidth: 280,
+          maxWidth: {
+            xs: 320,
+            sm: 360,
+          },
+          minWidth: {
+            xs: 240,
+            sm: 280,
+          },
+          width: {
+            xs: 'calc(100vw - 32px)',
+            sm: 'auto',
+          },
           backgroundColor: 'background.paper',
           border: `2px solid ${theme.palette.primary.main}`,
         }}
       >
-        <CardContent sx={{ pb: 1 }}>
+        <CardContent 
+          sx={{ 
+            pb: 1,
+            p: {
+              xs: 2,
+              sm: 3,
+            },
+          }}
+        >
           {/* Header */}
           <Box
             sx={{
@@ -94,11 +166,21 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
               justifyContent: 'space-between',
               alignItems: 'center',
               mb: 2,
+              gap: 1,
             }}
           >
             <Typography
               variant='h6'
-              sx={{ fontWeight: 600, color: 'primary.main' }}
+              sx={{ 
+                fontWeight: 600, 
+                color: 'primary.main',
+                fontSize: {
+                  xs: '1.1rem',
+                  sm: '1.25rem',
+                },
+                flex: 1,
+                wordBreak: 'break-word',
+              }}
             >
               {title}
             </Typography>
@@ -131,7 +213,18 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
           </Box>
 
           {/* Content */}
-          <Typography variant='body2' sx={{ mb: 3, lineHeight: 1.6 }}>
+          <Typography 
+            variant='body2' 
+            sx={{ 
+              mb: 3, 
+              lineHeight: 1.6,
+              fontSize: {
+                xs: '0.875rem',
+                sm: '0.875rem',
+              },
+              wordBreak: 'break-word',
+            }}
+          >
             {content}
           </Typography>
 
@@ -141,15 +234,49 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              flexWrap: {
+                xs: 'wrap',
+                sm: 'nowrap',
+              },
+              gap: {
+                xs: 1,
+                sm: 0,
+              },
             }}
           >
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                gap: {
+                  xs: 0.5,
+                  sm: 1,
+                },
+                width: {
+                  xs: '100%',
+                  sm: 'auto',
+                },
+                justifyContent: {
+                  xs: 'center',
+                  sm: 'flex-start',
+                },
+              }}
+            >
               <Button
                 variant='outlined'
                 size='small'
                 onClick={onPrevious}
                 disabled={isFirstStep}
                 startIcon={<NavigateBefore />}
+                sx={{
+                  fontSize: {
+                    xs: '0.75rem',
+                    sm: '0.875rem',
+                  },
+                  minWidth: {
+                    xs: 80,
+                    sm: 100,
+                  },
+                }}
               >
                 {labels.previous}
               </Button>
@@ -159,6 +286,16 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
                 size='small'
                 onClick={onNext}
                 endIcon={isLastStep ? <PlayArrow /> : <NavigateNext />}
+                sx={{
+                  fontSize: {
+                    xs: '0.75rem',
+                    sm: '0.875rem',
+                  },
+                  minWidth: {
+                    xs: 80,
+                    sm: 100,
+                  },
+                }}
               >
                 {isLastStep ? labels.finish : labels.next}
               </Button>

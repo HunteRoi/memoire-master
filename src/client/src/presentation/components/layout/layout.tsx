@@ -106,37 +106,71 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       sx={{
         backgroundColor: 'background.default',
         color: 'text.primary',
-        minHeight: '100vh',
+        height: '100vh',
         transition: 'all 0.3s ease-in-out',
         position: 'relative',
+        overflow: 'hidden',
       }}
     >
       {/* Language Selector - positioned in top right */}
       <Box
         sx={{
           position: 'absolute',
-          top: 16,
-          right: 16,
+          top: {
+            xs: 8,
+            sm: 16,
+          },
+          right: {
+            xs: 8,
+            sm: 16,
+          },
           zIndex: 1000,
         }}
       >
         <LanguageSelector />
       </Box>
 
-      <Container maxWidth={maxWidth}>
+      <Container 
+        maxWidth={maxWidth}
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Box
           display='flex'
           flexDirection='column'
           alignItems={centered ? 'center' : 'flex-start'}
-          minHeight='100vh'
-          py={4}
+          height='100%'
+          py={
+            {
+              xs: 2,
+              sm: 3,
+              md: 4,
+            }
+          }
+          sx={{
+            overflow: 'auto',
+          }}
         >
           <Typography
             variant='h1'
             component='h1'
             gutterBottom
             align={centered ? 'center' : 'left'}
-            sx={{ mb: 2 }}
+            sx={{ 
+              mb: {
+                xs: 1,
+                sm: 2,
+              },
+              fontSize: {
+                xs: '2rem',
+                sm: '2.5rem',
+                md: '3rem',
+              },
+              lineHeight: 1.2,
+            }}
           >
             {title}
           </Typography>
@@ -148,7 +182,19 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
               gutterBottom
               align={centered ? 'center' : 'left'}
               color='text.secondary'
-              sx={{ mb: 4 }}
+              sx={{ 
+                mb: {
+                  xs: 2,
+                  sm: 3,
+                  md: 4,
+                },
+                fontSize: {
+                  xs: '1.1rem',
+                  sm: '1.3rem',
+                  md: '1.5rem',
+                },
+                lineHeight: 1.4,
+              }}
             >
               {subtitle}
             </Typography>
@@ -161,7 +207,12 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
               display: 'flex',
               flexDirection: 'column',
               alignItems: centered ? 'center' : 'flex-start',
-              mb: 4,
+              mb: {
+                xs: 2,
+                sm: 3,
+                md: 4,
+              },
+              overflow: 'auto',
             }}
           >
             {children}
@@ -169,16 +220,39 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
 
           <Box
             display='flex'
-            gap={2}
+            gap={{
+              xs: 1,
+              sm: 2,
+            }}
             justifyContent='center'
-            sx={{ mt: 'auto' }}
+            sx={{ 
+              mt: 'auto',
+              pt: {
+                xs: 1,
+                sm: 2,
+              },
+              flexShrink: 0,
+            }}
           >
             {onBack && (
               <Button
                 variant='outlined'
                 size='large'
                 onClick={onBack}
-                sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
+                sx={{ 
+                  minWidth: {
+                    xs: 140,
+                    sm: 240,
+                  },
+                  fontSize: {
+                    xs: '1rem',
+                    sm: '1.2rem',
+                  },
+                  py: {
+                    xs: 1,
+                    sm: 1.5,
+                  },
+                }}
               >
                 {backText || defaultLabels.back}
               </Button>
@@ -189,7 +263,20 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                 size='large'
                 onClick={onContinue}
                 disabled={continueDisabled}
-                sx={{ minWidth: 240, fontSize: '1.2rem', py: 1.5 }}
+                sx={{ 
+                  minWidth: {
+                    xs: 140,
+                    sm: 240,
+                  },
+                  fontSize: {
+                    xs: '1rem',
+                    sm: '1.2rem',
+                  },
+                  py: {
+                    xs: 1,
+                    sm: 1.5,
+                  },
+                }}
               >
                 {continueText || defaultLabels.continue}
               </Button>

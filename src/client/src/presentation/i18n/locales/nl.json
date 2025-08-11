@@ -248,7 +248,8 @@
       "scriptCompleted": "Script uitvoering voltooid",
       "scriptFailed": "Script uitvoering mislukt",
       "executingBlock": "Uitvoeren: {{blockName}}",
-      "scriptStoppedByUser": "Script uitvoering gestopt door gebruiker"
+      "scriptStoppedByUser": "Script uitvoering gestopt door gebruiker",
+      "scriptCleared": "Script succesvol gewist"
     },
     "errors": {
       "invalidBlockData": "Ongeldige blokgegevens ontvangen",

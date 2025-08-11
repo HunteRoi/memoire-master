@@ -248,7 +248,8 @@
       "scriptCompleted": "Esecuzione script completata",
       "scriptFailed": "Esecuzione script fallita",
       "executingBlock": "Esecuzione: {{blockName}}",
-      "scriptStoppedByUser": "Esecuzione script interrotta dall'utente"
+      "scriptStoppedByUser": "Esecuzione script interrotta dall'utente",
+      "scriptCleared": "Script cancellato con successo"
     },
     "errors": {
       "invalidBlockData": "Dati del blocco non validi",

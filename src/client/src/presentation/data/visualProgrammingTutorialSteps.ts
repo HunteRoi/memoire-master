@@ -35,7 +35,7 @@ export const getVisualProgrammingTutorialSteps = (): TutorialStep[] => [
     title: 'tutorial.visualProgramming.scriptCanvas.title',
     content: 'tutorial.visualProgramming.scriptCanvas.content',
     targetSelector: '[data-tutorial="script-canvas"]',
-    placement: 'left',
+    placement: 'top',
     action: 'highlight',
   },
   {
@@ -43,7 +43,7 @@ export const getVisualProgrammingTutorialSteps = (): TutorialStep[] => [
     title: 'tutorial.visualProgramming.autoConnections.title',
     content: 'tutorial.visualProgramming.autoConnections.content',
     targetSelector: '[data-tutorial="script-canvas"]',
-    placement: 'left',
+    placement: 'top',
   },
   {
     id: 'execution-controls',

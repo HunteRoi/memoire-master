@@ -310,7 +310,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   const onClearScript = useCallback(() => {
     setNodes([]);
     setEdges([]);
-    addConsoleMessage('info', 'Script cleared successfully');
+    addConsoleMessage('info', 'visualProgramming.console.scriptCleared');
   }, [setNodes, setEdges, addConsoleMessage]);
 
   return (

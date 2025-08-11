@@ -48,7 +48,22 @@ export const ThemeSelectionContent = forwardRef<ThemeSelectionContentRef>(
     }));
 
     return (
-      <Grid container spacing={3} sx={{ mt: 4, maxWidth: 1000 }}>
+      <Grid 
+        container 
+        spacing={{
+          xs: 2,
+          sm: 3,
+        }} 
+        sx={{ 
+          mt: {
+            xs: 2,
+            sm: 3,
+            md: 4,
+          }, 
+          maxWidth: 1000,
+          width: '100%',
+        }}
+      >
         {themeOptions.map(option => (
           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={option.type}>
             <ThemePreviewCard

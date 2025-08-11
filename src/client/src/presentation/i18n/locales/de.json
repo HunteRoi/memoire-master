@@ -248,7 +248,8 @@
       "scriptCompleted": "Skriptausführung abgeschlossen",
       "scriptFailed": "Skriptausführung fehlgeschlagen",
       "executingBlock": "Ausführung: {{blockName}}",
-      "scriptStoppedByUser": "Skriptausführung vom Benutzer gestoppt"
+      "scriptStoppedByUser": "Skriptausführung vom Benutzer gestoppt",
+      "scriptCleared": "Skript erfolgreich geleert"
     },
     "errors": {
       "invalidBlockData": "Ungültige Blockdaten empfangen",

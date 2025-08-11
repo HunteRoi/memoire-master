@@ -60,11 +60,29 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
         zIndex: 10000,
-        maxWidth: 400,
-        width: '90vw',
+        maxWidth: {
+          xs: 350,
+          sm: 400,
+        },
+        width: {
+          xs: 'calc(100vw - 32px)',
+          sm: '90vw',
+        },
+        maxHeight: {
+          xs: 'calc(100vh - 32px)',
+          sm: '90vh',
+        },
+        overflow: 'auto',
       }}
     >
-      <CardContent>
+      <CardContent
+        sx={{
+          p: {
+            xs: 2,
+            sm: 3,
+          },
+        }}
+      >
         {/* Header */}
         <Box
           sx={{
@@ -72,11 +90,21 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             mb: 2,
+            gap: 1,
           }}
         >
           <Typography
             variant='h5'
-            sx={{ fontWeight: 600, color: 'primary.main' }}
+            sx={{ 
+              fontWeight: 600, 
+              color: 'primary.main',
+              fontSize: {
+                xs: '1.25rem',
+                sm: '1.5rem',
+              },
+              flex: 1,
+              wordBreak: 'break-word',
+            }}
           >
             {tutorialTitle}
           </Typography>
@@ -101,10 +129,31 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
         </Box>
 
         {/* Content */}
-        <Typography variant='h6' sx={{ mb: 1 }}>
+        <Typography 
+          variant='h6' 
+          sx={{ 
+            mb: 1,
+            fontSize: {
+              xs: '1.1rem',
+              sm: '1.25rem',
+            },
+            wordBreak: 'break-word',
+          }}
+        >
           {title}
         </Typography>
-        <Typography variant='body1' sx={{ mb: 3 }}>
+        <Typography 
+          variant='body1' 
+          sx={{ 
+            mb: 3,
+            fontSize: {
+              xs: '0.875rem',
+              sm: '1rem',
+            },
+            lineHeight: 1.6,
+            wordBreak: 'break-word',
+          }}
+        >
           {content}
         </Typography>
 
@@ -114,18 +163,65 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: {
+              xs: 'wrap',
+              sm: 'nowrap',
+            },
+            gap: {
+              xs: 1,
+              sm: 0,
+            },
           }}
         >
-          <Button variant='text' onClick={onClose}>
+          <Button 
+            variant='text' 
+            onClick={onClose}
+            sx={{
+              fontSize: {
+                xs: '0.75rem',
+                sm: '0.875rem',
+              },
+            }}
+          >
             {labels.skip}
           </Button>
 
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              gap: {
+                xs: 0.5,
+                sm: 1,
+              },
+              order: {
+                xs: 3,
+                sm: 0,
+              },
+              width: {
+                xs: '100%',
+                sm: 'auto',
+              },
+              justifyContent: {
+                xs: 'center',
+                sm: 'flex-end',
+              },
+            }}
+          >
             <Button
               variant='outlined'
               onClick={onPrevious}
               disabled={isFirstStep}
               startIcon={<NavigateBefore />}
+              sx={{
+                fontSize: {
+                  xs: '0.75rem',
+                  sm: '0.875rem',
+                },
+                minWidth: {
+                  xs: 80,
+                  sm: 100,
+                },
+              }}
             >
               {labels.previous}
             </Button>
@@ -134,6 +230,16 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
               variant='contained'
               onClick={onNext}
               endIcon={isLastStep ? <PlayArrow /> : <NavigateNext />}
+              sx={{
+                fontSize: {
+                  xs: '0.75rem',
+                  sm: '0.875rem',
+                },
+                minWidth: {
+                  xs: 80,
+                  sm: 100,
+                },
+              }}
             >
               {isLastStep ? labels.finish : labels.next}
             </Button>

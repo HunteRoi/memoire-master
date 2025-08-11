@@ -8,7 +8,11 @@ const PanelComponent: FC<PropsWithChildren> = ({ children }) => {
         width: '100%',
         height: '100%',
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: {
+          xs: 'column',
+          sm: 'row',
+        },
+        overflow: 'hidden',
       }}
     >
       {children}
@@ -24,10 +28,20 @@ const LeftPanel: FC<PropsWithChildren<{ 'data-tutorial'?: string }>> = ({
     <Box
       data-tutorial={dataTutorial}
       sx={{
-        width: '20%',
-        height: '100%',
+        width: {
+          xs: '100%',
+          sm: '30%',
+          md: '25%',
+          lg: '20%',
+          xl: '18%',
+        },
+        height: {
+          xs: 'auto',
+          sm: '100%',
+        },
         display: 'flex',
         flexDirection: 'column',
+        minWidth: 250,
       }}
     >
       {children}
@@ -39,10 +53,17 @@ const RightPanel: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Box
       sx={{
-        width: '80%',
+        width: {
+          xs: '100%',
+          sm: '70%',
+          md: '75%',
+          lg: '80%',
+          xl: '82%',
+        },
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        flex: 1,
       }}
     >
       {children}
@@ -107,9 +128,23 @@ const FloatingButton: FC<FloatingButtonProps> = ({
       data-tutorial={dataTutorial}
       sx={{
         position: 'fixed',
-        bottom: 16,
-        right: 16,
+        bottom: {
+          xs: 80,
+          sm: 16,
+        },
+        right: {
+          xs: 16,
+          sm: 16,
+        },
         zIndex: 998,
+        fontSize: {
+          xs: '0.8rem',
+          sm: '0.875rem',
+        },
+        padding: {
+          xs: '8px 12px',
+          sm: '8px 16px',
+        },
       }}
     >
       {children}

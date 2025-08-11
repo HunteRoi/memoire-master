@@ -124,31 +124,60 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
     >
       <Box
         sx={{
-          p: isSimpleMode ? 2 : 1.5,
+          p: {
+            xs: isSimpleMode ? 1.5 : 1,
+            sm: isSimpleMode ? 2 : 1.5,
+          },
           borderBottom: 1,
           borderColor: 'divider',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          flexWrap: {
+            xs: 'wrap',
+            sm: 'nowrap',
+          },
+          gap: {
+            xs: 1,
+            sm: 0,
+          },
         }}
       >
         <Typography
           variant={isSimpleMode ? 'h5' : 'h6'}
           sx={{
             fontWeight: 600,
-            fontSize: isSimpleMode ? '1.5rem' : '1.25rem',
+            fontSize: {
+              xs: isSimpleMode ? '1.2rem' : '1rem',
+              sm: isSimpleMode ? '1.5rem' : '1.25rem',
+            },
           }}
         >
           🖥️ {labels.title}
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: {
+              xs: 0.5,
+              sm: 1,
+            },
+          }}
+        >
           <Tooltip title={labels.tooltips.clear}>
-            <IconButton onClick={onClearConsole}>
+            <IconButton 
+              onClick={onClearConsole}
+              size={isSimpleMode ? 'medium' : 'small'}
+            >
               <Clear />
             </IconButton>
           </Tooltip>
           <Tooltip title={labels.tooltips.close}>
-            <IconButton onClick={onToggle}>
+            <IconButton 
+              onClick={onToggle}
+              size={isSimpleMode ? 'medium' : 'small'}
+            >
               <VisibilityOff />
             </IconButton>
           </Tooltip>
@@ -158,12 +187,22 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
       <Box
         sx={{
           flex: 1,
-          p: 2,
-          pb: 3,
+          p: {
+            xs: 1,
+            sm: 2,
+          },
+          pb: {
+            xs: 2,
+            sm: 3,
+          },
           backgroundColor: 'grey.900',
           color: 'common.white',
           overflow: 'auto',
           fontFamily: 'monospace',
+          fontSize: {
+            xs: '0.7rem',
+            sm: '0.875rem',
+          },
         }}
       >
         {consoleMessages.map((message, index) => (
@@ -180,9 +219,15 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
               variant='body2'
               component='span'
               sx={{
-                fontSize: isSimpleMode ? '0.8rem' : '0.7rem',
+                fontSize: {
+                  xs: isSimpleMode ? '0.7rem' : '0.65rem',
+                  sm: isSimpleMode ? '0.8rem' : '0.7rem',
+                },
                 color: 'grey.400',
-                minWidth: '60px',
+                minWidth: {
+                  xs: '50px',
+                  sm: '60px',
+                },
                 flexShrink: 0,
               }}
             >
@@ -192,9 +237,13 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
               variant='body2'
               component='div'
               sx={{
-                fontSize: isSimpleMode ? '1rem' : '0.875rem',
+                fontSize: {
+                  xs: isSimpleMode ? '0.85rem' : '0.75rem',
+                  sm: isSimpleMode ? '1rem' : '0.875rem',
+                },
                 color: getMessageColor(message.type),
                 flex: 1,
+                wordBreak: 'break-word',
               }}
             >
               {message.message}
