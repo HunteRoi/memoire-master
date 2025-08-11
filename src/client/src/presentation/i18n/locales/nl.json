@@ -265,5 +265,68 @@
       "basedOnComment": "Gebaseerd op visuele blokken in het script gebied",
       "completedComment": "Script uitvoering voltooid"
     }
+  },
+  "tutorial": {
+    "skip": "Overslaan",
+    "previous": "Vorige",
+    "next": "Volgende",
+    "finish": "Begin met coderen!",
+    "step": "Stap",
+    "of": "van",
+    "visualProgramming": {
+      "title": "Visuele Programmering Gids",
+      "welcome": {
+        "title": "Welkom bij Visuele Programmering!",
+        "content": "Deze gids toont je hoe je programma's maakt door visuele blokken te verbinden. Laten we samen de interface verkennen!"
+      },
+      "blocksPanel": {
+        "title": "Blokken Paneel",
+        "content": "Dit is je blokken gereedschapskist. Hier vind je alle commando's die je kunt gebruiken om je robot te programmeren. Blokken zijn georganiseerd per categorie."
+      },
+      "blockCategories": {
+        "title": "Blok Categorieën",
+        "content": "Blokken zijn gegroepeerd op functie: Beweging (groen), Geluid (oranje), LEDs (blauw), en Sensoren (paars). Klik op een categorie om beschikbare blokken te zien."
+      },
+      "dragDrop": {
+        "title": "Blokken Toevoegen",
+        "content": "Je kunt blokken aan je programma toevoegen door ze naar het canvas te slepen, of er gewoon op te klikken. Probeer op dit blok te klikken!"
+      },
+      "scriptCanvas": {
+        "title": "Script Canvas",
+        "content": "Hier bouw je je programma. Blokken verbinden automatisch in volgorde. Je kunt ze opnieuw verbinden door de verbindingslijnen te slepen."
+      },
+      "autoConnections": {
+        "title": "Slimme Verbindingen",
+        "content": "Nieuwe blokken verbinden automatisch met bestaande om een volgorde te creëren. De verbindingen bepalen de uitvoeringsvolgorde van je programma!"
+      },
+      "executionControls": {
+        "title": "Uitvoering Besturing",
+        "content": "Gebruik deze knoppen om je programma te besturen: uitvoeren/pauzeren, stoppen, alle blokken wissen, en gegenereerde code bekijken."
+      },
+      "playButton": {
+        "title": "Programma Uitvoeren",
+        "content": "Klik op deze knop om je programma uit te voeren! De robot volgt de volgorde van verbonden blokken. Zorg ervoor dat je eerst blokken hebt verbonden."
+      },
+      "clearScript": {
+        "title": "Alle Blokken Wissen",
+        "content": "Deze knop verwijdert alle blokken van het canvas, zodat je een frisse start hebt voor een nieuw programma."
+      },
+      "pythonCode": {
+        "title": "Gegenereerde Code Bekijken",
+        "content": "Zie de Python-code die je visuele blokken maken! Dit helpt je programmeren leren terwijl je bouwt met blokken."
+      },
+      "consolePanel": {
+        "title": "Console Paneel",
+        "content": "Klik hier om de console te tonen, waar je programma-uitvoer, foutmeldingen en uitvoeringsvoortgang ziet."
+      },
+      "robotConnection": {
+        "title": "Robot Instellingen",
+        "content": "Voordat je programma's uitvoert, verbind met je robot via het instellingenpaneel. Je moet het IP-adres van de robot configureren."
+      },
+      "complete": {
+        "title": "Klaar om te Coderen!",
+        "content": "Je bent helemaal klaar! Begin door wat blokken toe te voegen en ze te verbinden om je eerste robotprogramma te maken. Veel plezier met coderen!"
+      }
+    }
   }
 }

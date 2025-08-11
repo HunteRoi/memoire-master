@@ -42,6 +42,7 @@ import {
   ScriptExecutionState,
   useScriptExecution,
 } from './scriptExecutionContainer';
+import { VisualProgrammingTutorialContainer } from './tutorialContainer';
 
 interface VisualProgrammingContentProps {
   isSimpleMode: boolean;
@@ -249,7 +250,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         // Find a good position for the new block (centered with some randomization to avoid overlap)
         const baseX = 200 + Math.random() * 300; // Random X between 200-500
         const baseY = 100 + Math.random() * 200; // Random Y between 100-300
-        
+
         const position = { x: baseX, y: baseY };
 
         // Get translated block name
@@ -314,12 +315,16 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
 
   return (
     <Panel>
-      <Panel.LeftPanel>
-        <BlocksPanel isSimpleMode={isSimpleMode} labels={blocksPanelLabels} onBlockClick={onBlockClick} />
+      <Panel.LeftPanel data-tutorial='blocks-panel'>
+        <BlocksPanel
+          isSimpleMode={isSimpleMode}
+          labels={blocksPanelLabels}
+          onBlockClick={onBlockClick}
+        />
       </Panel.LeftPanel>
 
       <Panel.RightPanel>
-        <Panel.TopPanel height={scriptHeight}>
+        <Panel.TopPanel height={scriptHeight} data-tutorial='script-canvas'>
           <ScriptPanel
             height='100%'
             isSimpleMode={isSimpleMode}
@@ -366,6 +371,7 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         <Panel.FloatingButton
           icon={<Visibility />}
           onClick={handleToggleConsole}
+          data-tutorial='show-console-button'
         >
           {consolePanelLabels.showConsole}
         </Panel.FloatingButton>
@@ -387,15 +393,17 @@ export const VisualProgrammingContent: FC<VisualProgrammingContentProps> = ({
           <CodeGenerationContainer nodes={nodes}>
             <ConsoleContainer isSimpleMode={isSimpleMode}>
               <ScriptExecutionContainer nodes={nodes} edges={edges}>
-                <VisualProgrammingFlow
-                  isSimpleMode={isSimpleMode}
-                  nodes={nodes}
-                  setNodes={setNodes}
-                  onNodesChange={onNodesChange}
-                  edges={edges}
-                  setEdges={setEdges}
-                  onEdgesChange={onEdgesChange}
-                />
+                <VisualProgrammingTutorialContainer>
+                  <VisualProgrammingFlow
+                    isSimpleMode={isSimpleMode}
+                    nodes={nodes}
+                    setNodes={setNodes}
+                    onNodesChange={onNodesChange}
+                    edges={edges}
+                    setEdges={setEdges}
+                    onEdgesChange={onEdgesChange}
+                  />
+                </VisualProgrammingTutorialContainer>
               </ScriptExecutionContainer>
             </ConsoleContainer>
           </CodeGenerationContainer>

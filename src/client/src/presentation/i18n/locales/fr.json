@@ -265,5 +265,68 @@
       "basedOnComment": "Basé sur les blocs visuels de la zone de script",
       "completedComment": "Exécution du script terminée"
     }
+  },
+  "tutorial": {
+    "skip": "Passer",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "finish": "Commencer à coder !",
+    "step": "Étape",
+    "of": "sur",
+    "visualProgramming": {
+      "title": "Guide de programmation visuelle",
+      "welcome": {
+        "title": "Bienvenue dans la programmation visuelle !",
+        "content": "Ce guide vous montrera comment créer des programmes en connectant des blocs visuels. Explorons l'interface ensemble !"
+      },
+      "blocksPanel": {
+        "title": "Panneau des blocs",
+        "content": "Voici votre boîte à outils de blocs. Ici vous trouverez toutes les commandes que vous pouvez utiliser pour programmer votre robot. Les blocs sont organisés par catégorie."
+      },
+      "blockCategories": {
+        "title": "Catégories de blocs",
+        "content": "Les blocs sont groupés par fonction : Mouvement (vert), Son (orange), LEDs (bleu), et Capteurs (violet). Cliquez sur une catégorie pour voir les blocs disponibles."
+      },
+      "dragDrop": {
+        "title": "Ajouter des blocs",
+        "content": "Vous pouvez ajouter des blocs à votre programme en les faisant glisser vers le canevas, ou simplement en cliquant dessus. Essayez de cliquer sur ce bloc !"
+      },
+      "scriptCanvas": {
+        "title": "Canevas du script",
+        "content": "C'est ici que vous construisez votre programme. Les blocs se connectent automatiquement en séquence. Vous pouvez les reconnecter en faisant glisser les lignes de connexion."
+      },
+      "autoConnections": {
+        "title": "Connexions intelligentes",
+        "content": "Les nouveaux blocs se connectent automatiquement aux existants pour créer une séquence. Les connexions déterminent l'ordre d'exécution de votre programme !"
+      },
+      "executionControls": {
+        "title": "Contrôles d'exécution",
+        "content": "Utilisez ces boutons pour contrôler votre programme : exécuter/pause, arrêter, effacer tous les blocs, et voir le code généré."
+      },
+      "playButton": {
+        "title": "Exécuter votre programme",
+        "content": "Cliquez sur ce bouton pour exécuter votre programme ! Le robot suivra la séquence des blocs connectés. Assurez-vous d'avoir des blocs connectés d'abord."
+      },
+      "clearScript": {
+        "title": "Effacer tous les blocs",
+        "content": "Ce bouton supprime tous les blocs du canevas, vous donnant un nouveau départ pour un nouveau programme."
+      },
+      "pythonCode": {
+        "title": "Voir le code généré",
+        "content": "Voyez le code Python que vos blocs visuels créent ! Cela vous aide à apprendre la programmation tout en construisant avec des blocs."
+      },
+      "consolePanel": {
+        "title": "Panneau de console",
+        "content": "Cliquez ici pour afficher la console, où vous verrez la sortie du programme, les messages d'erreur, et le progrès d'exécution."
+      },
+      "robotConnection": {
+        "title": "Paramètres du robot",
+        "content": "Avant d'exécuter des programmes, connectez-vous à votre robot via le panneau des paramètres. Vous devrez configurer l'adresse IP du robot."
+      },
+      "complete": {
+        "title": "Prêt à coder !",
+        "content": "Vous êtes prêt ! Commencez par ajouter quelques blocs et les connecter pour créer votre premier programme de robot. Amusez-vous bien à coder !"
+      }
+    }
   }
 }

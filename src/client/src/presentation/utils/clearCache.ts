@@ -22,6 +22,7 @@ export const clearApplicationDataOnly = () => {
       'visual-programming-edges',
       'visual-programming-console-messages',
       'visual-programming-console-visibility',
+      'seen_tutorials',
     ];
 
     keysToRemove.forEach(key => {

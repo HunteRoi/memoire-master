@@ -265,5 +265,68 @@
       "basedOnComment": "Basierend auf visuellen Blöcken im Skriptbereich",
       "completedComment": "Skriptausführung abgeschlossen"
     }
+  },
+  "tutorial": {
+    "skip": "Überspringen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "finish": "Loslegen!",
+    "step": "Schritt",
+    "of": "von",
+    "visualProgramming": {
+      "title": "Visuelle Programmierung Anleitung",
+      "welcome": {
+        "title": "Willkommen zur visuellen Programmierung!",
+        "content": "Diese Anleitung zeigt Ihnen, wie Sie Programme durch das Verbinden visueller Blöcke erstellen. Lassen Sie uns die Oberfläche gemeinsam erkunden!"
+      },
+      "blocksPanel": {
+        "title": "Block-Panel",
+        "content": "Das ist Ihr Block-Werkzeugkasten. Hier finden Sie alle Befehle, die Sie zur Programmierung Ihres Roboters verwenden können. Blöcke sind nach Kategorien organisiert."
+      },
+      "blockCategories": {
+        "title": "Block-Kategorien",
+        "content": "Blöcke sind nach Funktion gruppiert: Bewegung (grün), Sound (orange), LEDs (blau) und Sensoren (violett). Klicken Sie auf eine Kategorie, um verfügbare Blöcke zu sehen."
+      },
+      "dragDrop": {
+        "title": "Blöcke hinzufügen",
+        "content": "Sie können Blöcke zu Ihrem Programm hinzufügen, indem Sie sie auf die Leinwand ziehen oder einfach darauf klicken. Versuchen Sie, auf diesen Block zu klicken!"
+      },
+      "scriptCanvas": {
+        "title": "Skript-Leinwand",
+        "content": "Hier bauen Sie Ihr Programm auf. Blöcke verbinden sich automatisch in Sequenz. Sie können sie durch Ziehen der Verbindungslinien neu verbinden."
+      },
+      "autoConnections": {
+        "title": "Intelligente Verbindungen",
+        "content": "Neue Blöcke verbinden sich automatisch mit vorhandenen, um eine Sequenz zu erstellen. Die Verbindungen bestimmen die Ausführungsreihenfolge Ihres Programms!"
+      },
+      "executionControls": {
+        "title": "Ausführungssteuerung",
+        "content": "Verwenden Sie diese Schaltflächen, um Ihr Programm zu steuern: ausführen/pausieren, stoppen, alle Blöcke löschen und generierten Code anzeigen."
+      },
+      "playButton": {
+        "title": "Programm ausführen",
+        "content": "Klicken Sie auf diese Schaltfläche, um Ihr Programm auszuführen! Der Roboter folgt der Sequenz verbundener Blöcke. Stellen Sie sicher, dass Sie zuerst Blöcke verbunden haben."
+      },
+      "clearScript": {
+        "title": "Alle Blöcke löschen",
+        "content": "Diese Schaltfläche entfernt alle Blöcke von der Leinwand und gibt Ihnen einen Neuanfang für ein neues Programm."
+      },
+      "pythonCode": {
+        "title": "Generierten Code anzeigen",
+        "content": "Sehen Sie den Python-Code, den Ihre visuellen Blöcke erstellen! Das hilft Ihnen beim Programmieren lernen, während Sie mit Blöcken bauen."
+      },
+      "consolePanel": {
+        "title": "Konsolen-Panel",
+        "content": "Klicken Sie hier, um die Konsole anzuzeigen, wo Sie Programmausgaben, Fehlermeldungen und Ausführungsfortschritt sehen."
+      },
+      "robotConnection": {
+        "title": "Roboter-Einstellungen",
+        "content": "Bevor Sie Programme ausführen, verbinden Sie sich mit Ihrem Roboter über das Einstellungspanel. Sie müssen die IP-Adresse des Roboters konfigurieren."
+      },
+      "complete": {
+        "title": "Bereit zum Programmieren!",
+        "content": "Sie sind startklar! Beginnen Sie, indem Sie einige Blöcke hinzufügen und sie verbinden, um Ihr erstes Roboterprogramm zu erstellen. Viel Spaß beim Programmieren!"
+      }
+    }
   }
 }

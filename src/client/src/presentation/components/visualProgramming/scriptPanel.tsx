@@ -1,4 +1,11 @@
-import { Clear, Code, Pause, PlayArrow, Settings, Stop } from '@mui/icons-material';
+import {
+  Clear,
+  Code,
+  Pause,
+  PlayArrow,
+  Settings,
+  Stop,
+} from '@mui/icons-material';
 import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import type { DragEvent, FC } from 'react';
 import ReactFlow, {
@@ -146,10 +153,14 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
           </Box>
 
           {/* Control Buttons */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            data-tutorial='execution-controls'
+          >
             {/* Settings Button */}
             <Tooltip title={labels.tooltips.settings}>
               <IconButton
+                data-tutorial='settings-button'
                 onClick={onSettings}
                 size={isSimpleMode ? 'medium' : 'small'}
                 sx={{
@@ -172,6 +183,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
             <Tooltip title={labels.tooltips.playPause}>
               <span>
                 <IconButton
+                  data-tutorial='play-button'
                   onClick={onPlayPause}
                   disabled={!canExecuteScript && executionState === 'idle'}
                   size={isSimpleMode ? 'medium' : 'small'}
@@ -217,7 +229,9 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
                   size={isSimpleMode ? 'medium' : 'small'}
                   sx={{
                     backgroundColor:
-                      executionState !== 'idle' ? 'error.main' : 'background.paper',
+                      executionState !== 'idle'
+                        ? 'error.main'
+                        : 'background.paper',
                     color:
                       executionState !== 'idle'
                         ? 'error.contrastText'
@@ -225,7 +239,9 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
                     boxShadow: 1,
                     '&:hover': {
                       backgroundColor:
-                        executionState !== 'idle' ? 'error.dark' : 'action.hover',
+                        executionState !== 'idle'
+                          ? 'error.dark'
+                          : 'action.hover',
                       boxShadow: 2,
                     },
                     '&:disabled': {
@@ -243,6 +259,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
             {/* Clear Script Button */}
             <Tooltip title={labels.tooltips.clear}>
               <IconButton
+                data-tutorial='clear-button'
                 onClick={onClearScript}
                 size={isSimpleMode ? 'medium' : 'small'}
                 sx={{
@@ -263,6 +280,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
             {/* Python Code View Button */}
             <Tooltip title={labels.tooltips.viewCode}>
               <IconButton
+                data-tutorial='view-code-button'
                 onClick={onViewPythonCode}
                 size={isSimpleMode ? 'medium' : 'small'}
                 sx={{

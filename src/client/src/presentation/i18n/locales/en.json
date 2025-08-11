@@ -265,5 +265,68 @@
       "basedOnComment": "Based on visual blocks in the script area",
       "completedComment": "Script execution completed"
     }
+  },
+  "tutorial": {
+    "skip": "Skip",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Start Coding!",
+    "step": "Step",
+    "of": "of",
+    "visualProgramming": {
+      "title": "Visual Programming Guide",
+      "welcome": {
+        "title": "Welcome to Visual Programming!",
+        "content": "This guide will show you how to create programs by connecting visual blocks. Let's explore the interface together!"
+      },
+      "blocksPanel": {
+        "title": "Blocks Panel",
+        "content": "This is your blocks toolbox. Here you'll find all the commands you can use to program your robot. Blocks are organized by category."
+      },
+      "blockCategories": {
+        "title": "Block Categories",
+        "content": "Blocks are grouped by function: Movement (green), Sound (orange), LEDs (blue), and Sensors (purple). Click on a category to see available blocks."
+      },
+      "dragDrop": {
+        "title": "Adding Blocks",
+        "content": "You can add blocks to your program by dragging them to the canvas, or simply clicking on them. Try clicking this block!"
+      },
+      "scriptCanvas": {
+        "title": "Script Canvas",
+        "content": "This is where you build your program. Blocks automatically connect in sequence. You can reconnect them by dragging the connection lines."
+      },
+      "autoConnections": {
+        "title": "Smart Connections",
+        "content": "New blocks automatically connect to existing ones to create a sequence. The connections determine the execution order of your program!"
+      },
+      "executionControls": {
+        "title": "Execution Controls",
+        "content": "Use these buttons to control your program: run/pause, stop, clear all blocks, and view the generated code."
+      },
+      "playButton": {
+        "title": "Run Your Program",
+        "content": "Click this button to execute your program! The robot will follow the sequence of connected blocks. Make sure you have blocks connected first."
+      },
+      "clearScript": {
+        "title": "Clear All Blocks",
+        "content": "This button removes all blocks from the canvas, giving you a fresh start for a new program."
+      },
+      "pythonCode": {
+        "title": "View Generated Code",
+        "content": "See the Python code that your visual blocks create! This helps you learn programming while building with blocks."
+      },
+      "consolePanel": {
+        "title": "Console Panel",
+        "content": "Click here to show the console, where you'll see program output, error messages, and execution progress."
+      },
+      "robotConnection": {
+        "title": "Robot Settings",
+        "content": "Before running programs, connect to your robot through the settings panel. You'll need to configure the robot's IP address."
+      },
+      "complete": {
+        "title": "Ready to Code!",
+        "content": "You're all set! Start by adding some blocks and connecting them to create your first robot program. Have fun coding!"
+      }
+    }
   }
 }

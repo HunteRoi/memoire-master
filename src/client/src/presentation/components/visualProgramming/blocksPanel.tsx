@@ -32,7 +32,11 @@ interface BlocksPanelProps {
   onBlockClick?: (block: Block) => void;
 }
 
-export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels, onBlockClick }) => {
+export const BlocksPanel: FC<BlocksPanelProps> = ({
+  isSimpleMode,
+  labels,
+  onBlockClick,
+}) => {
   return (
     <Paper
       elevation={2}
@@ -57,67 +61,74 @@ export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels, onBloc
           🧩 {labels.title}
         </Typography>
 
-        {blockCategories.map(category => (
-          <Accordion key={category.id} sx={{ mb: 1 }}>
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              sx={{
-                minHeight: isSimpleMode ? 56 : 48,
-                backgroundColor: `${category.color}08`,
-                borderLeft: `4px solid ${category.color}`,
-                '& .MuiAccordionSummary-content': {
-                  margin: '8px 0',
-                },
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography
-                  variant='h6'
-                  component='span'
-                  sx={{ fontSize: isSimpleMode ? '1.5rem' : '1.25rem' }}
-                >
-                  {category.icon}
-                </Typography>
-                <Typography
-                  variant={isSimpleMode ? 'h6' : 'subtitle1'}
-                  sx={{ fontWeight: 500 }}
-                >
-                  {
-                    labels.categories[
-                      category.id as keyof typeof labels.categories
-                    ]
-                  }
-                </Typography>
-                <Chip
-                  label={category.blocks.length}
-                  size='small'
-                  sx={{
-                    backgroundColor: `${category.color}20`,
-                    color: category.color,
-                    fontWeight: 600,
-                    minWidth: '24px',
-                    height: '20px',
-                  }}
-                />
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails sx={{ pt: 0 }}>
-              {category.blocks.map(block => (
-                <BlockItem
-                  key={block.id}
-                  {...block}
-                  name={labels.blockNames[block.id] || block.name}
-                  description={
-                    labels.blockDescriptions[block.id] || block.description
-                  }
-                  isSimpleMode={isSimpleMode}
-                  categoryColor={category.color}
-                  onBlockClick={onBlockClick}
-                />
-              ))}
-            </AccordionDetails>
-          </Accordion>
-        ))}
+        <div data-tutorial='block-categories'>
+          {blockCategories.map(category => (
+            <Accordion key={category.id} sx={{ mb: 1 }}>
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                sx={{
+                  minHeight: isSimpleMode ? 56 : 48,
+                  backgroundColor: `${category.color}08`,
+                  borderLeft: `4px solid ${category.color}`,
+                  '& .MuiAccordionSummary-content': {
+                    margin: '8px 0',
+                  },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant='h6'
+                    component='span'
+                    sx={{ fontSize: isSimpleMode ? '1.5rem' : '1.25rem' }}
+                  >
+                    {category.icon}
+                  </Typography>
+                  <Typography
+                    variant={isSimpleMode ? 'h6' : 'subtitle1'}
+                    sx={{ fontWeight: 500 }}
+                  >
+                    {
+                      labels.categories[
+                        category.id as keyof typeof labels.categories
+                      ]
+                    }
+                  </Typography>
+                  <Chip
+                    label={category.blocks.length}
+                    size='small'
+                    sx={{
+                      backgroundColor: `${category.color}20`,
+                      color: category.color,
+                      fontWeight: 600,
+                      minWidth: '24px',
+                      height: '20px',
+                    }}
+                  />
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails sx={{ pt: 0 }}>
+                {category.blocks.map((block, index) => (
+                  <BlockItem
+                    data-tutorial={
+                      index === 0 && category.id === 'movement'
+                        ? 'first-block'
+                        : undefined
+                    }
+                    key={block.id}
+                    {...block}
+                    name={labels.blockNames[block.id] || block.name}
+                    description={
+                      labels.blockDescriptions[block.id] || block.description
+                    }
+                    isSimpleMode={isSimpleMode}
+                    categoryColor={category.color}
+                    onBlockClick={onBlockClick}
+                  />
+                ))}
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </div>
       </Box>
     </Paper>
   );
@@ -128,11 +139,19 @@ const BlockItem: FC<
     isSimpleMode: boolean;
     categoryColor: string;
     onBlockClick?: (block: Block) => void;
+    'data-tutorial'?: string;
   } & Block
-> = ({ isSimpleMode, categoryColor, onBlockClick, ...block }) => {
+> = ({
+  isSimpleMode,
+  categoryColor,
+  onBlockClick,
+  'data-tutorial': dataTutorial,
+  ...block
+}) => {
   return (
     <Paper
       elevation={1}
+      data-tutorial={dataTutorial}
       sx={{
         p: isSimpleMode ? 2 : 1.5,
         mb: 1,

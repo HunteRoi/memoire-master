@@ -16,9 +16,13 @@ const PanelComponent: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-const LeftPanel: FC<PropsWithChildren> = ({ children }) => {
+const LeftPanel: FC<PropsWithChildren<{ 'data-tutorial'?: string }>> = ({
+  children,
+  'data-tutorial': dataTutorial,
+}) => {
   return (
     <Box
+      data-tutorial={dataTutorial}
       sx={{
         width: '20%',
         height: '100%',
@@ -46,12 +50,12 @@ const RightPanel: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-const TopPanel: FC<PropsWithChildren<{ height?: string }>> = ({
-  children,
-  height = '100%',
-}) => {
+const TopPanel: FC<
+  PropsWithChildren<{ height?: string; 'data-tutorial'?: string }>
+> = ({ children, height = '100%', 'data-tutorial': dataTutorial }) => {
   return (
     <Box
+      data-tutorial={dataTutorial}
       sx={{
         width: '100%',
         height,
@@ -86,18 +90,21 @@ interface FloatingButtonProps {
   icon?: ReactNode;
   onClick: () => void;
   children: ReactNode;
+  'data-tutorial'?: string;
 }
 
 const FloatingButton: FC<FloatingButtonProps> = ({
   icon,
   onClick,
   children,
+  'data-tutorial': dataTutorial,
 }) => {
   return (
     <Button
       variant='contained'
       onClick={onClick}
       startIcon={icon}
+      data-tutorial={dataTutorial}
       sx={{
         position: 'fixed',
         bottom: 16,

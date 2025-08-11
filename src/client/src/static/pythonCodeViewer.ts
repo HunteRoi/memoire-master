@@ -28,7 +28,8 @@ function getNestedValue(obj: any, path: string): string | undefined {
 }
 
 function t(key: string, fallback: string = key): string {
-  const currentTranslations = translations[currentLanguage as keyof typeof translations];
+  const currentTranslations =
+    translations[currentLanguage as keyof typeof translations];
   const translation = getNestedValue(currentTranslations, key);
 
   if (translation) return translation;
@@ -48,15 +49,28 @@ function updateTranslations(): void {
     updateIndicator: document.getElementById('updateIndicator'),
   };
 
-  if (elements.windowTitle) elements.windowTitle.textContent = t('visualProgramming.pythonViewer.title');
-  if (elements.headerTitle) elements.headerTitle.textContent = t('visualProgramming.pythonViewer.title');
-  if (elements.readOnlyBadge) elements.readOnlyBadge.textContent = t('visualProgramming.pythonViewer.readOnly');
-  if (elements.closeButton) elements.closeButton.textContent = t('common.close');
-  if (elements.updateIndicator) elements.updateIndicator.textContent = t('visualProgramming.pythonViewer.updated');
+  if (elements.windowTitle)
+    elements.windowTitle.textContent = t(
+      'visualProgramming.pythonViewer.title'
+    );
+  if (elements.headerTitle)
+    elements.headerTitle.textContent = t(
+      'visualProgramming.pythonViewer.title'
+    );
+  if (elements.readOnlyBadge)
+    elements.readOnlyBadge.textContent = t(
+      'visualProgramming.pythonViewer.readOnly'
+    );
+  if (elements.closeButton)
+    elements.closeButton.textContent = t('common.close');
+  if (elements.updateIndicator)
+    elements.updateIndicator.textContent = t(
+      'visualProgramming.pythonViewer.updated'
+    );
 
   // Update empty state if currently showing
   const codeContent = document.getElementById('codeContent');
-  if (codeContent && codeContent.classList.contains('empty-state')) {
+  if (codeContent?.classList.contains('empty-state')) {
     codeContent.textContent = t('visualProgramming.pythonViewer.emptyState');
   }
 }
@@ -65,7 +79,10 @@ function updateTranslations(): void {
 function initializeLanguage(): void {
   try {
     const savedLanguage = localStorage.getItem('pucklab-language');
-    if (savedLanguage && translations[savedLanguage as keyof typeof translations]) {
+    if (
+      savedLanguage &&
+      translations[savedLanguage as keyof typeof translations]
+    ) {
       currentLanguage = savedLanguage;
       document.documentElement.lang = savedLanguage;
     }
@@ -82,8 +99,17 @@ function watchLanguageChanges(): void {
   setInterval(() => {
     try {
       const savedLanguage = localStorage.getItem('pucklab-language');
-      if (savedLanguage && savedLanguage !== currentLanguage && translations[savedLanguage as keyof typeof translations]) {
-        console.log('Language changed from', currentLanguage, 'to', savedLanguage);
+      if (
+        savedLanguage &&
+        savedLanguage !== currentLanguage &&
+        translations[savedLanguage as keyof typeof translations]
+      ) {
+        console.log(
+          'Language changed from',
+          currentLanguage,
+          'to',
+          savedLanguage
+        );
         currentLanguage = savedLanguage;
         document.documentElement.lang = savedLanguage;
         updateTranslations();
@@ -111,7 +137,7 @@ function updateCode(code: string): void {
       codeContent.className = 'language-python';
 
       // Apply Prism.js highlighting
-      if (Prism && Prism.languages && Prism.languages.python) {
+      if (Prism?.languages?.python) {
         // Force re-highlighting
         delete (codeContent as any).dataset.highlighted;
         Prism.highlightElement(codeContent);
@@ -147,7 +173,7 @@ function closeWindow(): void {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Python code viewer ready');
   console.log('Prism available:', !!Prism);
-  console.log('Python language available:', !!(Prism && Prism.languages && Prism.languages.python));
+  console.log('Python language available:', !!Prism?.languages?.python);
 
   // Initialize language and translations
   initializeLanguage();

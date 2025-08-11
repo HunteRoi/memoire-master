@@ -1,23 +1,51 @@
 import { Box } from '@mui/material';
-import type { FC } from 'react';
+import { type FC, useEffect } from 'react';
 
 import { VisualProgrammingContent } from '../containers/visualProgramming';
+import { TutorialProvider, useTutorial } from '../contexts/tutorialContext';
 import { useAppContext } from '../hooks/useAppContext';
+
+const VisualProgrammingWithTutorial: FC<{ isSimpleMode: boolean }> = ({
+  isSimpleMode,
+}) => {
+  const { startTutorial, hasSeenTutorial } = useTutorial();
+
+  // Auto-start tutorial for first-time users
+  useEffect(() => {
+    const shouldShowTutorial = !hasSeenTutorial('visual_programming');
+    if (shouldShowTutorial) {
+      // Delay tutorial to ensure page is fully loaded
+      const timer = setTimeout(() => {
+        startTutorial();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [startTutorial, hasSeenTutorial]);
+
+  return (
+    <Box
+      data-tutorial='main-container'
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        position: 'relative',
+        bgcolor: 'background.default',
+      }}
+    >
+      <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
+        <VisualProgrammingContent isSimpleMode={isSimpleMode} />
+      </Box>
+    </Box>
+  );
+};
 
 export const VisualProgramming: FC = () => {
   const { userAge } = useAppContext();
   const isSimpleMode = userAge?.isSimpleMode() ?? false;
 
   return (
-    <Box sx={{ 
-      height: '100vh', 
-      display: 'flex', 
-      position: 'relative',
-      bgcolor: 'background.default'
-    }}>
-      <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-        <VisualProgrammingContent isSimpleMode={isSimpleMode} />
-      </Box>
-    </Box>
+    <TutorialProvider>
+      <VisualProgrammingWithTutorial isSimpleMode={isSimpleMode} />
+    </TutorialProvider>
   );
 };
