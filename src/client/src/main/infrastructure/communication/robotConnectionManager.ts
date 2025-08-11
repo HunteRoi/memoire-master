@@ -1,4 +1,5 @@
 import WebSocket from 'ws';
+
 import type {
   ConnectedRobot,
   Robot,
@@ -12,7 +13,7 @@ export class RobotConnectionManager implements Disposable {
   private readonly connectionTimeout = 10000; // 10 seconds
   private disposed = false;
 
-  constructor(private logger: Logger) {}
+  constructor(private logger: Logger) { }
 
   async connect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);
