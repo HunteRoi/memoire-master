@@ -10,16 +10,21 @@ const VisualProgrammingWithTutorial: FC<{ isSimpleMode: boolean }> = ({
 }) => {
   const { startTutorial, hasSeenTutorial } = useTutorial();
 
-  // Auto-start tutorial for first-time users
+  // Auto-start tutorial for first-time users - event-based, no delay
   useEffect(() => {
-    const shouldShowTutorial = !hasSeenTutorial('visual_programming');
-    if (shouldShowTutorial) {
-      // Delay tutorial to ensure page is fully loaded
-      const timer = setTimeout(() => {
-        startTutorial();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
+    const checkAndStartTutorial = () => {
+      const shouldShowTutorial = !hasSeenTutorial('visual_programming');
+      console.debug('Tutorial check - should show:', shouldShowTutorial);
+      if (shouldShowTutorial) {
+        // Use requestAnimationFrame to ensure DOM is ready without delay
+        requestAnimationFrame(() => {
+          startTutorial();
+        });
+      }
+    };
+
+    // Check immediately and also after a short delay to ensure localStorage is fully loaded
+    checkAndStartTutorial();
   }, [startTutorial, hasSeenTutorial]);
 
   return (
