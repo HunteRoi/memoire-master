@@ -242,7 +242,7 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
         </Box>
 
         <Box
-          sx={{ height: 'calc(100% - 60px)' }}
+          sx={{ height: 'calc(100% - 60px)', pb: 2 }}
           onDrop={onDrop}
           onDragOver={onDragOver}
         >

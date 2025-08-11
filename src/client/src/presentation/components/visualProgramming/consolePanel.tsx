@@ -140,6 +140,7 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
         sx={{
           flex: 1,
           p: 2,
+          pb: 3,
           backgroundColor: 'grey.900',
           color: 'common.white',
           overflow: 'auto',

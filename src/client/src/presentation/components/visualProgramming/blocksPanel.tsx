@@ -44,7 +44,7 @@ export const BlocksPanel: FC<BlocksPanelProps> = ({ isSimpleMode, labels }) => {
         borderColor: 'divider',
       }}
     >
-      <Box sx={{ p: isSimpleMode ? 2 : 1.5 }}>
+      <Box sx={{ p: isSimpleMode ? 2 : 1.5, pb: 3 }}>
         <Typography
           variant={isSimpleMode ? 'h5' : 'h6'}
           gutterBottom

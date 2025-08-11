@@ -9,7 +9,12 @@ export const VisualProgramming: FC = () => {
   const isSimpleMode = userAge?.isSimpleMode() ?? false;
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex', position: 'relative' }}>
+    <Box sx={{ 
+      height: '100vh', 
+      display: 'flex', 
+      position: 'relative',
+      bgcolor: 'background.default'
+    }}>
       <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
         <VisualProgrammingContent isSimpleMode={isSimpleMode} />
       </Box>
