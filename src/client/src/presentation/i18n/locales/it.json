@@ -1,0 +1,343 @@
+{
+  "common": {
+    "back": "Indietro",
+    "continue": "Continua",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "connect": "Connetti",
+    "disconnect": "Disconnetti",
+    "yes": "Sì",
+    "no": "No",
+    "close": "Chiudi",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo"
+  },
+  "splash": {
+    "title": "PuckLab",
+    "subtitle": "Programmazione visuale per robot e-puck2",
+    "loadError": "Impossibile caricare la configurazione dei robot"
+  },
+  "theme": {
+    "title": "Scegli il tuo tema",
+    "subtitle": "Seleziona un tema visivo adatto al tuo stile e alle tue preferenze",
+    "names": {
+      "classic": "Classico",
+      "dark": "Scuro",
+      "pink": "Rosa",
+      "adventure": "Avventura",
+      "lego": "Lego"
+    },
+    "descriptions": {
+      "classic": "Interfaccia pulita e professionale con colori neutri",
+      "dark": "Tema scuro più riposante per gli occhi in ambienti poco illuminati",
+      "pink": "Tema rosa divertente e colorato",
+      "adventure": "Tema ispirato alla natura, perfetto per avventure all'aperto",
+      "lego": "Tema vivace e giocoso ispirato ai mattoncini LEGO"
+    }
+  },
+  "age": {
+    "title": "Quanti anni hai?",
+    "subtitle": "Questo ci aiuta a personalizzare l'interfaccia per te",
+    "yearsOld": "anni",
+    "increment": "Aumenta età",
+    "decrement": "Diminuisci età"
+  },
+  "robot": {
+    "title": "Seleziona il tuo robot",
+    "subtitle": "Scegli un robot dalla lista salvata o aggiungine uno nuovo. Assicurati che il robot sia acceso e connesso alla rete.",
+    "addNewRobot": "Aggiungi nuovo robot",
+    "editRobot": "Modifica robot",
+    "deleteRobot": "Elimina robot",
+    "connectToRobot": "Connetti al robot",
+    "disconnectFromRobot": "Disconnetti dal robot",
+    "robotName": "Nome robot",
+    "ipAddress": "Indirizzo IP",
+    "port": "Porta",
+    "testConnection": "Test connessione",
+    "testingConnection": "Test connessione in corso...",
+    "connectionSuccess": "Connessione riuscita!",
+    "connectionSuccessWithId": "Connessione riuscita! Il robot {{id}} è raggiungibile.",
+    "connectionFailed": "Connessione fallita. Controlla le impostazioni di rete del robot.",
+    "connectionFailedDetails": "Connessione fallita. Controlla l'indirizzo IP, la porta e la connettività di rete.",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo robot?",
+    "robotIdWillBe": "L'ID del robot sarà: {{id}}",
+    "updateRobot": "Aggiorna robot",
+    "addRobot": "Aggiungi robot",
+    "connected": "Connesso",
+    "disconnected": "Disconnesso",
+    "connectToRobotName": "Connetti a {{name}}",
+    "connectConfirm": "Sei sicuro di voler connetterti a {{name}}?",
+    "connecting": "Connessione in corso...",
+    "robotNameDefault": "Robot {{id}}",
+    "mockMessages": {
+      "connecting": "Connessione al robot in corso...",
+      "connected": "Robot connesso con successo",
+      "disconnecting": "Disconnessione dal robot in corso...",
+      "disconnected": "Robot disconnesso",
+      "statusOperational": "Stato del robot: {{status}}",
+      "sensorsWorking": "Sensori: {{status}}",
+      "batteryLevel": "Livello batteria: {{level}}%",
+      "memoryUsage": "Utilizzo memoria: {{usage}}%",
+      "wifiSignal": "Segnale WiFi: {{strength}}",
+      "readyForCommands": "Pronto per i comandi",
+      "commandExecuted": "Comando simulato eseguito con successo"
+    }
+  },
+  "mode": {
+    "title": "Scegli la modalità del robot",
+    "subtitle": "Seleziona la modalità per il tuo robot. Questo determinerà i blocchi disponibili e i comportamenti predefiniti.",
+    "startProgramming": "Inizia a programmare",
+    "names": {
+      "exploration": "ESPLORAZIONE",
+      "navigation": "NAVIGAZIONE"
+    },
+    "descriptions": {
+      "exploration": "Muovi il robot attraverso un'arena e scansiona le tessere del pavimento per trovare tessere bianche in un ambiente completamente nero.",
+      "navigation": "Guida il robot attraverso un labirinto e trova il percorso ottimale per raggiungere le destinazioni."
+    }
+  },
+  "programming": {
+    "title": "Programmazione visiva",
+    "subtitle": "Trascina e rilascia blocchi per programmare il tuo robot"
+  },
+  "alerts": {
+    "robotAlreadyConnected": "Il robot {{robotId}} è già connesso",
+    "robotConnectedSuccess": "Connesso con successo al robot {{robotId}}",
+    "robotConnectionFailed": "Impossibile connettersi al robot {{robotId}}. Controlla il robot e la rete.",
+    "robotDisconnectedSuccess": "Disconnesso dal robot {{robotId}}",
+    "robotDisconnectionFailed": "Impossibile disconnettersi dal robot {{robotId}}"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "tabs": {
+      "customization": "Personalizzazione",
+      "robots": "Robot"
+    },
+    "sections": {
+      "themeSelection": {
+        "title": "Selezione tema",
+        "description": "Scegli il tema colore preferito per l'applicazione."
+      },
+      "ageConfiguration": {
+        "title": "Configurazione età",
+        "description": "Imposta la tua età per personalizzare la complessità dell'interfaccia."
+      },
+      "robotManagement": {
+        "title": "Gestione robot",
+        "description": "Gestisci le connessioni dei robot e aggiungi nuovi robot."
+      },
+      "robotMode": {
+        "title": "Modalità robot",
+        "description": "Scegli la modalità operativa per il tuo robot."
+      },
+      "clearCache": {
+        "title": "Svuota cache",
+        "description": "Cancella tutti i dati memorizzati, inclusi il tuo spazio di lavoro, la cronologia della console e le preferenze. Questa azione non può essere annullata.",
+        "button": "Cancella tutti i dati",
+        "dialog": {
+          "title": "Cancellare tutti i dati?",
+          "description": "Questo eliminerà definitivamente tutti i dati del tuo spazio di lavoro, la cronologia della console e le preferenze. L'applicazione si riavvierà dopo la cancellazione. Questa azione non può essere annullata.",
+          "cancel": "Annulla",
+          "confirm": "Cancella tutti i dati"
+        }
+      }
+    }
+  },
+  "visualProgramming": {
+    "title": "Programmazione visiva",
+    "blocks": {
+      "title": "Blocchi",
+      "categories": {
+        "movement": "Movimento",
+        "sound": "Suono",
+        "leds": "LED",
+        "sensors": "Sensori",
+        "control": "Controllo"
+      },
+      "names": {
+        "move_forward": "Avanza",
+        "move_backward": "Indietreggia",
+        "turn_left": "Gira a sinistra",
+        "turn_right": "Gira a destra",
+        "stop": "Ferma",
+        "play_beep": "Emetti beep",
+        "play_melody": "Esegui melodia",
+        "set_volume": "Imposta volume",
+        "set_led_color": "Imposta colore LED",
+        "set_led_rgb": "Imposta LED RGB",
+        "blink_leds": "Fai lampeggiare LED",
+        "floor_sensor": "Sensore colore pavimento",
+        "distance_sensor": "Sensore di distanza",
+        "light_sensor": "Sensore di luce",
+        "wait": "Attendi",
+        "if_condition": "Se condizione",
+        "while_loop": "Ciclo mentre",
+        "repeat": "Ripeti"
+      },
+      "descriptions": {
+        "move_forward": "Muove il robot in avanti",
+        "move_backward": "Muove il robot all'indietro",
+        "turn_left": "Gira il robot a sinistra",
+        "turn_right": "Gira il robot a destra",
+        "stop": "Ferma tutti i movimenti del robot",
+        "play_beep": "Emette un suono beep",
+        "play_melody": "Esegue una melodia predefinita",
+        "set_volume": "Imposta il volume dell'altoparlante",
+        "set_led_color": "Imposta il LED su un colore specifico",
+        "set_led_rgb": "Imposta il LED con valori RGB personalizzati",
+        "blink_leds": "Fa lampeggiare i LED",
+        "floor_sensor": "Rileva il colore del pavimento (rilevamento tessera bianca)",
+        "distance_sensor": "Misura la distanza dagli ostacoli",
+        "light_sensor": "Misura il livello di luce ambientale",
+        "wait": "Attende per una durata specificata",
+        "if_condition": "Esegue blocchi in base a una condizione",
+        "while_loop": "Ripete i blocchi mentre la condizione è vera",
+        "repeat": "Ripete i blocchi per un numero specifico di volte"
+      },
+      "parameters": {
+        "speed": "Velocità",
+        "duration": "Durata",
+        "angle": "Angolo",
+        "frequency": "Frequenza",
+        "melody": "Melodia",
+        "volume": "Volume",
+        "led_id": "LED",
+        "color": "Colore",
+        "red": "Rosso",
+        "green": "Verde",
+        "blue": "Blu",
+        "times": "Volte",
+        "interval": "Intervallo",
+        "target_color": "Colore target",
+        "sensitivity": "Sensibilità",
+        "max_distance": "Distanza massima",
+        "condition": "Condizione"
+      }
+    },
+    "script": {
+      "title": "Script",
+      "status": {
+        "running": "In esecuzione",
+        "paused": "In pausa",
+        "idle": "Inattivo"
+      },
+      "tooltips": {
+        "settings": "Apri impostazioni",
+        "playPause": "Esegui o metti in pausa lo script",
+        "stop": "Ferma l'esecuzione dello script",
+        "clear": "Rimuovi tutti i blocchi dallo script",
+        "viewCode": "Visualizza il codice Python generato"
+      }
+    },
+    "console": {
+      "title": "Console",
+      "showConsole": "Mostra console",
+      "messages": {
+        "robotInitialized": "Robot inizializzato con successo",
+        "connecting": "Connessione al robot in corso...",
+        "connectionEstablished": "Connessione stabilita",
+        "readyForCommands": "Pronto per i comandi"
+      },
+      "tooltips": {
+        "clear": "Cancella messaggi console",
+        "close": "Chiudi console"
+      },
+      "scriptCompleted": "Esecuzione script completata",
+      "scriptFailed": "Esecuzione script fallita",
+      "executingBlock": "Esecuzione: {{blockName}}",
+      "scriptStoppedByUser": "Esecuzione script interrotta dall'utente"
+    },
+    "errors": {
+      "invalidBlockData": "Dati del blocco non validi",
+      "invalidBlockStructure": "Struttura del blocco non valida",
+      "failedToAddBlock": "Impossibile aggiungere il blocco"
+    },
+    "success": {
+      "blockAdded": "Blocco aggiunto: {{blockName}}",
+      "blockDeleted": "Blocco eliminato: {{blockName}}"
+    },
+    "alerts": {
+      "noRobotConnected": "Nessun robot connesso. Connetti prima un robot.",
+      "noBlocksInScript": "Nessun blocco nello script. Aggiungi prima alcuni blocchi.",
+      "scriptStarted": "Esecuzione script avviata",
+      "scriptResumed": "Esecuzione script ripresa",
+      "scriptPaused": "Esecuzione script in pausa",
+      "scriptStopped": "Esecuzione script fermata"
+    },
+    "pythonViewer": {
+      "title": "Codice Python generato",
+      "readOnly": "Sola lettura",
+      "emptyState": "Nessun blocco nello script. Aggiungi dei blocchi per vedere il codice Python generato.",
+      "updated": "Aggiornato",
+      "generatedComment": "Script Python generato",
+      "basedOnComment": "Basato sui blocchi visuali nell'area script",
+      "completedComment": "Esecuzione script completata"
+    }
+  },
+  "tutorial": {
+    "skip": "Salta",
+    "previous": "Precedente",
+    "next": "Avanti",
+    "finish": "Inizia a programmare!",
+    "step": "Passo",
+    "of": "di",
+    "visualProgramming": {
+      "title": "Guida alla programmazione visiva",
+      "welcome": {
+        "title": "Benvenuto nella programmazione visiva!",
+        "content": "Questa guida ti mostrerà come creare programmi collegando blocchi visuali. Esploriamo insieme l'interfaccia!"
+      },
+      "blocksPanel": {
+        "title": "Pannello blocchi",
+        "content": "Questa è la tua cassetta degli attrezzi. Qui troverai tutti i comandi per programmare il robot, organizzati per categoria."
+      },
+      "blockCategories": {
+        "title": "Categorie di blocchi",
+        "content": "I blocchi sono raggruppati per funzione: Movimento (verde), Suono (arancione), LED (blu) e Sensori (viola). Clicca su una categoria per vedere i blocchi disponibili."
+      },
+      "dragDrop": {
+        "title": "Aggiungere blocchi",
+        "content": "Puoi aggiungere blocchi trascinandoli sul canvas o semplicemente cliccandoci sopra. Prova a cliccare questo blocco!"
+      },
+      "scriptCanvas": {
+        "title": "Canvas script",
+        "content": "Qui costruisci il tuo programma. I blocchi si collegano automaticamente in sequenza. Puoi ricollegarli trascinando le linee di connessione."
+      },
+      "autoConnections": {
+        "title": "Connessioni intelligenti",
+        "content": "I nuovi blocchi si collegano automaticamente a quelli esistenti per creare una sequenza. Le connessioni determinano l'ordine di esecuzione!"
+      },
+      "executionControls": {
+        "title": "Controlli di esecuzione",
+        "content": "Usa questi pulsanti per controllare il tuo programma: esegui/metti in pausa, ferma, rimuovi tutti i blocchi e visualizza il codice generato."
+      },
+      "playButton": {
+        "title": "Esegui il tuo programma",
+        "content": "Clicca questo pulsante per eseguire il programma! Il robot seguirà la sequenza dei blocchi connessi. Assicurati di aver connesso dei blocchi prima."
+      },
+      "clearScript": {
+        "title": "Rimuovi tutti i blocchi",
+        "content": "Questo pulsante rimuove tutti i blocchi dal canvas, dandoti un nuovo inizio."
+      },
+      "pythonCode": {
+        "title": "Visualizza il codice generato",
+        "content": "Guarda il codice Python creato dai blocchi visuali! Ti aiuta a imparare la programmazione mentre costruisci con i blocchi."
+      },
+      "consolePanel": {
+        "title": "Pannello console",
+        "content": "Clicca qui per mostrare la console, dove vedrai l'output del programma, i messaggi di errore e l'avanzamento dell'esecuzione."
+      },
+      "robotConnection": {
+        "title": "Impostazioni robot",
+        "content": "Prima di eseguire i programmi, connettiti al robot dal pannello impostazioni. Dovrai configurare l'indirizzo IP del robot."
+      },
+      "complete": {
+        "title": "Pronto per programmare!",
+        "content": "Tutto pronto! Inizia aggiungendo dei blocchi e collegandoli per creare il tuo primo programma per robot. Divertiti!"
+      }
+    }
+  }
+}

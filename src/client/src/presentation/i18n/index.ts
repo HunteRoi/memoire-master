@@ -8,6 +8,7 @@ import de from './locales/de.json';
 import en from './locales/en.json';
 import fr from './locales/fr.json';
 import nl from './locales/nl.json';
+import it from './locales/it.json';
 
 // const backend = new Backend({
 //   loadPath: './locales/{{lng}}.json'
@@ -18,6 +19,7 @@ export const languages = [
   { code: 'fr', name: 'Français' },
   { code: 'nl', name: 'Nederlands' },
   { code: 'de', name: 'Deutsch' },
+  { code: 'it', name: 'Italiano' }
 ];
 
 // We'll initialize with debug disabled, and enable it after checking isPackaged
@@ -34,6 +36,7 @@ i18n
       fr: { translation: fr },
       nl: { translation: nl },
       de: { translation: de },
+      it: { translations: it },
     },
     lng: 'en', // default language
     fallbackLng: 'en',
