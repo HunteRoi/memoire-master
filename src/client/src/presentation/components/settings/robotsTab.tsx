@@ -13,26 +13,39 @@ export const RobotsTab: FC<RobotsTabProps> = ({ sections }) => {
       display: 'flex', 
       flexDirection: 'column', 
       gap: {
-        xs: 2,
-        sm: 3,
+        xs: 3,
+        sm: 4,
       },
+      maxWidth: 800,
+      mx: 'auto',
       pb: {
-        xs: 2,
-        sm: 3,
+        xs: 3,
+        sm: 4,
       },
     }}>
       {sections.map(section => (
-        <Card key={section.title} elevation={2}>
+        <Card 
+          key={section.title} 
+          elevation={1}
+          sx={{
+            borderRadius: 2,
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              elevation: 2,
+              transform: 'translateY(-1px)',
+            },
+          }}
+        >
           <CardContent
             sx={{
               p: {
-                xs: 2,
-                sm: 3,
+                xs: 3,
+                sm: 4,
               },
               '&:last-child': {
                 pb: {
-                  xs: 2,
-                  sm: 3,
+                  xs: 3,
+                  sm: 4,
                 },
               },
             }}
@@ -42,11 +55,13 @@ export const RobotsTab: FC<RobotsTabProps> = ({ sections }) => {
               gutterBottom
               sx={{
                 fontSize: {
-                  xs: '1.1rem',
-                  sm: '1.25rem',
+                  xs: '1.2rem',
+                  sm: '1.3rem',
                 },
+                fontWeight: 600,
+                color: 'text.primary',
                 mb: {
-                  xs: 1,
+                  xs: 1.5,
                   sm: 2,
                 },
               }}
@@ -59,14 +74,14 @@ export const RobotsTab: FC<RobotsTabProps> = ({ sections }) => {
                 color='text.secondary' 
                 sx={{
                   mb: {
-                    xs: 1.5,
-                    sm: 2,
+                    xs: 2.5,
+                    sm: 3,
                   },
                   fontSize: {
-                    xs: '0.8rem',
-                    sm: '0.875rem',
+                    xs: '0.9rem',
+                    sm: '0.95rem',
                   },
-                  lineHeight: 1.4,
+                  lineHeight: 1.5,
                 }}
               >
                 {section.description}
@@ -74,11 +89,7 @@ export const RobotsTab: FC<RobotsTabProps> = ({ sections }) => {
             )}
             <Box sx={{ 
               '& > *': {
-                transform: {
-                  xs: 'scale(0.9)',
-                  sm: 'scale(1)',
-                },
-                transformOrigin: 'top left',
+                width: '100%',
               },
             }}>
               {section.content}

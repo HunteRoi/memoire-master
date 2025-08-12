@@ -67,6 +67,7 @@ export const Settings: FC = () => {
       display: 'flex', 
       flexDirection: 'column',
       overflow: 'hidden',
+      backgroundColor: 'background.default',
     }}>
       <SettingsHeader title={t('settings.title')} onBack={handleBack} />
 
@@ -80,9 +81,11 @@ export const Settings: FC = () => {
       <Box sx={{ 
         flexGrow: 1, 
         overflow: 'auto',
+        backgroundColor: 'background.default',
         p: {
-          xs: 1,
-          sm: 2,
+          xs: 2,
+          sm: 3,
+          md: 4,
         },
       }}>
         <TabPanel value={tabValue} index={0}>
