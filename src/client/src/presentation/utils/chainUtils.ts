@@ -1,5 +1,11 @@
 import type { Edge, Node } from 'reactflow';
 
+/**
+ * Get the nodes execution order based on connections between them.
+ * @param nodes nodes
+ * @param edges connections
+ * @returns the ordered nodes
+ */
 export const getExecutionOrder = (nodes: Node[], edges: Edge[]): Node[] => {
   if (nodes.length === 0) return [];
 
@@ -62,4 +68,42 @@ export const getExecutionOrder = (nodes: Node[], edges: Edge[]): Node[] => {
   );
 
   return [...sortedNodes, ...disconnectedNodes];
+};
+
+/**
+ * Find the end node of the main execution chain (node with no outgoing edges)
+ * @param nodes nodes
+ * @param edges connections
+ * @returns the end node of the main execution chain
+ */
+export const findChainEndNode = (nodes: Node[], edges: Edge[]): Node | null => {
+  if (nodes.length === 0) return null;
+  if (nodes.length === 1) return nodes[0];
+
+  const nodesWithOutgoingEdges = new Set<string>();
+  edges.forEach(edge => {
+    if (edge.source) {
+      nodesWithOutgoingEdges.add(edge.source);
+    }
+  });
+
+  const endNodes = nodes.filter(node => !nodesWithOutgoingEdges.has(node.id));
+
+  if (endNodes.length === 0) {
+    return nodes[nodes.length - 1];
+  }
+
+  if (endNodes.length === 1) {
+    return endNodes[0];
+  }
+
+  const executionOrder = getExecutionOrder(nodes, edges);
+  for (let i = executionOrder.length - 1; i >= 0; i--) {
+    const node = executionOrder[i];
+    if (endNodes.includes(node)) {
+      return node;
+    }
+  }
+
+  return endNodes[0];
 };

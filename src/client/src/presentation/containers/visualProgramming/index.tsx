@@ -28,6 +28,7 @@ import {
   LabelsProvider,
   useVisualProgrammingLabels,
 } from '../../providers/visualProgramming/labelsProvider';
+import { findChainEndNode } from '../../utils/chainUtils';
 import {
   CodeGenerationContainer,
   useCodeGeneration,
@@ -187,16 +188,18 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         setNodes(n => [...n, newNode]);
 
         if (nodes.length > 0) {
-          const latestNode = nodes[nodes.length - 1];
-          const newEdge: Edge = {
-            source: latestNode.id,
-            target: newNode.id,
-            id: `${latestNode.id}-${newNode.id}-${Date.now()}`,
-            type: 'smoothstep',
-            animated: true,
-            style: { stroke: '#8b5cf6', strokeWidth: 2 },
-          };
-          setEdges(edges => [...edges, newEdge]);
+          const chainEndNode = findChainEndNode(nodes, edges);
+          if (chainEndNode) {
+            const newEdge: Edge = {
+              source: chainEndNode.id,
+              target: newNode.id,
+              id: `${chainEndNode.id}-${newNode.id}-${Date.now()}`,
+              type: 'smoothstep',
+              animated: true,
+              style: { stroke: '#8b5cf6', strokeWidth: 2 },
+            };
+            setEdges(edges => [...edges, newEdge]);
+          }
         }
 
         addConsoleMessage('info', 'visualProgramming.success.blockAdded', {
@@ -266,16 +269,18 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
         setNodes(n => [...n, newNode]);
 
         if (nodes.length > 0) {
-          const latestNode = nodes[nodes.length - 1];
-          const newEdge: Edge = {
-            source: latestNode.id,
-            target: newNode.id,
-            id: `${latestNode.id}-${newNode.id}-${Date.now()}`,
-            type: 'smoothstep',
-            animated: true,
-            style: { stroke: '#8b5cf6', strokeWidth: 2 },
-          };
-          setEdges(edges => [...edges, newEdge]);
+          const chainEndNode = findChainEndNode(nodes, edges);
+          if (chainEndNode) {
+            const newEdge: Edge = {
+              source: chainEndNode.id,
+              target: newNode.id,
+              id: `${chainEndNode.id}-${newNode.id}-${Date.now()}`,
+              type: 'smoothstep',
+              animated: true,
+              style: { stroke: '#8b5cf6', strokeWidth: 2 },
+            };
+            setEdges(edges => [...edges, newEdge]);
+          }
         }
 
         addConsoleMessage('info', 'visualProgramming.success.blockAdded', {

@@ -9,16 +9,22 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Edge, Node } from 'reactflow';
+
 import { useVisualProgrammingLabels } from '../../providers/visualProgramming/labelsProvider';
 import { useConsole } from './consoleContainer';
 import { useRobotConnection } from './robotConnectionContainer';
-import { getExecutionOrder } from '../../utils/executionOrderUtils';
+import { getExecutionOrder } from '../../utils/chainUtils';
 import { validateExecution, validateNode } from '../../utils/executionValidationUtils';
-import { 
+import {
   type ExecutionControl,
   createExecutionControl,
-  cancellableDelay 
+  cancellableDelay
 } from '../../utils/executionControlUtils';
+import {
+  createEnhancedNode,
+  createExecutionAlerts,
+  createConsoleMessages
+} from '../../utils/scriptExecutionHelpers';
 
 export enum ScriptExecutionState {
   IDLE = 'idle',
@@ -63,12 +69,16 @@ export const ScriptExecutionContainer: React.FC<
   const { blocksPanelLabels } = useVisualProgrammingLabels();
   const { addConsoleMessage } = useConsole();
 
+  const alerts = useMemo(() => createExecutionAlerts(t), [t]);
+  const consoleMessages = useMemo(() => createConsoleMessages(), []);
+
   const [executionState, setExecutionState] = useState<ScriptExecutionState>(
     ScriptExecutionState.IDLE
   );
   const [currentlyExecutingNodeId, setCurrentlyExecutingNodeId] = useState<
     string | null
   >(null);
+  const [pausedNodeIndex, setPausedNodeIndex] = useState<number>(0);
 
   const executionControlRef = useRef<ExecutionControl>({
     shouldStop: false,
@@ -77,66 +87,41 @@ export const ScriptExecutionContainer: React.FC<
   });
 
   const enhancedNodes = useMemo(() => {
-    return nodes.map(node => {
-      let updatedLabel = node.data?.label;
-      if (node.data?.blockType && node.data?.blockIcon) {
-        const translatedBlockName =
-          blocksPanelLabels.blockNames[node.data.blockType];
-        if (translatedBlockName) {
-          updatedLabel = `${node.data.blockIcon} ${translatedBlockName}`;
-        }
-      }
-
-      return {
-        ...node,
-        data: {
-          ...node.data,
-          label: updatedLabel,
-          blockName:
-            blocksPanelLabels.blockNames[node.data?.blockType] ||
-            node.data?.blockName,
-        },
-        style: {
-          ...node.style,
-          backgroundColor:
-            node.id === currentlyExecutingNodeId
-              ? '#ffd54f'
-              : node.style?.backgroundColor,
-          border:
-            node.id === currentlyExecutingNodeId
-              ? '2px solid #ff9800'
-              : node.style?.border,
-          boxShadow:
-            node.id === currentlyExecutingNodeId
-              ? '0 4px 8px rgba(255, 152, 0, 0.3)'
-              : node.style?.boxShadow,
-        },
-      };
-    });
+    return nodes.map(node =>
+      createEnhancedNode(node, currentlyExecutingNodeId, blocksPanelLabels.blockNames)
+    );
   }, [nodes, currentlyExecutingNodeId, blocksPanelLabels.blockNames]);
+
+  const updateExecutionState = useCallback((
+    state: ScriptExecutionState,
+    alertMessage: string,
+    alertType: 'success' | 'info' | 'warning' | 'error',
+    clearCurrentNode = false
+  ) => {
+    setExecutionState(state);
+    if (clearCurrentNode) {
+      setCurrentlyExecutingNodeId(null);
+    }
+    showAlert(alertMessage, alertType);
+  }, [showAlert]);
 
   const startExecution = useCallback(
     (isResuming: boolean) => {
-      setExecutionState(ScriptExecutionState.RUNNING);
-      showAlert(
-        isResuming
-          ? t('visualProgramming.alerts.scriptResumed')
-          : t('visualProgramming.alerts.scriptStarted'),
-        'success'
-      );
+      const alert = isResuming ? alerts.scriptResumed : alerts.scriptStarted;
+      updateExecutionState(alert.state, alert.alertMessage, alert.alertType);
     },
-    [showAlert, t]
+    [alerts, updateExecutionState]
   );
 
   const pauseExecution = useCallback(() => {
-    setExecutionState(ScriptExecutionState.PAUSED);
-    setCurrentlyExecutingNodeId(null);
-    showAlert(t('visualProgramming.alerts.scriptPaused'), 'info');
-  }, [showAlert, t]);
+    const alert = alerts.scriptPaused;
+    updateExecutionState(alert.state, alert.alertMessage, alert.alertType, alert.clearCurrentNode);
+  }, [alerts, updateExecutionState]);
 
   const stopExecution = useCallback(() => {
     setCurrentlyExecutingNodeId(null);
     setExecutionState(ScriptExecutionState.IDLE);
+    setPausedNodeIndex(0);
     executionControlRef.current.currentIndex = 0;
   }, []);
 
@@ -144,22 +129,21 @@ export const ScriptExecutionContainer: React.FC<
     (wasStopped: boolean) => {
       stopExecution();
       if (!wasStopped) {
-        addConsoleMessage(
-          'success',
-          'visualProgramming.console.scriptCompleted'
-        );
+        const message = consoleMessages.scriptCompleted;
+        addConsoleMessage(message.type, message.key);
       }
     },
-    [stopExecution, addConsoleMessage]
+    [stopExecution, addConsoleMessage, consoleMessages]
   );
 
   const handleExecutionError = useCallback(
     (error: any) => {
       console.error('Script execution error:', error);
       stopExecution();
-      addConsoleMessage('error', 'visualProgramming.console.scriptFailed');
+      const message = consoleMessages.scriptFailed;
+      addConsoleMessage(message.type, message.key);
     },
-    [stopExecution, addConsoleMessage]
+    [stopExecution, addConsoleMessage, consoleMessages]
   );
 
   const executeNode = useCallback(
@@ -167,15 +151,31 @@ export const ScriptExecutionContainer: React.FC<
       const { blockName } = node.data;
 
       setCurrentlyExecutingNodeId(node.id);
-      addConsoleMessage(
-        'info',
-        'visualProgramming.console.executingBlock', 
-        { blockName }
-      );
+      const message = consoleMessages.executingBlock;
+      addConsoleMessage(message.type, message.key, { blockName });
 
-      await cancellableDelay(1000, control.abortController);
+      if (control.shouldPause) {
+        return;
+      }
+
+      const delayDuration = 1000;
+      const checkInterval = 100; // Check every 100ms
+      let elapsed = 0;
+
+      while (elapsed < delayDuration) {
+        if (control.shouldPause || control.shouldStop) {
+          return;
+        }
+
+        if (control.abortController?.signal.aborted) {
+          throw new Error('Execution cancelled');
+        }
+
+        await new Promise(resolve => setTimeout(resolve, checkInterval));
+        elapsed += checkInterval;
+      }
     },
-    [addConsoleMessage, cancellableDelay]
+    [addConsoleMessage, consoleMessages]
   );
 
   const executeNodes = useCallback(
@@ -184,11 +184,11 @@ export const ScriptExecutionContainer: React.FC<
 
       for (let i = startIndex; i < executionOrder.length; i++) {
         if (control.shouldStop) {
-          break;
+          return;
         }
 
         if (control.shouldPause) {
-          control.currentIndex = i;
+          setPausedNodeIndex(i);
           pauseExecution();
           return;
         }
@@ -198,11 +198,19 @@ export const ScriptExecutionContainer: React.FC<
           continue;
         }
 
-        control.currentIndex = i;
         await executeNode(node, control);
+
+        if (control.shouldPause) {
+          setPausedNodeIndex(i);
+          pauseExecution();
+          return;
+        }
       }
+
+      // Only complete execution if we've actually finished all nodes
+      completeExecution(false);
     },
-    [nodes, edges, executeNode, pauseExecution]
+    [nodes, edges, executeNode, pauseExecution, completeExecution]
   );
 
   const handlePlayScript = useCallback(async () => {
@@ -213,16 +221,13 @@ export const ScriptExecutionContainer: React.FC<
     }
 
     const isResuming = executionState === ScriptExecutionState.PAUSED;
-    const startIndex = isResuming
-      ? executionControlRef.current.currentIndex
-      : 0;
+    const startIndex = isResuming ? pausedNodeIndex : 0;
 
     executionControlRef.current = createExecutionControl(startIndex);
     startExecution(isResuming);
 
     try {
       await executeNodes(startIndex, executionControlRef.current);
-      completeExecution(executionControlRef.current.shouldStop);
     } catch (error) {
       if (error instanceof Error && error.message !== 'Execution cancelled') {
         handleExecutionError(error);
@@ -234,31 +239,33 @@ export const ScriptExecutionContainer: React.FC<
     t,
     showAlert,
     executionState,
+    pausedNodeIndex,
     startExecution,
     executeNodes,
-    completeExecution,
     handleExecutionError,
   ]);
 
   const handlePauseScript = useCallback(() => {
     if (executionState === ScriptExecutionState.RUNNING) {
       executionControlRef.current.shouldPause = true;
-      showAlert(t('visualProgramming.alerts.scriptPausing'), 'info');
+      const alert = alerts.scriptPausing;
+      showAlert(alert.alertMessage, alert.alertType);
     }
-  }, [executionState, showAlert, t]);
+  }, [executionState, showAlert, alerts]);
 
   const handleStopScript = useCallback(() => {
     if (executionState !== ScriptExecutionState.IDLE) {
       executionControlRef.current.shouldStop = true;
       executionControlRef.current.abortController?.abort();
       stopExecution();
-      showAlert(t('visualProgramming.alerts.scriptStopped'), 'info');
-      addConsoleMessage(
-        'info',
-        'visualProgramming.console.scriptStoppedByUser'
-      );
+
+      const alert = alerts.scriptStopped;
+      showAlert(alert.alertMessage, alert.alertType);
+
+      const message = consoleMessages.scriptStoppedByUser;
+      addConsoleMessage(message.type, message.key);
     }
-  }, [executionState, stopExecution, showAlert, t, addConsoleMessage]);
+  }, [executionState, stopExecution, showAlert, addConsoleMessage, alerts, consoleMessages]);
 
   const contextValue = useMemo<ScriptExecutionContextType>(
     () => ({
