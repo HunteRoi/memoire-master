@@ -1,0 +1,2 @@
+1. adding a block should use the connection order to add a new block to the latest block of the chain, instead of directly linking the added block to the newest block even if it's not the latest of the chain.
+2. when pausing a script run, and resuming it, we should not start from scratch but from where we paused.
