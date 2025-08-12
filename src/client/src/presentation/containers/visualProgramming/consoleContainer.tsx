@@ -52,13 +52,11 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
   const { consoleMessages, setConsoleMessages, showConsole, setShowConsole } =
     usePersistedConsoleState({ isSimpleMode });
 
-  // Re-translate all messages when language changes
   useEffect(() => {
     setConsoleMessages(prevMessages =>
       prevMessages.map(msg => {
         let finalTranslationParams = msg.translationParams || {};
 
-        // Handle block ID translation for re-translation
         if (msg.translationParams?.blockId) {
           const translatedBlockName =
             blocksPanelLabels.blockNames[msg.translationParams.blockId];
@@ -77,10 +75,8 @@ export const ConsoleContainer: React.FC<ConsoleContainerProps> = ({
     );
   }, [t, blocksPanelLabels.blockNames, setConsoleMessages]);
 
-  // Console management functions
   const handleFeedback = useCallback(
     (feedback: RobotFeedback) => {
-      // Extract message parameters if they exist in the feedback data
       const messageParams = feedback.data?.messageParams || {};
       const translatedMessage = translateFeedbackMessage(
         feedback.message,

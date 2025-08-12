@@ -49,11 +49,9 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable;
 
-      // Check if there's an open dialog or modal that should handle the event
       const isDialogOpen = document.querySelector('[role="dialog"]') !== null;
       const isModalOpen = document.querySelector('[role="presentation"]') !== null;
 
-      // Don't handle global shortcuts if a dialog/modal is open
       if (isDialogOpen || isModalOpen) {
         return;
       }
@@ -121,7 +119,6 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         overflow: 'hidden',
       }}
     >
-      {/* Language Selector - positioned in top right */}
       <Box
         sx={{
           position: 'absolute',

@@ -40,7 +40,6 @@ export const RobotConnectionContainer: React.FC<
   const { selectedRobot, isRobotConnected, robots, showAlert } =
     useAppContext();
 
-  // Computed values
   const selectedRobotData = useMemo(
     () => robots.find(robot => robot.id === selectedRobot),
     [robots, selectedRobot]

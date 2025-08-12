@@ -22,7 +22,6 @@ export const languages = [
   { code: 'it', name: 'Italiano' },
 ];
 
-// We'll initialize with debug disabled, and enable it after checking isPackaged
 let isDebugEnabled = false;
 
 i18n
@@ -46,7 +45,6 @@ i18n
     debug: isDebugEnabled,
   });
 
-// Check if we're in development mode and enable debug if so
 window.electronAPI.app
   .isPackaged()
   .then(isPackaged => {
@@ -57,7 +55,6 @@ window.electronAPI.app
     }
   })
   .catch(() => {
-    // If electronAPI is not available, assume production
     console.log(
       'i18next: electronAPI not available, running in production mode'
     );

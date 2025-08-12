@@ -87,7 +87,6 @@ export const RobotDialog: FC<RobotDialogProps> = ({
         setCurrentRobot(result.data);
       } else {
         console.error(`Failed to create robot: ${result.error}`);
-        // Keep the current robot if creation fails
       }
     }, 300);
 
@@ -134,7 +133,6 @@ export const RobotDialog: FC<RobotDialogProps> = ({
           handleSave();
         }
       } else if (event.key === 'Backspace' || event.key === 'Escape') {
-        // Only handle backspace/escape if not focused on an input
         const target = event.target as HTMLElement;
         const isInputElement =
           target.tagName === 'INPUT' ||

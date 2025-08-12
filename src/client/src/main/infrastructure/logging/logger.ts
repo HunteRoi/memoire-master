@@ -105,7 +105,6 @@ export class ConsoleLogger implements Logger {
   }
 }
 
-// Singleton logger instance
 let loggerInstance: Logger | null = null;
 
 export function getLogger(): Logger {

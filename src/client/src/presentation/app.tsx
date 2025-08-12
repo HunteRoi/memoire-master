@@ -29,7 +29,6 @@ const AppRoutes: FC = () => {
     i18n.changeLanguage(language);
   }, [language, i18n]);
 
-  // Handle menu events from Electron
   useEffect(() => {
     const handleLanguageChange = (event: CustomEvent) => {
       const newLanguage = event.detail;

@@ -71,7 +71,6 @@ export class RobotTimeoutError extends DomainError {
   }
 }
 
-// Utility functions for error handling
 export function isRobotError(error: unknown): error is DomainError {
   return error instanceof DomainError;
 }

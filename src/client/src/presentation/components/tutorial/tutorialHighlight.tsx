@@ -12,7 +12,6 @@ export const TutorialHighlight: FC<TutorialHighlightProps> = ({
 
   if (!targetElement) return null;
 
-  // Get element's position relative to viewport
   const rect = targetElement.getBoundingClientRect();
 
   return (

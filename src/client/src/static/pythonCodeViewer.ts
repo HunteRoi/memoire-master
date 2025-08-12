@@ -22,7 +22,6 @@ const translations = {
 
 let currentLanguage = 'en';
 
-// Get translation using dot notation
 function getNestedValue(obj: any, path: string): string | undefined {
   return path.split('.').reduce((current, key) => current?.[key], obj);
 }
@@ -34,12 +33,10 @@ function t(key: string, fallback: string = key): string {
 
   if (translation) return translation;
 
-  // Fallback to English
   const englishTranslation = getNestedValue(translations.en, key);
   return englishTranslation || fallback;
 }
 
-// Update UI with translations
 function updateTranslations(): void {
   const elements = {
     windowTitle: document.getElementById('windowTitle'),
@@ -68,14 +65,12 @@ function updateTranslations(): void {
       'visualProgramming.pythonViewer.updated'
     );
 
-  // Update empty state if currently showing
   const codeContent = document.getElementById('codeContent');
   if (codeContent?.classList.contains('empty-state')) {
     codeContent.textContent = t('visualProgramming.pythonViewer.emptyState');
   }
 }
 
-// Initialize language from localStorage
 function initializeLanguage(): void {
   try {
     const savedLanguage = localStorage.getItem('pucklab-language');
@@ -92,10 +87,7 @@ function initializeLanguage(): void {
   updateTranslations();
 }
 
-// Listen for language changes in localStorage
 function watchLanguageChanges(): void {
-  // Poll localStorage for language changes every 500ms
-  // This is needed because storage events don't fire in the same window that made the change
   setInterval(() => {
     try {
       const savedLanguage = localStorage.getItem('pucklab-language');
@@ -120,7 +112,6 @@ function watchLanguageChanges(): void {
   }, 500);
 }
 
-// Update code with syntax highlighting
 function updateCode(code: string): void {
   const codeContent = document.getElementById('codeContent');
   const updateIndicator = document.getElementById('updateIndicator');
@@ -132,13 +123,10 @@ function updateCode(code: string): void {
       codeContent.textContent = t('visualProgramming.pythonViewer.emptyState');
       codeContent.className = 'empty-state';
     } else {
-      // Set the code content
       codeContent.textContent = code;
       codeContent.className = 'language-python';
 
-      // Apply Prism.js highlighting
       if (Prism?.languages?.python) {
-        // Force re-highlighting
         delete (codeContent as any).dataset.highlighted;
         Prism.highlightElement(codeContent);
       } else {
@@ -146,7 +134,6 @@ function updateCode(code: string): void {
       }
     }
 
-    // Show update indicator briefly
     if (updateIndicator) {
       updateIndicator.classList.add('show');
       setTimeout(() => {
@@ -160,33 +147,26 @@ function updateCode(code: string): void {
   }
 }
 
-// Close window function
 function closeWindow(): void {
   window.close();
 }
 
-// Make functions available globally
 (window as any).updateCode = updateCode;
 (window as any).closeWindow = closeWindow;
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Python code viewer ready');
   console.log('Prism available:', !!Prism);
   console.log('Python language available:', !!Prism?.languages?.python);
 
-  // Initialize language and translations
   initializeLanguage();
 
-  // Start watching for language changes
   watchLanguageChanges();
 
-  // Force Prism manual mode for better control
   if (Prism) {
     Prism.manual = true;
   }
 
-  // Listen for code updates from the main process
   window.addEventListener('codeUpdate', (event: any) => {
     updateCode(event.detail);
   });

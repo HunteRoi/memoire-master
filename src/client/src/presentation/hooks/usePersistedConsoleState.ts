@@ -11,7 +11,6 @@ interface UsePersistedConsoleStateProps {
 export const usePersistedConsoleState = ({
   isSimpleMode,
 }: UsePersistedConsoleStateProps) => {
-  // Load initial console messages from localStorage
   const getInitialMessages = (): ConsoleMessage[] => {
     try {
       const saved = localStorage.getItem(CONSOLE_MESSAGES_STORAGE_KEY);
@@ -21,7 +20,6 @@ export const usePersistedConsoleState = ({
     }
   };
 
-  // Load initial console visibility from localStorage
   const getInitialVisibility = (): boolean => {
     try {
       const saved = localStorage.getItem(CONSOLE_VISIBILITY_STORAGE_KEY);
@@ -31,7 +29,6 @@ export const usePersistedConsoleState = ({
     }
   };
 
-  // State hooks with persisted initial values
   const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>(
     getInitialMessages()
   );
@@ -39,7 +36,6 @@ export const usePersistedConsoleState = ({
     getInitialVisibility()
   );
 
-  // Persist console messages to localStorage whenever they change
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -54,7 +50,6 @@ export const usePersistedConsoleState = ({
     }
   }, [consoleMessages]);
 
-  // Persist console visibility to localStorage whenever it changes
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -69,7 +64,6 @@ export const usePersistedConsoleState = ({
     }
   }, [showConsole]);
 
-  // Clear persisted console state
   const clearPersistedConsoleState = useCallback(() => {
     try {
       localStorage.removeItem(CONSOLE_MESSAGES_STORAGE_KEY);

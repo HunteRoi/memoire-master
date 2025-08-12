@@ -64,7 +64,6 @@ const Fallback: FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
       >
         <CardContent sx={{ p: 4 }}>
           <Stack spacing={3} alignItems='center'>
-            {/* Error Icon */}
             <Box
               sx={{
                 width: 80,
@@ -84,7 +83,6 @@ const Fallback: FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
               />
             </Box>
 
-            {/* Main Error Message */}
             <Stack spacing={1} alignItems='center' textAlign='center'>
               <Typography variant='h4' color='error' gutterBottom>
                 Oops! Something went wrong
@@ -99,7 +97,6 @@ const Fallback: FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
               </Typography>
             </Stack>
 
-            {/* Error Type Chip */}
             <Chip
               icon={<BugReport />}
               label={error.name || 'Application Error'}
@@ -107,7 +104,6 @@ const Fallback: FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
               variant='outlined'
             />
 
-            {/* Action Buttons */}
             <Stack direction='row' spacing={2}>
               <Button
                 variant='contained'
@@ -127,7 +123,6 @@ const Fallback: FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
               </Button>
             </Stack>
 
-            {/* Collapsible Error Details */}
             <Collapse in={showDetails} sx={{ width: '100%' }}>
               <Card variant='outlined' sx={{ mt: 2 }}>
                 <CardContent>
@@ -213,7 +208,6 @@ const Fallback: FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
               </Card>
             </Collapse>
 
-            {/* Footer Help Text */}
             <Typography
               variant='caption'
               color='text.secondary'

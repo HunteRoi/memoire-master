@@ -87,7 +87,6 @@ export const RobotSelectionContent = forwardRef<
         setConfirmDialogOpen(true);
       }
     }
-    // If robot is already connected, let the page handle navigation
   };
 
   const navigateLeft = () => {

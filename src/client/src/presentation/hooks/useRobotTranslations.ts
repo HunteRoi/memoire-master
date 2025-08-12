@@ -14,11 +14,9 @@ export const useRobotTranslations = () => {
 
   const translateFeedbackMessage = useCallback(
     (messageKey: string, messageParams?: Record<string, any>): string => {
-      // If the message is already a translation key, translate it
       if (messageKey.startsWith('robot.mockMessages.')) {
         return t(messageKey, messageKey, messageParams);
       }
-      // Otherwise, return as is (for backwards compatibility)
       return messageKey;
     },
     [t]

@@ -33,7 +33,6 @@ export class Container {
     this._robotsConfigurationRepository =
       new FileSystemRobotsConfigurationRepository(this.logger);
 
-    // USE CASES
     this._manageRobots = new ManageRobots(
       this._robotsConfigurationRepository,
       this.logger

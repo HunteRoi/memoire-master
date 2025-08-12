@@ -43,18 +43,10 @@ export const LanguageSelector: FC = () => {
 
   const handleLanguageChange = async (languageCode: string) => {
     try {
-      // Change i18n language first for immediate effect
       await i18n.changeLanguage(languageCode);
-
-      // Update global app state
       setLanguage(languageCode);
-
-      // Persist the selection
       localStorage.setItem('pucklab-language', languageCode);
-
-      // Close the dropdown
       handleClose();
-
       console.log('Language changed to:', languageCode);
     } catch (error) {
       console.error('Failed to change language:', error);

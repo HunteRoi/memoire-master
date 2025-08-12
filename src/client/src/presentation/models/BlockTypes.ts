@@ -27,7 +27,6 @@ export interface BlockCategory {
   blocks: Block[];
 }
 
-// Block categories with translation keys
 export const blockCategoryIds = [
   'movement',
   'sound',
@@ -35,7 +34,6 @@ export const blockCategoryIds = [
   'sensors',
 ] as const;
 
-// Movement blocks
 export const movementBlocks: Block[] = [
   {
     id: 'move_forward',
@@ -161,7 +159,6 @@ export const movementBlocks: Block[] = [
   },
 ];
 
-// Sound blocks
 export const soundBlocks: Block[] = [
   {
     id: 'play_beep',
@@ -243,7 +240,6 @@ export const soundBlocks: Block[] = [
   },
 ];
 
-// LED blocks
 export const ledBlocks: Block[] = [
   {
     id: 'set_led_color',
@@ -388,7 +384,6 @@ export const ledBlocks: Block[] = [
   },
 ];
 
-// Sensor blocks
 export const sensorBlocks: Block[] = [
   {
     id: 'floor_sensor',
@@ -450,96 +445,6 @@ export const sensorBlocks: Block[] = [
   },
 ];
 
-// Control blocks
-export const controlBlocks: Block[] = [
-  {
-    id: 'wait',
-    name: 'Wait',
-    icon: '⏰',
-    category: 'control',
-    description: 'Wait for a specified duration',
-    parameters: [
-      {
-        id: 'duration',
-        name: 'Duration',
-        type: 'number',
-        defaultValue: 1,
-        min: 0.1,
-        max: 10,
-        unit: 'sec',
-      },
-    ],
-    pythonTemplate: 'time.sleep({{duration}})',
-  },
-  {
-    id: 'if_condition',
-    name: 'If Condition',
-    icon: '❓',
-    category: 'control',
-    description: 'Execute blocks based on condition',
-    parameters: [
-      {
-        id: 'condition',
-        name: 'Condition',
-        type: 'select',
-        defaultValue: 'floor_white',
-        options: [
-          { value: 'floor_white', label: 'Floor is White' },
-          { value: 'floor_black', label: 'Floor is Black' },
-          { value: 'distance_less', label: 'Distance < Value' },
-          { value: 'distance_greater', label: 'Distance > Value' },
-          { value: 'light_bright', label: 'Light is Bright' },
-          { value: 'light_dark', label: 'Light is Dark' },
-        ],
-      },
-    ],
-    pythonTemplate: 'if robot.{{condition}}():',
-  },
-  {
-    id: 'while_loop',
-    name: 'While Loop',
-    icon: '🔄',
-    category: 'control',
-    description: 'Repeat blocks while condition is true',
-    parameters: [
-      {
-        id: 'condition',
-        name: 'Condition',
-        type: 'select',
-        defaultValue: 'floor_black',
-        options: [
-          { value: 'floor_white', label: 'Floor is White' },
-          { value: 'floor_black', label: 'Floor is Black' },
-          { value: 'distance_less', label: 'Distance < Value' },
-          { value: 'distance_greater', label: 'Distance > Value' },
-          { value: 'light_bright', label: 'Light is Bright' },
-          { value: 'light_dark', label: 'Light is Dark' },
-        ],
-      },
-    ],
-    pythonTemplate: 'while robot.{{condition}}():',
-  },
-  {
-    id: 'repeat',
-    name: 'Repeat',
-    icon: '🔁',
-    category: 'control',
-    description: 'Repeat blocks a specific number of times',
-    parameters: [
-      {
-        id: 'times',
-        name: 'Times',
-        type: 'number',
-        defaultValue: 3,
-        min: 1,
-        max: 100,
-      },
-    ],
-    pythonTemplate: 'for i in range({{times}}):',
-  },
-];
-
-// All block IDs for type safety
 export const blockIds = [
   ...movementBlocks.map(b => b.id),
   ...soundBlocks.map(b => b.id),
@@ -547,7 +452,6 @@ export const blockIds = [
   ...sensorBlocks.map(b => b.id),
 ] as const;
 
-// Block categories with their blocks (using translation keys)
 export const blockCategories: BlockCategory[] = [
   {
     id: 'movement',

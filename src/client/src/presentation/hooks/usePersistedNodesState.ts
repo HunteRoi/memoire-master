@@ -5,7 +5,6 @@ const NODES_STORAGE_KEY = 'visual-programming-nodes';
 const EDGES_STORAGE_KEY = 'visual-programming-edges';
 
 export const usePersistedNodesState = () => {
-  // Load initial state from localStorage
   const getInitialNodes = (): Node[] => {
     try {
       const saved = localStorage.getItem(NODES_STORAGE_KEY);
@@ -24,11 +23,9 @@ export const usePersistedNodesState = () => {
     }
   };
 
-  // Use React Flow hooks with persisted initial values
   const [nodes, setNodes, onNodesChange] = useNodesState(getInitialNodes());
   const [edges, setEdges, onEdgesChange] = useEdgesState(getInitialEdges());
 
-  // Persist nodes to localStorage whenever they change
   useEffect(() => {
     try {
       localStorage.setItem(NODES_STORAGE_KEY, JSON.stringify(nodes));
@@ -37,7 +34,6 @@ export const usePersistedNodesState = () => {
     }
   }, [nodes]);
 
-  // Persist edges to localStorage whenever they change
   useEffect(() => {
     try {
       localStorage.setItem(EDGES_STORAGE_KEY, JSON.stringify(edges));
@@ -46,7 +42,6 @@ export const usePersistedNodesState = () => {
     }
   }, [edges]);
 
-  // Clear persisted state
   const clearPersistedState = useCallback(() => {
     try {
       localStorage.removeItem(NODES_STORAGE_KEY);

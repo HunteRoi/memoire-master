@@ -12,8 +12,7 @@ import { RobotHealthMonitor } from './robotHealthMonitor';
 import { RobotMessageHandler } from './robotMessageHandler';
 
 export class WebsocketRobotCommunicationService
-  implements RobotCommunicationService, Disposable
-{
+  implements RobotCommunicationService, Disposable {
   private connectionManager: RobotConnectionManager;
   private messageHandler: RobotMessageHandler;
   private healthMonitor: RobotHealthMonitor;
@@ -28,7 +27,6 @@ export class WebsocketRobotCommunicationService
   async connect(robot: Robot): Promise<Robot> {
     const result = await this.connectionManager.connect(robot);
 
-    // Setup message handling for the connected robot
     const connectedRobot = this.connectionManager.getConnectedRobot(robot);
     if (connectedRobot) {
       connectedRobot.websocket.onmessage = event => {
@@ -50,14 +48,12 @@ export class WebsocketRobotCommunicationService
         );
       };
 
-      // Send initial status message
       this.messageHandler.sendMessage(connectedRobot.websocket, {
         type: 'status',
         data: { status: 'connected', client: 'pucklab' },
         timestamp: Date.now(),
       });
 
-      // Start health monitoring if this is the first connected robot
       const allConnectedRobots = this.connectionManager.getAllConnectedRobots();
       if (allConnectedRobots.length === 1) {
         this.healthMonitor.startMonitoring(
@@ -76,7 +72,6 @@ export class WebsocketRobotCommunicationService
     const connectedRobot = this.connectionManager.getConnectedRobot(robot);
 
     if (connectedRobot) {
-      // Send disconnecting status message
       this.messageHandler.sendMessage(connectedRobot.websocket, {
         type: 'status',
         data: { status: 'disconnecting' },
@@ -86,7 +81,6 @@ export class WebsocketRobotCommunicationService
 
     const result = await this.connectionManager.disconnect(robot);
 
-    // Stop health monitoring if no robots are connected
     const allConnectedRobots = this.connectionManager.getAllConnectedRobots();
     if (allConnectedRobots.length === 0) {
       this.healthMonitor.stopMonitoring();
@@ -124,13 +118,10 @@ export class WebsocketRobotCommunicationService
 
     this.disposed = true;
 
-    // Stop health monitoring first
     this.healthMonitor.stopMonitoring();
 
-    // Dispose connection manager (which handles robot disconnections)
     await this.connectionManager.dispose();
 
-    // Clean up message handler if it has disposal logic
     if (
       'dispose' in this.messageHandler &&
       typeof this.messageHandler.dispose === 'function'
@@ -138,7 +129,6 @@ export class WebsocketRobotCommunicationService
       await this.messageHandler.dispose();
     }
 
-    // Clean up health monitor if it has disposal logic
     if (
       'dispose' in this.healthMonitor &&
       typeof this.healthMonitor.dispose === 'function'
@@ -147,17 +137,6 @@ export class WebsocketRobotCommunicationService
     }
   }
 
-  /**
-   * Legacy cleanup method for backward compatibility
-   * @deprecated Use dispose() instead
-   */
-  public cleanup(): void {
-    this.dispose().catch(error => {
-      this.logger.error('Error during service cleanup:', error);
-    });
-  }
-
-  // Feedback methods implementation
   subscribeToFeedback(robot: Robot, callback: RobotFeedbackCallback): void {
     const connectedRobot = this.connectionManager.getConnectedRobot(robot);
 

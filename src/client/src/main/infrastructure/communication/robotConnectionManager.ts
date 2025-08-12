@@ -191,7 +191,6 @@ export class RobotConnectionManager implements Disposable {
         resolve();
       };
 
-      // Add temporary close listener
       if ('on' in ws && typeof ws.on === 'function') {
         ws.on('close', onClose);
       } else {
@@ -210,7 +209,6 @@ export class RobotConnectionManager implements Disposable {
     if (connectedRobot) {
       connectedRobot.connected = false;
 
-      // Clear any remaining feedback callbacks to prevent memory leaks
       connectedRobot.feedbackCallback = undefined;
 
       this.connectedRobots.delete(robotKey);

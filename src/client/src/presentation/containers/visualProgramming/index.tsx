@@ -105,10 +105,8 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
     updateCode();
   }, [nodes, handleUpdateCode]);
 
-  // React Flow
   const { screenToFlowPosition } = useReactFlow();
   const onNodesChangeWithCodeUpdate: OnNodesChange = async changes => {
-    // Detect node deletions and add console messages
     changes.forEach(change => {
       if (change.type === 'remove') {
         const nodeToRemove = nodes.find(node => node.id === change.id);
@@ -153,7 +151,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           return;
         }
 
-        // Validate block data structure
         if (
           !blockData ||
           typeof blockData !== 'object' ||
@@ -165,13 +162,11 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           return;
         }
 
-        // Use ReactFlow's screenToFlowPosition for accurate positioning
         const position = screenToFlowPosition({
           x: event.clientX,
           y: event.clientY,
         });
 
-        // Get translated block name
         const translatedBlockName =
           blocksPanelLabels.blockNames[blockData.id] || blockData.name;
 
@@ -191,7 +186,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
 
         setNodes(n => [...n, newNode]);
 
-        // Auto-connect to the latest existing block (if any blocks exist)
         if (nodes.length > 0) {
           const latestNode = nodes[nodes.length - 1];
           const newEdge: Edge = {
@@ -205,7 +199,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           setEdges(edges => [...edges, newEdge]);
         }
 
-        // Add console message for successful block addition
         addConsoleMessage('info', 'visualProgramming.success.blockAdded', {
           blockId: blockData.id,
         });
@@ -248,13 +241,11 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
   const onBlockClick = useCallback(
     (blockData: any) => {
       try {
-        // Find a good position for the new block (centered with some randomization to avoid overlap)
         const baseX = 200 + Math.random() * 300; // Random X between 200-500
         const baseY = 100 + Math.random() * 200; // Random Y between 100-300
 
         const position = { x: baseX, y: baseY };
 
-        // Get translated block name
         const translatedBlockName =
           blocksPanelLabels.blockNames[blockData.id] || blockData.name;
 
@@ -274,7 +265,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
 
         setNodes(n => [...n, newNode]);
 
-        // Auto-connect to the latest existing block (if any blocks exist)
         if (nodes.length > 0) {
           const latestNode = nodes[nodes.length - 1];
           const newEdge: Edge = {
@@ -288,7 +278,6 @@ const VisualProgrammingFlow: FC<VisualProgrammingFlowProps> = ({
           setEdges(edges => [...edges, newEdge]);
         }
 
-        // Add console message for successful block addition
         addConsoleMessage('info', 'visualProgramming.success.blockAdded', {
           blockId: blockData.id,
         });

@@ -36,12 +36,10 @@ export const TutorialProvider: React.FC<TutorialProviderProps> = ({
 }) => {
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
 
-  // Debug localStorage state on mount
   useEffect(() => {
     console.debug('Tutorial provider initialized. LocalStorage state:', localStorage.getItem('seen_tutorials'));
   }, []);
 
-  // Check if user has seen a specific tutorial
   const hasSeenTutorial = useCallback((tutorialId: string): boolean => {
     try {
       const stored = localStorage.getItem('seen_tutorials');
@@ -58,7 +56,6 @@ export const TutorialProvider: React.FC<TutorialProviderProps> = ({
     }
   }, []);
 
-  // Mark tutorial as seen
   const markTutorialAsSeen = useCallback((tutorialId: string) => {
     try {
       const stored = localStorage.getItem('seen_tutorials') || '{}';

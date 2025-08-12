@@ -43,7 +43,6 @@ export const RobotSelection: FC = () => {
     if (robotConnected) {
       navigate('/mode-selection');
     } else {
-      // Delegate to container to show connection dialog
       robotSelectionContentRef.current?.handleEnterKey();
     }
   };

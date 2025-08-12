@@ -223,7 +223,6 @@ const RobotCardComponent: FC<RobotCardProps> = ({
   );
 };
 
-// Memoize the component with custom comparison function for better performance
 export const RobotCard = memo(RobotCardComponent, (prevProps, nextProps) => {
   return (
     prevProps.robot.id === nextProps.robot.id &&

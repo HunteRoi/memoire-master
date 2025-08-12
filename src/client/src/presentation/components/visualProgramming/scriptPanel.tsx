@@ -80,12 +80,10 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
 }) => {
   const { fitView, setCenter } = useReactFlow();
 
-  // Focus on the currently executing node
   useEffect(() => {
     if (currentlyExecutingNodeId) {
       const executingNode = nodes.find(node => node.id === currentlyExecutingNodeId);
       if (executingNode && executingNode.position) {
-        // Center the view on the executing node with smooth animation
         setCenter(
           executingNode.position.x + (executingNode.width || 150) / 2,
           executingNode.position.y + (executingNode.height || 40) / 2,
@@ -130,7 +128,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
               📝 {labels.title}
             </Typography>
 
-            {/* Execution Status Indicator */}
             {executionState && executionState !== 'idle' && (
               <Box
                 sx={{
@@ -175,12 +172,10 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
             )}
           </Box>
 
-          {/* Control Buttons */}
           <Box
             sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
             data-tutorial='execution-controls'
           >
-            {/* Settings Button */}
             <Tooltip title={labels.tooltips.settings}>
               <IconButton
                 data-tutorial='settings-button'
@@ -202,7 +197,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
               </IconButton>
             </Tooltip>
 
-            {/* Play/Pause Button */}
             <Tooltip title={labels.tooltips.playPause}>
               <span>
                 <IconButton
@@ -243,7 +237,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
               </span>
             </Tooltip>
 
-            {/* Stop Button */}
             <Tooltip title={labels.tooltips.stop}>
               <span>
                 <IconButton
@@ -279,7 +272,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
               </span>
             </Tooltip>
 
-            {/* Clear Script Button */}
             <Tooltip title={labels.tooltips.clear}>
               <IconButton
                 data-tutorial='clear-button'
@@ -300,7 +292,6 @@ export const ScriptPanel: FC<ScriptPanelProps> = ({
               </IconButton>
             </Tooltip>
 
-            {/* Python Code View Button */}
             <Tooltip title={labels.tooltips.viewCode}>
               <IconButton
                 data-tutorial='view-code-button'

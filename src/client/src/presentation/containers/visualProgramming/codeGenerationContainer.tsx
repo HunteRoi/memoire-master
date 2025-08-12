@@ -37,7 +37,6 @@ export const CodeGenerationContainer: React.FC<
 > = ({ children, nodes }) => {
   const { t } = useTranslation();
 
-  // Python code generation logic
   const generatePythonCode = useCallback(() => {
     if (nodes.length === 0) {
       const generatedComment = t(

@@ -37,7 +37,6 @@ const createMuiTheme = (appTheme: Theme) => {
       error: {
         main: appTheme.colors.error,
       },
-      // Add custom colors to the palette
       action: {
         hover: appTheme.colors.surface.primary,
       },

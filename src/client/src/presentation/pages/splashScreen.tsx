@@ -12,7 +12,6 @@ export const SplashScreen: FC = () => {
   const { isLoading, error } = useAppContext();
 
   useEffect(() => {
-    // Navigate when data loading is complete
     if (!isLoading && !error) {
       navigate('/theme-selection');
     }

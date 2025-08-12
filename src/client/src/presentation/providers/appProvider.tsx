@@ -88,7 +88,6 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const loadingRef = useRef({ robots: false, theme: false });
 
-  // Memoize robot transformation to prevent unnecessary recalculations
   const transformRobotData = useCallback(
     (robotConfigs: RobotConfig[]): Robot[] => {
       return robotConfigs

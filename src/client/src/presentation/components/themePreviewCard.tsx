@@ -46,7 +46,6 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
         onClick={() => onSelect(themeOption.type)}
         sx={{ height: '100%', position: 'relative' }}
       >
-        {/* Selection Radio */}
         <Box
           sx={{
             position: 'absolute',
@@ -61,7 +60,6 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
           />
         </Box>
 
-        {/* Theme Preview Area */}
         <Box
           sx={{
             backgroundColor: themeOption.theme.colors.background.default,
@@ -75,7 +73,6 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             gap: 2,
           }}
         >
-          {/* Color Swatches */}
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Box
               sx={{
@@ -109,7 +106,6 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             />
           </Box>
 
-          {/* Typography Preview */}
           <Typography
             variant='h4'
             sx={{
@@ -121,7 +117,6 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
           </Typography>
         </Box>
 
-        {/* Theme Details */}
         <CardContent
           sx={{
             backgroundColor: themeOption.theme.colors.background.paper,

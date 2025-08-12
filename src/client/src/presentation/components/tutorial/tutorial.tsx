@@ -47,7 +47,6 @@ export const Tutorial: FC<TutorialProps> = ({
   const isLastStep = currentStep === steps.length - 1;
   const isFirstStep = currentStep === 0;
 
-  // Update target element and positioning
   const updateTarget = useCallback(() => {
     if (!currentTutorialStep?.targetSelector) {
       setAnchorEl(null);
@@ -71,13 +70,11 @@ export const Tutorial: FC<TutorialProps> = ({
   // biome-ignore lint/correctness/useExhaustiveDependencies: we want to trigger the useEffect when the step changes
   useEffect(() => {
     if (isOpen) {
-      // Small delay to ensure DOM is ready
       const timer = setTimeout(updateTarget, 100);
       return () => clearTimeout(timer);
     }
   }, [isOpen, currentStep, updateTarget]);
 
-  // Handle navigation
   const handleNext = useCallback(() => {
     if (isLastStep) {
       onComplete();
@@ -94,7 +91,6 @@ export const Tutorial: FC<TutorialProps> = ({
     onClose();
   }, [onClose]);
 
-  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 

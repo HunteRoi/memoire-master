@@ -121,7 +121,6 @@ export const useRobotManagement = () => {
         const result =
           await window.electronAPI.robotConnection.connectToRobot(robot);
         if (isSuccess(result)) {
-          // Clean up test connection
           await window.electronAPI.robotConnection.disconnectFromRobot(
             result.data
           );
@@ -136,15 +135,11 @@ export const useRobotManagement = () => {
     []
   );
 
-  // Memoize the return object to prevent unnecessary re-renders
   return useMemo(
     () => ({
-      // State
       robots,
       selectedRobot,
       isRobotConnected,
-
-      // Actions
       handleDeleteRobot,
       handleSaveRobot,
       handleConnectToRobot,

@@ -106,27 +106,29 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
             const { x, y } = state.modifiersData.popperOffsets || { x: 0, y: 0 };
             const { width: popperWidth, height: popperHeight } = state.rects.popper;
             const { width: viewportWidth, height: viewportHeight } = document.documentElement.getBoundingClientRect();
-            
+
             // Ensure tooltip doesn't go outside viewport bounds
             let adjustedX = x;
             let adjustedY = y;
-            
-            // Check horizontal bounds
             if (x < 20) {
               adjustedX = 20;
             } else if (x + popperWidth > viewportWidth - 20) {
               adjustedX = viewportWidth - popperWidth - 20;
             }
-            
-            // Check vertical bounds  
+
             if (y < 20) {
               adjustedY = 20;
             } else if (y + popperHeight > viewportHeight - 20) {
               adjustedY = viewportHeight - popperHeight - 20;
             }
-            
-            state.modifiersData.popperOffsets.x = adjustedX;
-            state.modifiersData.popperOffsets.y = adjustedY;
+
+            if (state.modifiersData.popperOffsets) {
+              state.modifiersData.popperOffsets.x = adjustedX;
+              state.modifiersData.popperOffsets.y = adjustedY;
+            }
+            else {
+              state.modifiersData.popperOffsets = { x: adjustedX, y: adjustedY };
+            }
           },
         },
       ]}
@@ -151,8 +153,8 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
           border: `2px solid ${theme.palette.primary.main}`,
         }}
       >
-        <CardContent 
-          sx={{ 
+        <CardContent
+          sx={{
             pb: 1,
             p: {
               xs: 2,
@@ -160,7 +162,6 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
             },
           }}
         >
-          {/* Header */}
           <Box
             sx={{
               display: 'flex',
@@ -172,8 +173,8 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
           >
             <Typography
               variant='h6'
-              sx={{ 
-                fontWeight: 600, 
+              sx={{
+                fontWeight: 600,
                 color: 'primary.main',
                 fontSize: {
                   xs: '1.1rem',
@@ -190,7 +191,6 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
             </IconButton>
           </Box>
 
-          {/* Progress */}
           <Box sx={{ mb: 2 }}>
             <Typography
               variant='caption'
@@ -213,11 +213,10 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
             />
           </Box>
 
-          {/* Content */}
-          <Typography 
-            variant='body2' 
-            sx={{ 
-              mb: 3, 
+          <Typography
+            variant='body2'
+            sx={{
+              mb: 3,
               lineHeight: 1.6,
               fontSize: {
                 xs: '0.875rem',
@@ -229,7 +228,6 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
             {content}
           </Typography>
 
-          {/* Navigation */}
           <Box
             sx={{
               display: 'flex',
@@ -245,9 +243,9 @@ export const TutorialTooltip: FC<TutorialTooltipProps> = ({
               },
             }}
           >
-            <Box 
-              sx={{ 
-                display: 'flex', 
+            <Box
+              sx={{
+                display: 'flex',
                 gap: {
                   xs: 0.5,
                   sm: 1,

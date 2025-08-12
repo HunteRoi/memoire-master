@@ -10,12 +10,10 @@ import type { Logger } from '../../../main/application/interfaces/logger';
  * @class IpcValidator
  */
 export class IpcValidator {
-  // Maximum lengths for security
   private readonly MAX_STRING_LENGTH = 1000;
   private readonly MAX_COMMAND_LENGTH = 500;
   private readonly MAX_ROBOT_ID_LENGTH = 255;
 
-  // Allowed IPC channels - whitelist approach
   private readonly ALLOWED_CHANNELS = new Set([
     'manageRobots:loadRobots',
     'manageRobots:addRobot',
@@ -36,14 +34,13 @@ export class IpcValidator {
     'pythonCodeViewer:updateCode',
   ]);
 
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: Logger) { }
 
   private sanitizeString(input: string, maxLength: number = 1000): string {
     if (typeof input !== 'string') {
       return '';
     }
 
-    // Keep only printable ASCII characters
     return input
       .trim()
       .slice(0, maxLength)
@@ -82,7 +79,7 @@ export class IpcValidator {
       );
     }
 
-    const sanitizedIp = this.sanitizeString(robotInput.ipAddress, 15); // IPv4 max length
+    const sanitizedIp = this.sanitizeString(robotInput.ipAddress, 15);
     if (sanitizedIp.length === 0) {
       throw new RobotValidationError(
         'Invalid robot configuration: ipAddress cannot be empty',
@@ -164,7 +161,6 @@ export class IpcValidator {
       );
     }
 
-    // Basic command injection prevention - check for suspicious patterns
     const dangerousPatterns = [
       /[;&|`$()]/g, // Command injection characters
       /\.\./g, // Directory traversal

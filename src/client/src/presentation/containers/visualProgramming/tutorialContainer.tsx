@@ -30,7 +30,6 @@ export const VisualProgrammingTutorialContainer: React.FC<
     [t]
   );
 
-  // Translate tutorial steps
   const translatedSteps = useMemo(
     () =>
       tutorialSteps.map(step => ({

@@ -83,7 +83,6 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
           },
         }}
       >
-        {/* Header */}
         <Box
           sx={{
             display: 'flex',
@@ -95,8 +94,8 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
         >
           <Typography
             variant='h5'
-            sx={{ 
-              fontWeight: 600, 
+            sx={{
+              fontWeight: 600,
               color: 'primary.main',
               fontSize: {
                 xs: '1.25rem',
@@ -113,7 +112,6 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
           </IconButton>
         </Box>
 
-        {/* Progress */}
         <Box sx={{ mb: 2 }}>
           <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
             {labels.step} {currentStep + 1} {labels.of} {totalSteps}
@@ -128,10 +126,9 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
           />
         </Box>
 
-        {/* Content */}
-        <Typography 
-          variant='h6' 
-          sx={{ 
+        <Typography
+          variant='h6'
+          sx={{
             mb: 1,
             fontSize: {
               xs: '1.1rem',
@@ -142,9 +139,9 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
         >
           {title}
         </Typography>
-        <Typography 
-          variant='body1' 
-          sx={{ 
+        <Typography
+          variant='body1'
+          sx={{
             mb: 3,
             fontSize: {
               xs: '0.875rem',
@@ -157,7 +154,6 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
           {content}
         </Typography>
 
-        {/* Navigation */}
         <Box
           sx={{
             display: 'flex',
@@ -173,8 +169,8 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
             },
           }}
         >
-          <Button 
-            variant='text' 
+          <Button
+            variant='text'
             onClick={onClose}
             sx={{
               fontSize: {
@@ -186,9 +182,9 @@ export const TutorialFallback: FC<TutorialFallbackProps> = ({
             {labels.skip}
           </Button>
 
-          <Box 
-            sx={{ 
-              display: 'flex', 
+          <Box
+            sx={{
+              display: 'flex',
               gap: {
                 xs: 0.5,
                 sm: 1,

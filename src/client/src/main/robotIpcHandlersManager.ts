@@ -38,14 +38,12 @@ export class RobotIpcHandlersManager {
       ...args: T
     ): Promise<R | { success: false; error: string; code?: string }> => {
       try {
-        // Channel validation
         if (!RobotIpcHandlersManager.validator.isChannelAllowed(channel)) {
           throw new Error(`Unauthorized IPC channel: ${channel}`);
         }
 
         const senderId = event.sender.id.toString();
 
-        // Log IPC call
         RobotIpcHandlersManager.logger.debug('IPC call received', {
           channel,
           senderId,
@@ -81,7 +79,6 @@ export class RobotIpcHandlersManager {
             RobotIpcHandlersManager.validator.validateRobotConfig(robotConfig);
           const robotKey = `${validatedRobotConfig.ipAddress}:${validatedRobotConfig.port}`;
 
-          // Create feedback callback that sends data to renderer
           const feedbackCallback = (feedback: RobotFeedback) => {
             const mainWindow =
               BrowserWindow.getFocusedWindow() ||
@@ -91,7 +88,6 @@ export class RobotIpcHandlersManager {
             }
           };
 
-          // Subscribe to feedback through the use case
           const result =
             await RobotIpcHandlersManager.container.robotConnection.subscribeToFeedback(
               validatedRobotConfig,
@@ -145,7 +141,6 @@ export class RobotIpcHandlersManager {
             RobotIpcHandlersManager.validator.validateRobotConfig(robotConfig);
           const robotKey = `${validatedRobotConfig.ipAddress}:${validatedRobotConfig.port}`;
 
-          // Unsubscribe from feedback through the use case
           const result =
             await RobotIpcHandlersManager.container.robotConnection.unsubscribeFromFeedback(
               validatedRobotConfig
@@ -226,7 +221,6 @@ export class RobotIpcHandlersManager {
               );
 
             if (isSuccess(result)) {
-              // Send command execution feedback
               const feedback: RobotFeedback = {
                 robotId: robot.id,
                 timestamp: Date.now(),
@@ -250,7 +244,6 @@ export class RobotIpcHandlersManager {
               throw new Error(result.error);
             }
           } catch (error) {
-            // Send error feedback
             const feedback: RobotFeedback = {
               robotId: robot.id,
               timestamp: Date.now(),

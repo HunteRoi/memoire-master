@@ -73,7 +73,6 @@ export class RobotMessageHandler {
     try {
       const response: RobotResponse = JSON.parse(data.toString());
 
-      // Send feedback for all message types
       const feedback: RobotFeedback = {
         robotId: connectedRobot.robot.id,
         timestamp: Date.now(),
@@ -86,7 +85,6 @@ export class RobotMessageHandler {
         connectedRobot.feedbackCallback(feedback);
       }
 
-      // Handle specific message types
       switch (response.type) {
         case 'pong':
           if (onPong) {
@@ -95,10 +93,8 @@ export class RobotMessageHandler {
           break;
         case 'status':
         case 'error':
-          // Feedback already sent above
           break;
         default:
-          // Handle other message types
           break;
       }
     } catch (error) {
@@ -138,7 +134,6 @@ export class RobotMessageHandler {
     connectedRobots: Map<string, ConnectedRobot>,
     feedback: RobotFeedback
   ): void {
-    // Find the robot by ID and send feedback if callback exists
     for (const connectedRobot of connectedRobots.values()) {
       if (
         connectedRobot.robot.id === feedback.robotId &&
@@ -159,7 +154,6 @@ export class RobotMessageHandler {
       `📻 [WebSocket] Subscribed to feedback for robot ${connectedRobot.robot.id}`
     );
 
-    // Send initial connection feedback
     callback({
       robotId: connectedRobot.robot.id,
       timestamp: Date.now(),
@@ -176,7 +170,6 @@ export class RobotMessageHandler {
   }
 
   async dispose(): Promise<void> {
-    // Clean up any resources if needed
     console.log('RobotMessageHandler disposed');
   }
 }

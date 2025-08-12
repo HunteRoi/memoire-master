@@ -45,7 +45,6 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
 }) => {
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = useCallback(() => {
     consoleEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
@@ -55,25 +54,20 @@ export const ConsolePanel: FC<ConsolePanelProps> = ({
     scrollToBottom();
   }, [consoleMessages, scrollToBottom]);
 
-  // Set up robot feedback subscription
   useEffect(() => {
     if (!hasConnectedRobot || !selectedRobotData) {
       return;
     }
 
-    // Set up feedback listener
     window.electronAPI.robotConnection.onFeedback(onFeedback);
 
-    // Subscribe to feedback for the selected robot
     window.electronAPI.robotConnection.subscribeToFeedback({
       ipAddress: selectedRobotData.ipAddress,
       port: selectedRobotData.port,
     });
 
-    // Add initial connection message
     onAddMessage('info', labels.messages.connecting);
 
-    // Cleanup function
     return () => {
       if (selectedRobotData) {
         window.electronAPI.robotConnection.unsubscribeFromFeedback({

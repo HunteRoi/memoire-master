@@ -9,7 +9,7 @@ export class RobotHealthMonitor {
   constructor(
     private messageHandler: RobotMessageHandler,
     private logger: Logger
-  ) {}
+  ) { }
 
   startMonitoring(connectedRobots: Map<string, ConnectedRobot>): void {
     if (this.pingTimer) {
@@ -56,13 +56,11 @@ export class RobotHealthMonitor {
 
         this.messageHandler.sendMessage(connectedRobot.websocket, pingMessage);
 
-        // Check for ping timeout
         if (now - connectedRobot.lastPing > this.pingInterval * 2) {
           this.logger.warn(
             `⚠️ Robot ${connectedRobot.robot.id} ping timeout, disconnecting...`
           );
 
-          // Terminate connection asynchronously
           setTimeout(() => {
             connectedRobot.websocket.terminate();
           }, 0);
