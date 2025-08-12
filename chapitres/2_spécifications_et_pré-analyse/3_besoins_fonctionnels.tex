@@ -1,0 +1,33 @@
+\subsection{Besoins fonctionnels} \label{sec:specs}
+
+Afin de répondre à ces exigences, les éléments suivants constituent les spécifications fonctionnelles de l’interface à développer.
+
+\subsubsection{Communication en temps réel} 
+Le robot doit pouvoir échanger des données en continu avec le poste de contrôle : réception des commandes et envoi des retours d’état.  
+La notion de temps réel est ici définie comme la capacité à réagir dans un délai suffisamment court pour que l’interaction utilisateur-robot reste fluide et fiable.
+
+Cela signifie évidemment que celui-ci doit être connecté à un réseau afin de communiquer avec le poste de contrôle.
+
+\subsubsection{Identification visuelle}
+Chaque robot doit pouvoir être identifié facilement, notamment par le biais de la configuration personnalisable de ses \acrshort{led}s (couleurs distinctes entre les robots).
+
+\subsubsection{Configuration flexible des déplacements}
+L’utilisateur doit pouvoir ajuster les déplacements selon plusieurs paramètres :
+\begin{itemize}
+    \item Trois niveaux de vitesse ;
+    \item Une définition de la distance à parcourir ;
+    \item Deux modes de déplacement : aléatoire ou pré-programmé.
+\end{itemize}
+
+\subsubsection{Gestion des obstacles}
+Le comportement face aux obstacles doit être adapté au mode de déplacement :
+\begin{itemize}
+    \item En mode aléatoire : le robot ajuste sa trajectoire pour les contourner.
+    \item En mode préprogrammé : le robot s’arrête et signale un blocage.
+\end{itemize}
+
+\subsubsection{Détection de couleurs}
+Le robot doit pouvoir reconnaître différentes zones colorées au sol (par exemple, repérer les zones blanches sur fond noir), en s’appuyant sur ses capteurs infrarouges ou sa caméra.
+
+\subsubsection{Retour visuel et sonore}
+Des retours visuels (\acrshort{led}s de différentes couleurs) et sonores doivent indiquer l’état du robot : par exemple, rouge pour un blocage, vert pour la réussite d’une tâche, etc.

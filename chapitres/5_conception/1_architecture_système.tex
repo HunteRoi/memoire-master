@@ -1,7 +1,7 @@
 \subsection{Architecture système} \label{sec:architecture_système}
 
 \subsubsection{Critères décisionnels}
-La détermination de l'architecture à adopter repose sur plusieurs critères essentiels dictés par les contraintes du projet :
+La détermination de l'architecture à adopter repose sur les critères essentiels suivants dictés par les contraintes du projet.
 \begin{itemize}
     \item \textbf{Ressources matérielles limitées} : le Raspberry Pi Zero embarqué dans les robots e-puck2 présente des capacités de calcul réduites.
     
@@ -78,5 +78,5 @@ Elle limite la dépendance à des services externes, reste compatible avec une a
 Ses limites résident principalement dans la centralisation de la charge sur le poste client, l’absence de persistance native, et la forte dépendance à une connexion réseau stable.
 
 \subsubsection{Choix de l'architecture}
-Le choix retenu s'est posé sur l'architecture \textbf{hybride à sandbox} car elle présente le meilleur compris entre pertinence, complexité la préparation à l'évolutivité multi-robot.
-Ses avantaghes garantissent une sécurité d'utilisation, une modularité dans le développement et une voie claire vers des améliorations futures (autant pour en mitiger les inconvénients que pour en améliorer le produit fini - voir \autoref{sec:axes_amelioration}).
+Le choix retenu s'est posé sur l'architecture \textbf{hybride à sandbox} car elle présente le meilleur compris entre pertinence, complexité et préparation à l'évolutivité multi-robot.
+Ses avantages garantissent une sécurité d'utilisation, une modularité dans le développement et une voie claire vers des améliorations futures (autant pour en mitiger les inconvénients que pour en améliorer le produit fini - voir \autoref{sec:axes_amelioration}).

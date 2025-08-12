@@ -5,7 +5,7 @@ Il est conçu pour l'enseignement et la recherche en robotique, offrant une plat
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{.//figures//e-puck2_image3D.png}
+    \includegraphics[width=0.5\linewidth]{figures//e-puck2_image3D.png}
     \caption{Représentation 3D d'un e-puck2 par GCTronic \autocite{noauthor_gctronic_nodate}}
     \label{fig:epuck2_3Dschema}
 \end{figure}
@@ -53,7 +53,7 @@ Le robot prend en charge plusieurs modes de communication :
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{.//figures//epuck2_rangeandbearing_epuck_omnivisioncam3_highlighted.jpg}
+    \includegraphics[width=0.75\linewidth]{figures//epuck2_rangeandbearing_epuck_omnivisioncam3_highlighted.jpg}
     \caption{Photo d'un e-puck2 avec les extensions attachées}
     \label{fig:epuck2_unamur}
 \end{figure}
@@ -75,7 +75,7 @@ Il permet de fournir des capacités de vision omnidirectionnelle à l'e-puck.
 \paragraph{Batterie externe supplémentaire}
 Une batterie d'extension de 1.5 Ah a été ajoutée au système afin d'augmenter la capacité totale du robot.
 
-\subsubsection{Conclusion}
+\subsubsection{Présentation générale du projet}
 Grâce à ses capteurs variés et ses différentes extensions matérielles, l'e-puck2 constitue une plateforme robotique polyvalente adaptée à l'enseignement et à la recherche.
 Ces améliorations font de l'e-puck2 un robot modulaire, capable d'évoluer en fonction des besoins pédagogiques et des applications robotiques avancées.
 
@@ -85,3 +85,30 @@ C'est pourquoi ce mémoire vise à créer une interface intuitive adaptable à d
     \item \textbf{Enfants (6-12 ans)} : une interface ludique et intuitive ;
     \item \textbf{Adolescents (13-18 ans)} : un environnement plus structuré, intégrant des concepts avancés comme la logique algorithmique et la programmation robotique.
 \end{enumerate}
+
+L’objectif d'une telle interface est de permettre la réalisation de trois grandes catégories d’actions, définies comme suit par le Dr. Tuci.  
+
+\begin{itemize}
+    \item \textbf{Navigation} : exécution de parcours pré-définis, comme la traversée d’un labyrinthe.
+    
+    \item \textbf{Exploration} : recherche et identification d’éléments spécifiques dans l’environnement, tels que des dalles de couleur.
+    
+    \item \textbf{Observation de comportements collectifs}\footnote{Comme indiqué en \autoref{sec:limites}, cette catégorie dépasse le cadre du présent projet, en raison des contraintes liées à la coordination multi-robots. Elle est néanmoins présentée ici afin d’offrir une vision d’ensemble et de justifier certains choix techniques facilitant son intégration future.} : mise en relation de plusieurs robots afin d’observer des interactions coordonnées, par exemple dans un scénario de type "jeu du chat et de la souris".
+\end{itemize}
+
+Les trois paragraphes suivants détaillent chacune de ces catégories d'actions.
+
+\paragraph{Navigation}
+Ce mode consiste à guider le robot selon un parcours précis, comme traverser un labyrinthe ou se déplacer dans une arène délimitée.
+Les déplacements peuvent être générés de manière aléatoire ou suivre un itinéraire prédéfini.
+Ce mode nécessite la maîtrise des systèmes de locomotion du robot : moteurs, roues et capteurs de proximité pour la détection d’obstacles.
+
+\paragraph{Exploration}
+Dans ce mode, le robot doit rechercher des éléments visuellement identifiables, comme des zones blanches sur un sol noir.
+Les trajectoires peuvent également être aléatoires ou définies à l’avance.
+Ce mode implique des exigences matérielles plus importantes : capteurs infrarouges au sol, caméra embarquée, et traitement d’image pour l’identification des couleurs.
+
+\paragraph{Observation de comportements collectifs}
+Ce mode vise à faire interagir plusieurs robots simultanément, par exemple à travers des scénarios collaboratifs ou compétitifs.
+Un robot peut être programmé pour suivre ou fuir un autre, selon des règles simples.
+Cela implique la gestion de la communication inter-robots et la coordination de leurs actions dans un espace partagé.

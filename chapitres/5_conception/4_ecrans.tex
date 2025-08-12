@@ -2,13 +2,13 @@
 
 \subsubsection{Présentation de la version initiale}
 Une première version des maquettes a été réalisée avec une interface volontairement sobre, minimaliste et orientée vers un public adolescent ou adulte. 
-Les écrans issus de cette itération sont consultables à la \autoref{sec:écrans_v1}.
+Les écrans issus de cette itération sont consultables en \autoref{sec:annexes_b}.
 
 Cette version permettait notamment à l'utilisateur de choisir son environnement de développement : programmation par blocs (\acrshort{vpl}) ou écriture directe de code dans une interface de type \acrfull{ide}. 
 Un écran de configuration était également proposé afin de faciliter la connexion à un robot e-puck2.
 
 \subsubsection{Présentation de la version améliorée}
-La version finale s'inspire de la structure de la première, tout en introduisant plusieurs ajustements pour mieux correspondre aux attentes et besoins du public visé.
+La version finale (en mode classique uniquement, dans les \autoref{fig:ui_screens-1} et \autoref{fig:ui_screens-2}) s'inspire de la structure de la première, tout en introduisant plusieurs ajustements pour mieux correspondre aux attentes et besoins du public visé.
 
 Afin de rendre l'application plus inclusive et attrayante, tant du point de vue du genre que de l'âge, plusieurs éléments ont été adaptés : une sélection de thèmes visuels plus variée (dont des palettes de couleurs plus mixtes comme le rose, des styles "Lego Mindset", "futuriste", ou encore "aventure"), une différenciation des écrans selon deux tranches d'âge (6–12 ans et 13–18 ans), et la possibilité de masquer l'affichage du code source derrière un bouton dédié, permettant ainsi de réduire la charge cognitive pour les plus jeunes.
 
@@ -24,7 +24,68 @@ Enfin, les \textbf{blocs verts} désignent les \textit{actions répétées et r�
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{.//figures//flow.png}
+    \includegraphics[width=0.75\linewidth]{figures//flow.png}
     \caption{\label{fig:app_usage_flow} Flux d'utilisation de l'application}
 \end{figure}
 
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures//Theme Choice.png}
+        \caption{\label{fig:choice_theme} Écran - Choix du Thème}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures//Age Choice.png}
+        \caption{\label{fig:choice_age} Écran - Choix de l'Âge}
+    \end{subfigure}
+
+
+    \caption{Aperçu 1 des principaux écrans de l'application PuckLab}
+    \label{fig:ui_screens-1}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures//Robot Choice.png}
+        \caption{\label{fig:choice_robot} Écran - Choix du Robot}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures//Mode Choice.png}
+        \caption{\label{fig:choice_mode} Écran - Choix du Mode}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures//VPL.png}
+        \caption{\label{fig:vpl} Écran - VPL}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures//VPL advanced.png}
+        \caption{\label{fig:vpl_advanced} Écran - VPL après 12 ans}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures//Settings.png}
+        \caption{\label{fig:settings} Écran - Paramètres}
+    \end{subfigure}
+
+    \caption{Aperçu 2 des principaux écrans de l'application PuckLab}
+    \label{fig:ui_screens-2}
+\end{figure}

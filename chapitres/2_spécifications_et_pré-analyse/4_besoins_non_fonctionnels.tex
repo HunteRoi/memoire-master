@@ -2,11 +2,11 @@
 
 Dans le cadre de ce projet, plusieurs exigences non-fonctionnelles ont été identifiées afin d’assurer la qualité, l’accessibilité et la maintenabilité du prototype, conformément aux recommandations du Dr. Tuci.
 
-\paragraph{Compatibilité et portabilité}
+\subsubsection{Compatibilité et portabilité}
 Le prototype devra être exécutable localement sur les principaux systèmes d’exploitation (Windows, macOS, Linux), sans nécessiter une configuration du poste de travail. 
 Cette exigence vise à favoriser l’adoption par les personnes autorisées à manipuler les robots, en garantissant une mise en route rapide et un déploiement sans contraintes techniques spécifiques.
 
-\paragraph{Sécurité}
+\subsubsection{Sécurité}
 Dans un souci de sécurité et de contrôle d’accès, l’application ne sera pas disponible à l'installation sur tous les terminaux personnels des utilisateurs.
 
 Elle sera conçue pour fonctionner localement sur des machines spécifiques gérées par des responsables habilités (e.g. des ordinateurs disponibles dans le laboratoire de robotique de l'UNamur).
@@ -14,7 +14,7 @@ Cela permet d’éviter une utilisation non-supervisée des robots et d’assure
 
 Cependant, le code source sera disponible sous licence MIT de manière totalement libre afin de favoriser son utilisation dans d'autres universités, et de profiter de la communauté open-source pour recevoir des conseils et des améliorations selon les besoins qui peuvent émerger dans le futur.
 
-\paragraph{Ergonomie et accessibilité}
+\subsubsection{Ergonomie et accessibilité}
 L’interface doit être pensée pour convenir à un public jeune.
 Pour ce faire, plusieurs éléments d’ergonomie doivent être considérés :
 \begin{itemize}
@@ -25,13 +25,13 @@ Pour ce faire, plusieurs éléments d’ergonomie doivent être considérés :
     \item Navigation intuitive par l’usage de blocs colorés, d’animations et d’un langage visuel accessible ;
 \end{itemize}
 
-\paragraph{Maintenabilité et évolutivité}
+\subsubsection{Maintenabilité et évolutivité}
 D'un point de vue "expérience développeur", le système devra être conçu de manière modulaire afin d'en faciliter les futures extensions, comme l’ajout de nouveaux blocs de programmation ou de nouveaux modes.
 Une architecture claire et découplée permettra une évolution progressive sans devoir réécrire l’ensemble du code source.
 
-\paragraph{Fiabilité}
+\subsubsection{Fiabilité}
 Le prototype devra offrir un comportement robuste lors de l’exécution de scripts, en assurant notamment une bonne gestion des erreurs (affichage d’un code couleur, messages d’erreur explicites, retour d’état via la console).
 
-\paragraph{Performance}
+\subsubsection{Performance}
 Sans pour autant avoir été quantifié, les actions demandées par l’utilisateur (exécution de blocs, génération de code, envoi au robot) devront être traitées avec des délais raisonnables. 
 Le temps de réponse doit simplement rester fluide pour ne pas altérer l’expérience utilisateur.

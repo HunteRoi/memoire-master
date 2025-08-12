@@ -1,0 +1,72 @@
+\subsection{Retours d'utilisateurs non-avertis}
+Afin d'évaluer l'intuitivité du logiciel, celui-ci a été mis à l'épreuve dans des conditions proches de la réalité par quatre personnes issues du public cible élargi : Basyl (12 ans), Élyne (16 ans), Adeline (19 ans), Lénaïk (21 ans) et Julien (31 ans).
+
+Bien que deux de ces participants soient légèrement en dehors de la tranche d'âge visée, les essais menés par ce groupe de \textit{beta-testeurs} ont permis de recueillir des informations précieuses sur la perception de l'application et sur la manière dont certaines actions paraissent plus ou moins naturelles face à un environnement nouveau.
+
+\subsubsection{Déroulement d'un essai}
+Le protocole de test a été identique pour chaque participant.
+
+La personne était isolée dans une pièce avec un ordinateur, le programme ouvert sur la page d'accueil, et un guide présent.  
+En raison de contraintes matérielles et réglementaires — impossibilité de déplacer les robots e-puck2 hors du laboratoire et nécessité d'autorisations pour l'accueil de personnes extérieures — les essais ont été réalisés dans un salon ordinaire, sans accès ni au robot réel ni à Internet.  
+Une version "de développement", où la connexion aux robots est simulée par une couche d'interactions fictives, a donc été utilisée.
+
+Après une brève introduction contextuelle et la mention de certains bugs connus, chaque participant devait :
+\begin{enumerate}
+    \item se connecter à un robot ;
+    \item programmer une séquence d'actions : avancer, tourner à gauche, jouer un son, puis modifier la couleur des \acrshort{led}s.
+\end{enumerate}
+
+Aucune assistance supplémentaire n'a été fournie pendant l'exécution afin d'observer la manière dont l'utilisateur découvre et s'approprie l'interface.
+
+\subsubsection{Synthèse des retours}
+Les tests préliminaires ont permis d’identifier un ensemble de problèmes et pistes d’amélioration dont certains ont déjà fait l'objet de modifications dans le prototype.  
+La \autoref{tab:retours_utilisateurs} en présente une synthèse.  
+Les éléments marqués d'un symbole \textcolor{green}{\faCheckSquare} indiquent les points ayant été corrigés ou implémentés dans la version actuelle.
+
+\begin{longtable}{p{3cm}p{9cm}p{3cm}}
+\caption{Synthèse des remarques issues des tests utilisateurs non-avertis}
+\label{tab:retours_utilisateurs} \\
+\toprule
+\textbf{Catégorie} & \textbf{Description} & \textbf{Impact / Priorité} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Catégorie} & \textbf{Description} & \textbf{Impact / Priorité} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\textit{Suite en page suivante}} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Champ IP modifiable entraînant un dysfonctionnement critique. & Élevée \\
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Bouton \texttt{Back} mal géré lors de la suppression de l'âge (\texttt{event.stopPropagation} manquant). & Moyenne \\
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Gestion de l'âge : impossibilité de supprimer complètement la valeur avant réinitialisation automatique à \texttt{1} après un délai. & Moyenne \\
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Console non persistante entre les pages et non toujours dépliable ; absence de défilement automatique. & Moyenne \\
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Problèmes de traduction : noms des thèmes incorrects, titre de la page de code généré, messages console partiellement non traduits. & Moyenne \\
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Langue non modifiable dans les paramètres. & Moyenne \\
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Manque de \textit{padding/margin} en bas de l’écran. & Faible \\
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Bloc manquant : \og arrêter la mélodie \fg{}. & Moyenne \\
+\textbf{Bug} & \textcolor{green}{\faCheckSquare} Exécution des blocs basée sur l’ordre d’ajout et non sur les liens logiques entre nœuds. & Élevée \\
+
+\textbf{Amélioration} & \textcolor{green}{\faCheckSquare} Ajout rapide de blocs par simple clic, en plus du glisser-déposer. & Moyenne \\
+\textbf{Amélioration} & \textcolor{green}{\faCheckSquare} Améliorer la visibilité des boutons (thème sombre) et ajouter des \textit{tooltips}. & Moyenne \\
+\textbf{Amélioration} & \textcolor{green}{\faCheckSquare} Bouton dédié pour vider le \textit{canvas}. & Moyenne \\
+\textbf{Amélioration} & \textcolor{green}{\faCheckSquare} Déconnexion en cliquant sur un robot déjà connecté. & Moyenne \\
+\textbf{Amélioration} & \textcolor{green}{\faCheckSquare} Poignées latérales supplémentaires sur les blocs. & Faible \\
+\textbf{Amélioration} & \textcolor{green}{\faCheckSquare} Tutoriel interactif pour la prise en main du scripting. & Élevée \\
+\textbf{Amélioration} & \textcolor{green}{\faCheckSquare} Recentrage automatique sur le bloc en cours d’exécution. & Moyenne \\
+\textbf{Amélioration} & Permettre d'exécuter les blocs de manière circulaire. & Élevée \\
+\textbf{Amélioration} & Exécution parallèle des blocs et paramétrage des blocs. & Élevée \\
+\textbf{Amélioration} & Duplication des blocs via \texttt{Ctrl+C / Ctrl+V}. & Moyenne \\
+\textbf{Amélioration} & Suppression multiple de blocs dans ReactFlow. & Moyenne \\
+\textbf{Amélioration} & Insertion automatique d’un bloc lorsqu’il est déposé sur une liaison. & Moyenne \\
+
+\end{longtable}
+
+\paragraph{Synthèse}
+Ces résultats mettent en évidence un ensemble de correctifs techniques à apporter en priorité (bugs critiques et incohérences de traduction), mais aussi des pistes d’amélioration visant à optimiser l’expérience utilisateur et l’accessibilité des fonctionnalités.  
+Une partie significative de ces correctifs et améliorations a déjà été intégrée au prototype, comme en témoignent les points cochés dans le \autoref{tab:retours_utilisateurs}. 
+Les modifications apportées concernent notamment la stabilité de la connexion, la gestion de l’âge, la persistance et l’ergonomie de la console, l’ajout d’un tutoriel interactif, ainsi que diverses optimisations de l’interface et de l’expérience de programmation.

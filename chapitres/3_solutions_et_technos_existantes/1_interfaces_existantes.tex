@@ -1,24 +1,21 @@
 \subsection{Interfaces existantes} \label{sec:interfaces_existantes}
 
-Pour déterminer la forme la plus adaptée que pourrait prendre l’application, il convient d’examiner les usages actuels du robot e-puck2.  
-Cette analyse permettra non seulement d’identifier les actions rendues possibles par les interfaces existantes, mais aussi de mettre en lumière leurs limites, afin de proposer une approche alternative mieux alignée avec les besoins exprimés en \autoref{sec:specs}.
-
 \subsubsection{Monitor3.0}
 \textbf{Monitor3.0} est une interface développée en C++ permettant de se connecter à l'e-puck2 via Bluetooth \autocite{noauthor_e-puck2monitor_2024} ou par Wi-Fi.
 Elle offre plusieurs fonctionnalités-clés :
 \begin{enumerate}
-    \item Accès au flux vidéo de la caméra avec possibilité de modifier les paramètres d'enregistrement.  
-    \item Contrôle des \acrshort{led}s.  
-    \item Diffusion de sons pré-enregistrés via le haut-parleur intégré.  
-    \item Déplacement du robot dans diverses directions.  
-    \item Captation des sons ambiants par les trois microphones.  
-    \item Analyse des données fournies par l'\acrshort{imu}.
-    \item Consultation des relevés des capteurs infrarouges et du capteur de lumière ambiante.  
+    \item accès au flux vidéo de la caméra avec possibilité de modifier les paramètres d'enregistrement,  
+    \item contrôle des \acrshort{led}s,  
+    \item diffusion de sons pré-enregistrés via le haut-parleur intégré,  
+    \item déplacement du robot dans diverses directions,  
+    \item captation des sons ambiants par les trois microphones,  
+    \item analyse des données fournies par l'\acrshort{imu} et
+    \item consultation des relevés des capteurs infrarouges et du capteur de lumière ambiante.  
 \end{enumerate}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{.//figures//Monitor3.0.png}
+    \includegraphics[width=0.6\linewidth]{figures//Monitor3.0.png}
     \caption{Capture d'écran de l'interface PC \autocite{gctronic_e-puck2_nodate}}
     \label{fig:screenshot_monitor_interface}
 \end{figure}
@@ -40,4 +37,4 @@ Cela révèle ainsi un besoin caché du domaine, d'autant plus que les jeunes g�
 \subsubsection{Conclusion}
 Bien que Monitor3.0 offre un premier niveau d'interaction avec l'e-puck2, son manque de flexibilité et son incompatibilité avec les extensions récentes soulignent la nécessité d'une solution plus évolutive et adaptée aux besoins actuels.
 
-De plus, l'absence d'applications mobiles dédiées souligne une opportunité à explorer dans le futur, offrant une piste intéressante pour le développement d'outils plus accessibles et adaptés aux usages actuels.
+De plus, l'absence d'applications mobiles dédiées représente une opportunité à explorer dans le futur, une piste intéressante pour le développement d'outils plus accessibles et adaptés aux usages actuels.

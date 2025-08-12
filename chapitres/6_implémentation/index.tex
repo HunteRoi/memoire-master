@@ -1,12 +1,12 @@
 \section{Implémentation}
 
-L’implémentation du logiciel a été réalisée par étapes, en suivant les \textit{job stories} décrites dans la \autoref{sec:features} ainsi que les tâches planifiées dans le diagramme de Gantt présenté en \autoref{fig:gantt_prototype_phases_detailed}.
+L’implémentation du logiciel a été réalisée par étapes, en suivant les \textit{job stories} décrites en \autoref{sec:annexes_b}, ainsi que les tâches planifiées dans le diagramme de Gantt présenté en \autoref{fig:gantt_prototype_phases_detailed} (\autoref{sec:méthodologie}).
 
 La \autoref{fig:structure_interactions} illustre l’architecture logicielle globale ainsi que les interactions entre les deux projets (client et robot).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{.//figures//implementation-schema.png}
+    \includegraphics[width=1\linewidth]{figures//implementation-schema.png}
     \caption{\label{fig:structure_interactions} Structure et interactions des codebases}
 \end{figure}
 
@@ -19,6 +19,9 @@ En effet, Electron repose sur une séparation stricte entre le \textit{main proc
 Ces deux processus ne pouvant pas interagir directement, un pont de communication a été mis en place via un \textit{context bridge}, étendant l’objet global $Window$ pour exposer une API sécurisée entre les deux contextes.
 
 Une fois cette structure maîtrisée, le développement de l’interface a pu se poursuivre de manière fluide.
+Les figures ci-dessous en sont le résultat.
+
+% TODO: AJOUTER SCREENSHOTS ICI
 
 \subsection{Développement du firmware embarqué (robot)}
 

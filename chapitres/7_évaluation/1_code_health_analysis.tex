@@ -1,14 +1,14 @@
 \subsection{Analyse de santé du code}
-L'analyse de la santé du code a été réalisée via l'outil \textbf{CodeScene} sur la période du 5 mai 2025 au 8 août 2025. 
-Le projet \textbf{PuckLab} totalise 21\,250 lignes de code réparties sur 120 fichiers, pour un seul développeur actif et 44 commits effectués durant la période de développement.
+L'analyse de la santé du code a été réalisée via l'outil \textbf{CodeScene} sur la période du 5 mai 2025 au 12 août 2025. 
+Le projet \textbf{PuckLab} totalise 25\,549 lignes de code réparties sur 160 fichiers, pour un seul développeur actif et 93 commits effectués durant la période de développement.
 
 Aucun risque actif n’a été identifié (voir la \autoref{fig:codescene_distribution}) et la tendance globale est stable, avec des scores de santé du code très élevés (voir la \autoref{fig:codescene_scores}).
-Le \autoref{tab:codescene_thresholds} disponible en \autoref{sec:codescene} donne les interprétations des scores de santé de CodeScene.
+Le \autoref{tab:codescene_thresholds} disponible en \autoref{sec:annexes_c} donne les interprétations des scores de santé de CodeScene.
 
 \begin{figure}[H]
   \centering
-
-  \begin{subfigure}[b]{0.48\linewidth}
+\makebox[\linewidth][c]{
+  \begin{subfigure}{0.49\linewidth}
     \centering
     \begin{tikzpicture}
       \begin{axis}[
@@ -34,8 +34,8 @@ Le \autoref{tab:codescene_thresholds} disponible en \autoref{sec:codescene} donn
         tick align=outside,
         tick pos=left,
       ]
-        \addplot+[fill=green!70, draw=green!60!black]  coordinates {(75,3)};
-        \addplot+[fill=yellow!80!orange, draw=orange!60!black] coordinates {(25,2)};
+        \addplot+[fill=green!70, draw=green!60!black]  coordinates {(68,3)};
+        \addplot+[fill=yellow!80!orange, draw=orange!60!black] coordinates {(32,2)};
         \addplot+[fill=red!70,   draw=red!60!black]   coordinates {(0,1)};
 
         \node[anchor=west, font=\footnotesize] at (axis cs:2,3) {Santé optimale};
@@ -43,11 +43,12 @@ Le \autoref{tab:codescene_thresholds} disponible en \autoref{sec:codescene} donn
         \node[anchor=west, font=\footnotesize] at (axis cs:2,1) {Code problématique};
       \end{axis}
     \end{tikzpicture}
-    \subcaption{Répartition de la santé du code}
-    \label{fig:codescene_distribution}
+    \subcaption{\label{fig:codescene_distribution} Répartition de la santé du code}
   \end{subfigure}
+
   \hfill
-  \begin{subfigure}[b]{0.48\linewidth}
+
+  \begin{subfigure}{0.49\linewidth}
     \centering
     \begin{tikzpicture}
       \begin{axis}[
@@ -69,30 +70,28 @@ Le \autoref{tab:codescene_thresholds} disponible en \autoref{sec:codescene} donn
         ymajorgrids=true
       ]
         \addplot[fill=blue!70, draw=blue!60!black] coordinates {
-          (Hotspot, 9.3)
+          (Hotspot, 8.5)
           (Moyenne, 9.3)
-          (Pire, 8.2)
+          (Pire, 7.0)
         };
       \end{axis}
     \end{tikzpicture}
-    \subcaption{Scores Code Health}
-    \label{fig:codescene_scores}
+    \subcaption{\label{fig:codescene_scores} Scores Code Health}
   \end{subfigure}
+  }
 
-  \caption{Synthèse CodeScene : répartition et scores}
-  \label{fig:codescene_side_by_side}
+  \caption{\label{fig:codescene_report}Synthèse CodeScene : répartition et scores}
 \end{figure}
 
 \paragraph{Analyse synthétique}
 Ces résultats indiquent un projet \textbf{hautement maintenable}, avec :
 \begin{itemize}
-    \item 75\% du code classé sain et aucun segment en zone rouge ;
-    \item des scores homogènes autour de 9/10, y compris pour le pire fichier ;
+    \item 68\% du code classé sain et aucun segment en zone rouge ;
+    \item des scores homogènes autour de 8/10, y compris pour le pire fichier ;
     \item une stabilité sur la période sans dégradation de la qualité.
 \end{itemize}
 
 La métrique \textit{"pire composant"} correspond au score de santé le plus bas relevé dans l’ensemble du code.
-Dans le cas présent, ce score est de \textbf{8,2/10}, ce qui reste largement dans la plage considérée comme \textit{saine} par CodeScene (7 à 10).
-Il est resté stable sur toute la période de développement, sans signe de dégradation.
+Dans le cas présent, ce score est de \textbf{7.0/10}, ce qui reste dans la plage considérée comme \textit{saine} par CodeScene (7 à 10).
 De plus, la base de code ne contient aucune portion marquée comme \textit{non saine} (rouge) et aucun risque actif identifié.
 Ainsi, même le composant le moins bien noté présente un niveau de qualité et de maintenabilité élevé, illustrant la solidité globale de l’architecture et des pratiques mises en œuvre.
