@@ -111,6 +111,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             sx={{
               color: themeOption.theme.colors.primary.main,
               fontWeight: 'bold',
+              fontFamily: themeOption.theme.fonts.primary,
             }}
           >
             Aa
@@ -131,6 +132,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             sx={{
               color: themeOption.theme.colors.primary.main,
               fontWeight: 'bold',
+              fontFamily: themeOption.theme.fonts.primary,
             }}
           >
             {labels.themeName}
@@ -139,6 +141,7 @@ export const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             variant='body2'
             sx={{
               color: themeOption.theme.colors.text.secondary,
+              fontFamily: themeOption.theme.fonts.secondary,
             }}
           >
             {labels.themeDescription}

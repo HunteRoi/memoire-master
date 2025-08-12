@@ -11,6 +11,12 @@ export type ThemeOption = {
   theme: Theme;
 };
 
+export interface ThemeFonts {
+  primary: string;
+  secondary: string;
+  monospace: string;
+}
+
 export interface ThemeColors {
   primary: {
     main: string;
@@ -48,7 +54,8 @@ export interface ThemeColors {
 export class Theme {
   constructor(
     public readonly type: ThemeType,
-    public readonly colors: ThemeColors
+    public readonly colors: ThemeColors,
+    public readonly fonts: ThemeFonts
   ) {}
 
   static createClassic(): Theme {
@@ -84,6 +91,10 @@ export class Theme {
       success: '#2e7d32',
       warning: '#f57c00',
       error: '#d32f2f',
+    }, {
+      primary: '"Inter", "Roboto", "Helvetica Neue", sans-serif',
+      secondary: '"Inter", "Roboto", "Helvetica Neue", sans-serif',
+      monospace: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
     });
   }
 
@@ -120,6 +131,10 @@ export class Theme {
       success: '#4caf50',
       warning: '#ffb74d',
       error: '#f44336',
+    }, {
+      primary: '"JetBrains Mono", "Fira Code", "SF Mono", "Consolas", monospace',
+      secondary: '"Source Code Pro", "Menlo", "Monaco", monospace',
+      monospace: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
     });
   }
 
@@ -156,6 +171,10 @@ export class Theme {
       success: '#388e3c',
       warning: '#f57c00',
       error: '#d32f2f',
+    }, {
+      primary: '"Poppins", "Nunito", "Open Sans", sans-serif',
+      secondary: '"Dancing Script", "Pacifico", cursive',
+      monospace: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
     });
   }
 
@@ -192,6 +211,10 @@ export class Theme {
       success: '#4caf50',
       warning: '#ff9800',
       error: '#d32f2f',
+    }, {
+      primary: '"Merriweather", "Crimson Text", "Georgia", serif',
+      secondary: '"Cabin", "Montserrat", sans-serif',
+      monospace: '"Ubuntu Mono", "Courier New", monospace',
     });
   }
 
@@ -228,6 +251,10 @@ export class Theme {
       success: '#388e3c',
       warning: '#f57c00',
       error: '#d32f2f',
+    }, {
+      primary: '"Comic Neue", "Quicksand", "Baloo 2", sans-serif',
+      secondary: '"Baloo 2", "Nunito", sans-serif',
+      monospace: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
     });
   }
 

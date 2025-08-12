@@ -13,8 +13,113 @@ import {
 import { useAppContext } from '../hooks/useAppContext';
 import { Theme, ThemeType } from '../models/Theme';
 
+// Import fonts for each theme
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '@fontsource/jetbrains-mono/600.css';
+import '@fontsource/fira-code/400.css';
+import '@fontsource/fira-code/500.css';
+import '@fontsource/fira-code/600.css';
+import '@fontsource/source-code-pro/400.css';
+import '@fontsource/source-code-pro/500.css';
+import '@fontsource/source-code-pro/600.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
+import '@fontsource/nunito/400.css';
+import '@fontsource/nunito/500.css';
+import '@fontsource/nunito/600.css';
+import '@fontsource/nunito/700.css';
+import '@fontsource/dancing-script/400.css';
+import '@fontsource/dancing-script/500.css';
+import '@fontsource/dancing-script/600.css';
+import '@fontsource/dancing-script/700.css';
+import '@fontsource/pacifico/400.css';
+import '@fontsource/merriweather/400.css';
+import '@fontsource/merriweather/700.css';
+import '@fontsource/crimson-text/400.css';
+import '@fontsource/crimson-text/600.css';
+import '@fontsource/cabin/400.css';
+import '@fontsource/cabin/500.css';
+import '@fontsource/cabin/600.css';
+import '@fontsource/montserrat/400.css';
+import '@fontsource/montserrat/500.css';
+import '@fontsource/montserrat/600.css';
+import '@fontsource/ubuntu-mono/400.css';
+import '@fontsource/ubuntu-mono/700.css';
+import '@fontsource/comic-neue/400.css';
+import '@fontsource/comic-neue/700.css';
+import '@fontsource/quicksand/400.css';
+import '@fontsource/quicksand/500.css';
+import '@fontsource/quicksand/600.css';
+import '@fontsource/baloo-2/400.css';
+import '@fontsource/baloo-2/500.css';
+import '@fontsource/baloo-2/600.css';
+import '@fontsource/baloo-2/700.css';
+import '@fontsource/open-sans/400.css';
+import '@fontsource/open-sans/500.css';
+import '@fontsource/open-sans/600.css';
+import '@fontsource/open-sans/700.css';
+
 const createMuiTheme = (appTheme: Theme) => {
   return createTheme({
+    typography: {
+      fontFamily: appTheme.fonts.primary,
+      h1: {
+        fontFamily: appTheme.fonts.primary,
+        fontWeight: 700,
+      },
+      h2: {
+        fontFamily: appTheme.fonts.primary,
+        fontWeight: 700,
+      },
+      h3: {
+        fontFamily: appTheme.fonts.primary,
+        fontWeight: 600,
+      },
+      h4: {
+        fontFamily: appTheme.fonts.primary,
+        fontWeight: 600,
+      },
+      h5: {
+        fontFamily: appTheme.fonts.primary,
+        fontWeight: 600,
+      },
+      h6: {
+        fontFamily: appTheme.fonts.primary,
+        fontWeight: 600,
+      },
+      subtitle1: {
+        fontFamily: appTheme.fonts.secondary,
+        fontWeight: 500,
+      },
+      subtitle2: {
+        fontFamily: appTheme.fonts.secondary,
+        fontWeight: 500,
+      },
+      body1: {
+        fontFamily: appTheme.fonts.primary,
+      },
+      body2: {
+        fontFamily: appTheme.fonts.primary,
+      },
+      button: {
+        fontFamily: appTheme.fonts.primary,
+        fontWeight: 600,
+        textTransform: 'none',
+      },
+      caption: {
+        fontFamily: appTheme.fonts.secondary,
+      },
+      overline: {
+        fontFamily: appTheme.fonts.secondary,
+      },
+    },
     palette: {
       mode: appTheme.type === ThemeType.DARK ? 'dark' : 'light',
       primary: appTheme.colors.primary,
