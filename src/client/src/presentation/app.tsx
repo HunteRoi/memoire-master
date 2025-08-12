@@ -18,6 +18,7 @@ import { ThemeSelection } from './pages/themeSelection';
 import { VisualProgramming } from './pages/visualProgramming';
 import { AppProvider } from './providers/appProvider';
 import { ThemeProvider } from './providers/themeProvider';
+import { TutorialProvider } from './contexts/tutorialContext';
 
 const AppRoutes: FC = () => {
   const { alert, language, setLanguage } = useAppContext();
@@ -72,7 +73,9 @@ const App: FC = () => {
   return (
     <AppProvider>
       <ThemeProvider>
-        <AppRoutes />
+        <TutorialProvider>
+          <AppRoutes />
+        </TutorialProvider>
       </ThemeProvider>
     </AppProvider>
   );

@@ -9,7 +9,7 @@ import { SettingsHeader } from '../components/settings/settingsHeader';
 import { SettingsTabs } from '../components/settings/settingsTabs';
 import { TabPanel } from '../components/tabPanel';
 import { AgeSelectionContent } from '../containers/ageSelectionContent';
-import { ClearCacheContent } from '../containers/clearCacheContent';
+import { ManageCacheContent } from '../containers/manageCacheContent';
 import { ModeSelectionContent } from '../containers/modeSelectionContent';
 import { RobotSelectionContent } from '../containers/robotSelectionContent';
 import { ThemeSelectionContent } from '../containers/themeSelectionContent';
@@ -39,12 +39,12 @@ export const Settings: FC = () => {
       content: <AgeSelectionContent />,
     },
     {
-      title: t('settings.sections.clearCache.title', 'Clear Cache'),
+      title: t('settings.sections.dataAndTutorial.title', 'Data & Tutorial'),
       description: t(
-        'settings.section.clearCache.description',
-        'Clear all stored data including your workspace, console history, and preferences. This action cannot be undone.'
+        'settings.sections.dataAndTutorial.description',
+        'Clear all stored data or reset tutorial progress. Use these options to start fresh or replay the tutorial.'
       ),
-      content: <ClearCacheContent />,
+      content: <ManageCacheContent />,
     },
   ];
 

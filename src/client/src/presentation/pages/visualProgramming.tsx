@@ -2,12 +2,12 @@ import { Box } from '@mui/material';
 import { type FC, useEffect } from 'react';
 
 import { VisualProgrammingContent } from '../containers/visualProgramming';
-import { TutorialProvider, useTutorial } from '../contexts/tutorialContext';
+import { useTutorial } from '../contexts/tutorialContext';
 import { useAppContext } from '../hooks/useAppContext';
 
-const VisualProgrammingWithTutorial: FC<{ isSimpleMode: boolean }> = ({
-  isSimpleMode,
-}) => {
+export const VisualProgramming: FC = () => {
+  const { userAge } = useAppContext();
+  const isSimpleMode = userAge?.isSimpleMode() ?? false;
   const { startTutorial, hasSeenTutorial } = useTutorial();
 
   useEffect(() => {
@@ -38,16 +38,5 @@ const VisualProgrammingWithTutorial: FC<{ isSimpleMode: boolean }> = ({
         <VisualProgrammingContent isSimpleMode={isSimpleMode} />
       </Box>
     </Box>
-  );
-};
-
-export const VisualProgramming: FC = () => {
-  const { userAge } = useAppContext();
-  const isSimpleMode = userAge?.isSimpleMode() ?? false;
-
-  return (
-    <TutorialProvider>
-      <VisualProgrammingWithTutorial isSimpleMode={isSimpleMode} />
-    </TutorialProvider>
   );
 };
