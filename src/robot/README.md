@@ -1,6 +1,6 @@
 # E-puck2 Robot WebSocket Server
 
-A clean architecture implementation of a WebSocket server for controlling e-puck2 robots, built with Python asyncio and following clean architecture principles.
+A clean architecture implementation of a WebSocket server for controlling e-puck2 robots, built with Python 2.7 for Pi Zero W compatibility and following clean architecture principles.
 
 ## Architecture
 

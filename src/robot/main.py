@@ -1,13 +1,11 @@
 """Main entry point for e-puck2 robot WebSocket server"""
 
-import asyncio
+import threading
 import logging
 import signal
 import sys
-from typing import Optional
-
-import websockets
-from websockets.server import WebSocketServerProtocol
+import json
+import time
 
 # Infrastructure layer
 from infrastructure.epuck2_motor import EPuck2Motor
@@ -23,29 +21,32 @@ from application.services import RobotService, WebSocketService
 class RobotServer:
     """Main robot server orchestrator"""
 
-    def __init__(self, host: str = None, port: int = 8765):
+    def __init__(self, host=None, port=8765):
         # Auto-detect host if not provided
         if host is None:
-            from config.network import get_default_host
-            host = get_default_host()
+            try:
+                from config.network import get_default_host
+                host = get_default_host()
+            except ImportError:
+                host = '192.168.0.121'  # Default for Pi
         self.host = host
         self.port = port
-        self.server: Optional[websockets.WebSocketServer] = None
-        self.robot_service: Optional[RobotService] = None
-        self.websocket_service: Optional[WebSocketService] = None
-        self.health_monitor: Optional[HealthMonitor] = None
+        self.robot_service = None
+        self.websocket_service = None
+        self.health_monitor = None
+        self.running = False
         self.logger = logging.getLogger(__name__)
 
         # Hardware components
-        self.motor: Optional[EPuck2Motor] = None
-        self.sensors: Optional[EPuck2Sensors] = None
-        self.leds: Optional[EPuck2LEDs] = None
-        self.audio: Optional[EPuck2Audio] = None
+        self.motor = None
+        self.sensors = None
+        self.leds = None
+        self.audio = None
 
-    async def initialize(self) -> bool:
+    def initialize(self):
         """Initialize all components"""
         try:
-            self.logger.info("🚀 Starting e-puck2 robot server initialization...")
+            self.logger.info("Starting e-puck2 robot server initialization...")
 
             # Initialize hardware components
             self.motor = EPuck2Motor()
@@ -54,21 +55,13 @@ class RobotServer:
             self.audio = EPuck2Audio()
 
             # Initialize hardware
-            hardware_init = await asyncio.gather(
-                self.motor.initialize(),
-                self.sensors.initialize(),
-                self.leds.initialize(),
-                self.audio.initialize(),
-                return_exceptions=True
-            )
-
-            # Check if all hardware initialized successfully
-            if not all(result is True for result in hardware_init):
-                self.logger.error("❌ Failed to initialize some hardware components")
-                for i, result in enumerate(hardware_init):
-                    if result is not True:
-                        component = ["motor", "sensors", "leds", "audio"][i]
-                        self.logger.error(f"❌ Failed to initialize {component}: {result}")
+            try:
+                self.motor.initialize()
+                self.sensors.initialize()
+                self.leds.initialize()
+                self.audio.initialize()
+            except Exception as e:
+                self.logger.error("Failed to initialize hardware: %s" % str(e))
                 return False
 
             # Initialize use cases
@@ -94,8 +87,8 @@ class RobotServer:
                 audio=self.audio
             )
 
-            if not await self.robot_service.initialize():
-                self.logger.error("❌ Failed to initialize robot service")
+            if not self.robot_service.initialize():
+                self.logger.error("Failed to initialize robot service")
                 return False
 
             # Initialize WebSocket service
@@ -104,14 +97,14 @@ class RobotServer:
             # Initialize health monitoring
             self.health_monitor = HealthMonitor(self.sensors, state_manager)
 
-            self.logger.info("✅ All components initialized successfully")
+            self.logger.info("All components initialized successfully")
             return True
 
         except Exception as e:
-            self.logger.error(f"❌ Fatal error during initialization: {e}")
+            self.logger.error("Fatal error during initialization: %s" % str(e))
             return False
 
-    async def start(self) -> None:
+    def start(self):
         """Start the WebSocket server"""
         if not self.websocket_service:
             raise RuntimeError("Server not initialized")
@@ -119,62 +112,61 @@ class RobotServer:
         try:
             # Start health monitoring in background
             if self.health_monitor:
-                asyncio.create_task(self.health_monitor.start_monitoring())
+                health_thread = threading.Thread(target=self.health_monitor.start_monitoring)
+                health_thread.daemon = True
+                health_thread.start()
 
             # Start WebSocket server
-            self.server = await websockets.serve(
-                self.websocket_service.handle_client,
-                self.host,
-                self.port,
-                ping_interval=20,
-                ping_timeout=10
-            )
+            self.websocket_service.start_server(self.host, self.port)
+            self.logger.info("Ready to accept WebSocket connections...")
 
-            self.logger.info(f"🌐 Robot WebSocket server started on ws://{self.host}:{self.port}/robot")
-            self.logger.info("📡 Ready to accept connections...")
-
-            # Wait for server to be closed
-            await self.server.wait_closed()
+            # Keep main thread alive
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                pass
 
         except Exception as e:
-            self.logger.error(f"❌ Server error: {e}")
+            self.logger.error("Server error: %s" % str(e))
             raise
 
-    async def shutdown(self) -> None:
+    def shutdown(self):
         """Shutdown the server gracefully"""
-        self.logger.info("🛑 Shutting down robot server...")
+        self.logger.info("Shutting down robot server...")
 
         try:
+            self.running = False
+            
             # Stop health monitoring
             if self.health_monitor:
                 self.health_monitor.stop_monitoring()
 
-            # Close WebSocket server
-            if self.server:
-                self.server.close()
-                await self.server.wait_closed()
+            # Stop WebSocket server
+            if self.websocket_service:
+                self.websocket_service.stop_server()
 
             # Cleanup robot service
             if self.robot_service:
-                await self.robot_service.cleanup()
+                self.robot_service.cleanup()
 
             # Cleanup hardware components
             if self.motor:
-                await self.motor.cleanup()
+                self.motor.cleanup()
             if self.sensors:
-                await self.sensors.cleanup()
+                self.sensors.cleanup()
             if self.leds:
-                await self.leds.cleanup()
+                self.leds.cleanup()
             if self.audio:
-                await self.audio.cleanup()
+                self.audio.cleanup()
 
-            self.logger.info("✅ Server shutdown complete")
+            self.logger.info("Server shutdown complete")
 
         except Exception as e:
-            self.logger.error(f"❌ Error during shutdown: {e}")
+            self.logger.error("Error during shutdown: %s" % str(e))
 
 
-async def main():
+def main():
     """Main entry point"""
     # Setup logging
     from config.logging import setup_logging, get_log_config
@@ -188,38 +180,38 @@ async def main():
     server = RobotServer()
 
     # Setup signal handlers for graceful shutdown
-    def signal_handler():
-        logger.info("📡 Received shutdown signal")
-        asyncio.create_task(server.shutdown())
+    def signal_handler(signum, frame):
+        logger.info("Received shutdown signal")
+        server.shutdown()
+        sys.exit(0)
 
     # Register signal handlers
     if sys.platform != "win32":
-        loop = asyncio.get_event_loop()
-        for sig in [signal.SIGTERM, signal.SIGINT]:
-            loop.add_signal_handler(sig, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+        signal.signal(signal.SIGINT, signal_handler)
 
     try:
         # Initialize and start server
-        if await server.initialize():
-            await server.start()
+        if server.initialize():
+            server.start()
         else:
-            logger.error("❌ Server initialization failed")
+            logger.error("Server initialization failed")
             sys.exit(1)
 
     except KeyboardInterrupt:
-        logger.info("📡 Received keyboard interrupt")
+        logger.info("Received keyboard interrupt")
+        server.shutdown()
     except Exception as e:
-        logger.error(f"❌ Unexpected error: {e}")
+        logger.error("Unexpected error: %s" % str(e))
+        server.shutdown()
         sys.exit(1)
-    finally:
-        await server.shutdown()
 
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        main()
     except KeyboardInterrupt:
-        print("\n🛑 Server stopped by user")
+        print("\nServer stopped by user")
     except Exception as e:
-        print(f"❌ Fatal error: {e}")
+        print("Fatal error: %s" % str(e))
         sys.exit(1)

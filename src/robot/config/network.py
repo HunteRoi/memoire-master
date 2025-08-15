@@ -2,10 +2,9 @@
 
 import socket
 import logging
-from typing import Optional
 
 
-def get_robot_ip() -> Optional[str]:
+def get_robot_ip():
     """Automatically detect the robot's IP address on 192.168.0.xxx network
 
     Returns:
@@ -16,7 +15,7 @@ def get_robot_ip() -> Optional[str]:
     try:
         # Get all network interfaces
         hostname = socket.gethostname()
-        logger.debug(f"🔍 Checking hostname: {hostname}")
+        logger.debug("Checking hostname: %s" % hostname)
 
         # Get IP addresses for this host
         ip_addresses = socket.gethostbyname_ex(hostname)[2]
@@ -24,7 +23,7 @@ def get_robot_ip() -> Optional[str]:
         # Look for 192.168.0.xxx addresses first
         for ip in ip_addresses:
             if ip.startswith("192.168.0."):
-                logger.info(f"🎯 Found robot IP on 192.168.0.x network: {ip}")
+                logger.info("Found robot IP on 192.168.0.x network: %s" % ip)
                 return ip
 
         # Fallback: look for any private network IP
@@ -32,26 +31,29 @@ def get_robot_ip() -> Optional[str]:
             if (ip.startswith("192.168.") or
                 ip.startswith("10.") or
                 ip.startswith("172.")):
-                logger.info(f"🎯 Found private network IP: {ip}")
+                logger.info("Found private network IP: %s" % ip)
                 return ip
 
         # If no private IPs found, try connecting to a remote address
         # to determine which interface would be used
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
             # Connect to a remote address (doesn't actually send data)
             s.connect(("8.8.8.8", 80))
             local_ip = s.getsockname()[0]
             if local_ip.startswith("192.168.0."):
-                logger.info(f"🎯 Detected robot IP via route test: {local_ip}")
+                logger.info("Detected robot IP via route test: %s" % local_ip)
                 return local_ip
+        finally:
+            s.close()
 
     except Exception as e:
-        logger.warning(f"⚠️  Could not auto-detect IP address: {e}")
+        logger.warning("Could not auto-detect IP address: %s" % str(e))
 
     return None
 
 
-def get_default_host() -> str:
+def get_default_host():
     """Get the default host address for the robot server
 
     Returns:

@@ -1,17 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """Simple startup script for the e-puck2 robot server"""
 
 import os
 import sys
 import argparse
-from pathlib import Path
 
 # Add the robot directory to Python path
-robot_dir = Path(__file__).parent.absolute()
-sys.path.insert(0, str(robot_dir))
+robot_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, robot_dir)
 
 from main import main
-import asyncio
 
 
 def parse_args():
@@ -77,16 +75,16 @@ if __name__ == "__main__":
     os.environ["ROBOT_PORT"] = str(args.port)
     os.environ["LOG_LEVEL"] = args.log_level
 
-    print("🤖 Starting E-puck2 Robot Server...")
-    print(f"📡 Server will listen on ws://{args.host}:{args.port}/robot")
-    print(f"📝 Log level: {args.log_level}")
+    print("Starting E-puck2 Robot Server...")
+    print("Server will listen on ws://%s:%d" % (args.host, args.port))
+    print("Log level: %s" % args.log_level)
     print("Press Ctrl+C to stop the server\n")
 
     try:
         # Run the main server
-        asyncio.run(main())
+        main()
     except KeyboardInterrupt:
-        print("\n🛑 Server stopped by user")
+        print("\nServer stopped by user")
     except Exception as e:
-        print(f"❌ Fatal error: {e}")
+        print("Fatal error: %s" % str(e))
         sys.exit(1)

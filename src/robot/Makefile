@@ -4,15 +4,15 @@
 
 # Install dependencies
 install:
-	pip install -r requirements.txt
+	pip2.7 install -r requirements.txt
 
 # Run the server
 run:
-	python start_server.py
+	python2.7 start_server.py
 
 # Run with debug logging
 debug:
-	LOG_LEVEL=DEBUG python start_server.py
+	LOG_LEVEL=DEBUG python2.7 start_server.py
 
 # Clean up generated files
 clean:
@@ -23,10 +23,9 @@ clean:
 
 # Run basic checks
 lint:
-	python -m py_compile main.py start_server.py
-	python -m py_compile domain/*.py
-	python -m py_compile application/*.py
-	python -m py_compile infrastructure/*.py
+	python2.7 -m py_compile main.py start_server.py websocket_server.py
+	python2.7 -m py_compile config/*.py
+	python2.7 -m py_compile application/*.py
 
 # Show help
 help:
