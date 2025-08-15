@@ -9,6 +9,24 @@ import argparse
 robot_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, robot_dir)
 
+# Load .env file if it exists
+try:
+    from dotenv import load_dotenv
+    # Load .env file from the same directory as this script
+    dotenv_path = os.path.join(robot_dir, '.env')
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path)
+        print("Loaded configuration from .env file")
+    else:
+        # Try to load from .env.example as fallback documentation
+        example_path = os.path.join(robot_dir, '.env.example')
+        if os.path.exists(example_path):
+            print("Found .env.example file - copy to .env to use custom configuration")
+except ImportError:
+    print("Warning: python-dotenv not installed - .env files will be ignored")
+except Exception as e:
+    print("Warning: Could not load .env file: %s" % str(e))
+
 from main import main
 
 

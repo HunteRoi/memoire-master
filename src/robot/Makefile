@@ -1,10 +1,26 @@
 # Simple Makefile for e-puck2 robot server
 
-.PHONY: install run clean test lint
+.PHONY: install run clean test lint config
 
 # Install dependencies
 install:
 	pip2.7 install -r requirements.txt
+
+# Create .env file from .env.example
+config:
+	@if [ ! -f .env ]; then \
+		cp .env.example .env; \
+		echo "Created .env file from .env.example"; \
+		echo "Edit .env file to customize your configuration"; \
+	else \
+		echo ".env file already exists - use 'make config-force' to overwrite"; \
+	fi
+
+# Force create .env file (overwrites existing)
+config-force:
+	cp .env.example .env
+	@echo "Created .env file from .env.example (overwrote existing)"
+	@echo "Edit .env file to customize your configuration"
 
 # Run the server
 run:
@@ -30,9 +46,11 @@ lint:
 # Show help
 help:
 	@echo "Available targets:"
-	@echo "  install  - Install Python dependencies"
-	@echo "  run      - Start the robot server"
-	@echo "  debug    - Start server with debug logging"
-	@echo "  clean    - Remove generated files"
-	@echo "  lint     - Basic syntax checking"
-	@echo "  help     - Show this help message"
+	@echo "  install      - Install Python dependencies"
+	@echo "  config       - Create .env file from .env.example"
+	@echo "  config-force - Create .env file (overwrites existing)"
+	@echo "  run          - Start the robot server"
+	@echo "  debug        - Start server with debug logging"
+	@echo "  clean        - Remove generated files"
+	@echo "  lint         - Basic syntax checking"
+	@echo "  help         - Show this help message"
