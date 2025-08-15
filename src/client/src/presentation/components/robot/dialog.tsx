@@ -177,7 +177,7 @@ export const RobotDialog: FC<RobotDialogProps> = ({
             variant='outlined'
             value={ip}
             onChange={onIpChange}
-            placeholder='192.168.1.121'
+            placeholder='192.168.0.121'
             sx={{ mb: 2 }}
             disabled={ipFieldDisabled}
           />

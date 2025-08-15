@@ -6,7 +6,7 @@ export class Robot {
   constructor(
     public readonly ipAddress: string,
     public readonly port: number
-  ) {}
+  ) { }
 
   get id(): string {
     const value = this.ipAddress.split('.');
@@ -90,7 +90,7 @@ export class RobotBuilder {
     const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
     if (!ipv4Regex.test(trimmedIp)) {
       errors.push(
-        'Invalid IP address format. Expected IPv4 format (e.g., 192.168.1.1)'
+        'Invalid IP address format. Expected IPv4 format (e.g., 192.168.0.1)'
       );
       return { isValid: false, errors };
     }

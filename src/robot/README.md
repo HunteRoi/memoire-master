@@ -60,7 +60,7 @@ This starts the WebSocket server on `ws://0.0.0.0:8765/robot`
 
 ```bash
 # Custom host and port
-python start_server.py --host 192.168.1.100 --port 9000
+python start_server.py --host 192.168.0.100 --port 9000
 
 # Debug logging
 python start_server.py --log-level DEBUG
@@ -236,7 +236,7 @@ print("Hello from e-puck2!")
 The robot maintains the following states with visual/audio feedback:
 
 - **IDLE**: Blue pulsing LED, A note (440Hz)
-- **CONNECTED**: Green solid LED, C# note (554Hz)  
+- **CONNECTED**: Green solid LED, C# note (554Hz)
 - **RUNNING**: Yellow blinking LED, E note (659Hz)
 - **PAUSED**: Orange pulsing LED
 - **ERROR**: Red fast blinking LED, error sound sequence

@@ -163,7 +163,7 @@ Complex object construction with validation:
 
 ```typescript
 const robotResult = Robot.create()
-  .setIpAddress('192.168.1.100')
+  .setIpAddress('192.168.0.100')
   .setPort(8765)
   .build();
 

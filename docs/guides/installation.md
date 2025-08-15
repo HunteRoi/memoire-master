@@ -145,9 +145,9 @@ This guide provides step-by-step instructions for setting up the PuckLab develop
    Edit `/etc/dhcpcd.conf` on the Pi-Puck:
    ```
    interface wlan0
-   static ip_address=192.168.1.100/24
-   static routers=192.168.1.1
-   static domain_name_servers=192.168.1.1 8.8.8.8
+   static ip_address=192.168.0.100/24
+   static routers=192.168.0.1
+   static domain_name_servers=192.168.0.1 8.8.8.8
    ```
 
 2. **Configure Hostname**:
@@ -216,7 +216,7 @@ The client will automatically discover robots on the local network, but you can 
 
 2. **Distribution**:
    - Windows: `.exe` installer
-   - macOS: `.dmg` disk image  
+   - macOS: `.dmg` disk image
    - Linux: `.deb` and `.rpm` packages
 
 ### Robot Server
