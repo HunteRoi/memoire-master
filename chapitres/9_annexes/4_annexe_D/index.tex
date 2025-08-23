@@ -1,9 +1,10 @@
 \section{Annexe - Références et compléments} \label{sec:annexes_d}
-Comme expliqué dans la bibliographie, ce document a puisé ses reformulations, corrections orthographiques, aides typographiques, etc. dans les \acrshort{ia} génératrices telles que ChatGPT.
+Comme expliqué dans la bibliographie, ce document ainsi que son prototype applicatif ont puisé leurs reformulations, corrections orthographiques, aides typographiques, etc. dans les \acrshort{ia} génératrices telles que ChatGPT, Copilot, Claude AI, ...
 
-Cette annexe vise à expliciter de manière entièrement transparente l'utilisation de cette technologie dans le cadre de la rédaction de ce document.
+Cette annexe vise à expliciter de manière entièrement transparente l'utilisation de cette technologie dans le cadre de la rédaction de ce document et du développement du prototype.
 
-\subsection{Informations complémentaires}
+\subsection{Rédaction du travail}
+\subsubsection{Informations complémentaires}
 L'\acrfull{ia} employée majoritairement dans ce travail est ChatGPT dans ses versions o3, GPT-4o, o4-mini et GPT-5.
 
 La méthodologie employée est de passer par un prompt qui donne un contexte clair et structuré et limite les dérives de cette intelligence artificielle générative tout en exploitant ses capacités.
@@ -12,7 +13,7 @@ Ainsi, la reformulation du texte, les manières de faire convoyer les idées et 
 
 Cependant, il est important de mentionner que tout le premier jet de ce travail a bel et bien été rédigé par moi-même (parfois de manière un peu confuse) et que toute recherche de références n'a jamais été réalisée par l'\acrshort{ia} sans être corroborée par des sources externes provenant de mes propres recherches.
 
-\subsection{Prompt employé}
+\subsubsection{Prompt employé}
 Mon premier prompt à l'intention de l'\acrshort{ia} a été formulé de manière à donner du contexte sur la tâche à réaliser et à limiter ce que l'\acrshort{ia} peut réaliser dans ce domaine.
 
 Voici un copier-coller du prompt original: 
@@ -54,10 +55,37 @@ L'encadré suivant donne un exemple de prompt que j'ai envoyé à ChatGPT pour p
 Tu peux commencer par m'aider à reformuler le paragraphe suivant: $[...]$.
 \end{boxitup}
 
-\subsection{Réponses attendues et points d'attention}
+\subsubsection{Réponses attendues et points d'attention}
 Il est toujours intéressant de voir comment l'\acrshort{ia} répond aux différentes demandes effectuées.
 Il est tout de même très important de vérifier ses dires (pour éviter de dénaturer le texte et les intentions que j'y ai glissées ou perdre le fil rouge de celui-ci), ses sources et informations quand elle juge adéquat d'en rajouter (toujours à la demande), etc.
 
 Aucun contenu de ce travail n'a été copié-collé sans être adapté, que cela soit un simple mot pour que la force de la phrase soit différente, ou la ponctuation, voire même parfois des répétitions de mots ou des formulations de phrases dont le ton ne s'accordait pas avec le reste du travail ou ma manière d'écrire.
 
 J'ai particulièrement été attentif à la manière dont l'\acrshort{ia} reformulait mes phrases et à tout ce qu'elle ajoutait à mes écrits quand je le lui demandais.
+
+\subsection{Développement du prototype applicatif}
+\subsubsection{Informations complémentaires}
+Les \acrshort{ia}s employées majoritairement dans ce travail sont Copilot dans sa version gratuite (qui emploie notamment ChatGPT) et Claude AI.
+
+La méthodologie employée est de permettre à l'outil de réaliser de l'autocomplétion selon le contexte, et de passer par un prompt pour réaliser des tâches fatiguantes (e.g. traduire un fichier complet, réaliser un \textit{refactoring} en divisant une grosse méthode publique en plus petites méthodes privées, etc.).
+
+Ainsi, le code employé est un mélange entre des inspirations personnelles et des \textit{snippets} de code de l'\acrshort{ia}.
+
+Cependant, il est important de mentionner qu'à part les fichiers de traduction ainsi que le composant qui décrit un robot e-puck2 en SVG, le code a bel et bien été rédigé par moi-même, boosté par ces outils.
+
+\subsubsection{Prompt employé}
+Les prompts employés pour Copilot et Claude AI sont assez contextualisés.
+Le plus concret est celui qui m'a permis de traduire les fichiers JSON en plusieurs langues:
+\begin{boxitup}
+Look at the JSON structure of the /locales/en.json file.
+Once you understand its structure, create other translation files for French (fr.json), Dutch (nl.json), German (de.json) and Italian (it.json) in the same folder.
+\end{boxitup}
+
+\subsubsection{Réponses attendues et points d'attention}
+Dans le cadre d'un développement informatique, il est d'autant plus important de vérifier que l'\acrshort{ia} ne prend pas des initiatives ou décisions insensées, car développer une usine à gaz pour faire une simple soustraction est inutile.
+
+L'esprit critique et la réflexion sont de mise dans un contexte tel que celui-ci.
+Il faut pouvoir remettre en question ses propres décisions mais également vérifier que l'outil employé ne déborde pas dans ses modifications du code.
+
+J'ai particulièrement été attentif à la manière dont l'\acrshort{ia} utilisait les méthodes disponibles pour éviter la duplication.
+J'ai aussi été très pointilleux sur les noms de variable, fonctions et classes qu'elle pouvait générer ainsi que la taille des fichiers pour éviter de submerger le développeur \autocites{mark_seemann_fractal_2021}{mark_seemann_code_2021}.
