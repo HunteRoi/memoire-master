@@ -17,6 +17,7 @@ export class WebsocketRobotCommunicationService
   private messageHandler: RobotMessageHandler;
   private healthMonitor: RobotHealthMonitor;
   private disposed = false;
+  private statusUpdateCallback?: (robotId: string, batteryData: any) => void;
 
   constructor(private logger: Logger) {
     this.connectionManager = new RobotConnectionManager(logger);
@@ -33,7 +34,7 @@ export class WebsocketRobotCommunicationService
         this.messageHandler.handleRobotMessage(
           connectedRobot,
           event.data,
-          (robotId: string, timestamp: number) => {
+          (robotId: string, timestamp: number, batteryData?: any) => {
             this.healthMonitor.updateLastPing(
               this.connectionManager
                 .getAllConnectedRobots()
@@ -44,6 +45,11 @@ export class WebsocketRobotCommunicationService
               robotId,
               timestamp
             );
+
+            // Notify status update if callback is set and battery data is available
+            if (this.statusUpdateCallback && batteryData) {
+              this.statusUpdateCallback(robotId, batteryData);
+            }
           }
         );
       };
@@ -107,6 +113,14 @@ export class WebsocketRobotCommunicationService
     return `${robot.ipAddress}:${robot.port}`;
   }
 
+  setDisconnectCallback(callback: (robotId: string) => void): void {
+    this.connectionManager.setDisconnectCallback(callback);
+  }
+
+  setStatusUpdateCallback(callback: (robotId: string, batteryData: any) => void): void {
+    this.statusUpdateCallback = callback;
+  }
+
   /**
    * Dispose method for proper resource cleanup
    * Implements Disposable interface
@@ -166,9 +180,5 @@ export class WebsocketRobotCommunicationService
       }, new Map<string, ConnectedRobot>());
 
     this.messageHandler.sendFeedback(connectedRobotsMap, feedback);
-  }
-
-  setDisconnectCallback(callback: (robotId: string) => void): void {
-    this.connectionManager.setDisconnectCallback(callback);
   }
 }

@@ -17,6 +17,7 @@ interface RobotGridProps {
   robots: Robot[];
   selectedRobotId: string | null | undefined;
   isRobotConnected: (robotId: string) => boolean;
+  getRobotBattery: (robotId: string) => number;
   onRobotSelect: (robot: Robot) => void;
   onRobotConnect: (robot: Robot) => void;
   onRobotEdit: (robot: Robot) => void;
@@ -31,6 +32,7 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
   robots,
   selectedRobotId,
   isRobotConnected,
+  getRobotBattery,
   onRobotSelect,
   onRobotConnect,
   onRobotEdit,
@@ -53,6 +55,7 @@ export const RobotGrid: React.FC<RobotGridProps> = ({
             onDisconnect={onRobotDisconnect}
             selected={selectedRobotId === robot.id}
             connected={isRobotConnected(robot.id)}
+            batteryPercentage={getRobotBattery(robot.id)}
             labels={robotCardLabels}
           />
         </Grid>

@@ -27,7 +27,7 @@ export const RobotSelectionContent = forwardRef<
   RobotSelectionContentProps
 >(({ onConnectionSuccess }, ref) => {
   const { t } = useTranslation();
-  const { setSelectedRobot, showAlert } = useAppContext();
+  const { setSelectedRobot, showAlert, getRobotBattery } = useAppContext();
 
   const {
     robots,
@@ -238,6 +238,7 @@ export const RobotSelectionContent = forwardRef<
         robots={robots}
         selectedRobotId={selectedRobot}
         isRobotConnected={isRobotConnected}
+        getRobotBattery={getRobotBattery}
         onRobotSelect={handleRobotSelection}
         onRobotConnect={handleRobotConnect}
         onRobotEdit={handleEditRobot}

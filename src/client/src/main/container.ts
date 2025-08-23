@@ -68,4 +68,11 @@ export class Container {
       this._robotCommunicationService.setDisconnectCallback(callback);
     }
   }
+
+  setRobotStatusUpdateCallback(callback: (robotId: string, batteryData: any) => void): void {
+    // Only set callback for WebSocket service (not mock)
+    if (this._robotCommunicationService instanceof WebsocketRobotCommunicationService) {
+      this._robotCommunicationService.setStatusUpdateCallback(callback);
+    }
+  }
 }

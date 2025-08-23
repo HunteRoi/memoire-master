@@ -1,4 +1,13 @@
 import {
+  Battery0Bar,
+  Battery1Bar,
+  Battery2Bar,
+  Battery3Bar,
+  Battery4Bar,
+  Battery5Bar,
+  Battery6Bar,
+  BatteryFull,
+  BatteryUnknown,
   Delete,
   Edit,
   Link,
@@ -45,6 +54,7 @@ interface RobotCardProps {
   onDisconnect: (robot: Robot) => void;
   selected: boolean;
   connected: boolean;
+  batteryPercentage?: number;
   labels: RobotCardLabels;
 }
 
@@ -57,6 +67,7 @@ const RobotCardComponent: FC<RobotCardProps> = ({
   onDisconnect,
   selected,
   connected,
+  batteryPercentage = 0,
   labels,
 }) => {
   const { getRobotDisplayName } = useRobotTranslations();
@@ -143,6 +154,25 @@ const RobotCardComponent: FC<RobotCardProps> = ({
     [labels, robotDisplayName]
   );
 
+  const getBatteryIcon = (percentage: number) => {
+    if (percentage >= 90) return <BatteryFull />;
+    if (percentage >= 75) return <Battery6Bar />;
+    if (percentage >= 60) return <Battery5Bar />;
+    if (percentage >= 45) return <Battery4Bar />;
+    if (percentage >= 30) return <Battery3Bar />;
+    if (percentage >= 15) return <Battery2Bar />;
+    if (percentage > 0) return <Battery1Bar />;
+    if (percentage === 0) return <Battery0Bar />;
+    return <BatteryUnknown />;
+  };
+
+  const getBatteryColor = (percentage: number): 'success' | 'warning' | 'error' | 'default' => {
+    if (percentage >= 50) return 'success';
+    if (percentage >= 20) return 'warning';
+    if (percentage > 0) return 'error';
+    return 'default';
+  };
+
   return (
     <Card sx={cardSx} onClick={handleCardClick}>
       <CardContent
@@ -219,9 +249,22 @@ const RobotCardComponent: FC<RobotCardProps> = ({
           </Box>
         </Box>
 
-        <Typography variant='body2' color='text.secondary' gutterBottom>
-          IP: {robot.ipAddress}:{robot.port}
-        </Typography>
+        <Box>
+          <Typography variant='body2' color='text.secondary' gutterBottom>
+            IP: {robot.ipAddress}:{robot.port}
+          </Typography>
+          {connected && batteryPercentage > 0 && (
+            <Box display='flex' alignItems='center' gap={1} mt={1}>
+              <Chip
+                icon={getBatteryIcon(batteryPercentage)}
+                label={`${batteryPercentage}%`}
+                color={getBatteryColor(batteryPercentage)}
+                size='small'
+                variant='outlined'
+              />
+            </Box>
+          )}
+        </Box>
       </CardContent>
     </Card>
   );
@@ -234,6 +277,7 @@ export const RobotCard = memo(RobotCardComponent, (prevProps, nextProps) => {
     prevProps.robot.port === nextProps.robot.port &&
     prevProps.selected === nextProps.selected &&
     prevProps.connected === nextProps.connected &&
+    prevProps.batteryPercentage === nextProps.batteryPercentage &&
     prevProps.onSelect === nextProps.onSelect &&
     prevProps.onConnect === nextProps.onConnect &&
     prevProps.onEdit === nextProps.onEdit &&

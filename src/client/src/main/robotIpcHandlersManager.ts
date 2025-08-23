@@ -43,8 +43,32 @@ export class RobotIpcHandlersManager {
       }
     };
 
-    // Pass the callback to the container's communication service
+    // Set up robot status update callback
+    const statusUpdateCallback = (robotId: string, batteryData: any) => {
+      const mainWindow = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+      if (mainWindow && batteryData) {
+        const statusInfo = {
+          robotId,
+          batteryPercentage: batteryData.battery || 0,
+          batteryVoltage: batteryData.battery_voltage || 0,
+          status: batteryData.status || 'unknown',
+          lastUpdate: Date.now(),
+          hardwareStatus: batteryData.hardware || {
+            motors: false,
+            leds: false,
+            audio: false,
+            sensors: false
+          }
+        };
+        
+        RobotIpcHandlersManager.logger.debug('Robot status update', { robotId, statusInfo });
+        mainWindow.webContents.send('robotConnection:statusUpdate', statusInfo);
+      }
+    };
+
+    // Pass the callbacks to the container's communication service
     RobotIpcHandlersManager.container.setRobotDisconnectCallback(disconnectCallback);
+    RobotIpcHandlersManager.container.setRobotStatusUpdateCallback(statusUpdateCallback);
   }
 
   private static createSecureHandler<T extends unknown[], R>(

@@ -159,6 +159,15 @@ export interface ConnectedRobot {
   connected: boolean;
   lastPing: number;
   feedbackCallback?: RobotFeedbackCallback;
+  batteryPercentage?: number;
+  batteryVoltage?: number;
+  robotStatus?: string;
+  hardwareStatus?: {
+    motors: boolean;
+    leds: boolean;
+    audio: boolean;
+    sensors: boolean;
+  };
 }
 
 export interface RobotMessageData {
@@ -175,8 +184,17 @@ export interface RobotMessage {
 
 export interface RobotResponseData {
   battery?: number;
+  battery_voltage?: number;
   sensors?: unknown;
   status?: string;
+  client_count?: number;
+  robot_id?: string;
+  hardware?: {
+    motors: boolean;
+    leds: boolean;
+    audio: boolean;
+    sensors: boolean;
+  };
   result?: any;
   rawData?: string;
   [key: string]: any;

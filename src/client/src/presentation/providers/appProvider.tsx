@@ -28,6 +28,7 @@ const initialState: AppState = {
   selectedRobot: DEFAULT_ROBOT.id,
   robots: [DEFAULT_ROBOT],
   connectedRobots: new Set<string>(),
+  robotStatus: new Map(),
   isLoading: false,
   error: null,
   alert: {
@@ -60,7 +61,21 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'REMOVE_CONNECTED_ROBOT': {
       const newConnectedRobots = new Set(state.connectedRobots);
       newConnectedRobots.delete(action.payload);
-      return { ...state, connectedRobots: newConnectedRobots };
+      const newRobotStatus = new Map(state.robotStatus);
+      newRobotStatus.delete(action.payload);
+      return { 
+        ...state, 
+        connectedRobots: newConnectedRobots,
+        robotStatus: newRobotStatus
+      };
+    }
+    case 'UPDATE_ROBOT_STATUS': {
+      const newRobotStatus = new Map(state.robotStatus);
+      newRobotStatus.set(action.payload.robotId, action.payload);
+      return {
+        ...state,
+        robotStatus: newRobotStatus
+      };
     }
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
@@ -164,6 +179,25 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     []
   );
 
+  const updateRobotStatus = useCallback(
+    (status: import('../contexts/appContext').RobotStatusInfo) =>
+      dispatch({ type: 'UPDATE_ROBOT_STATUS', payload: status }),
+    []
+  );
+
+  const getRobotStatus = useCallback(
+    (robotId: string) => state.robotStatus.get(robotId),
+    [state.robotStatus]
+  );
+
+  const getRobotBattery = useCallback(
+    (robotId: string) => {
+      const status = state.robotStatus.get(robotId);
+      return status?.batteryPercentage || 0;
+    },
+    [state.robotStatus]
+  );
+
   const isRobotConnected = useCallback(
     (robotId: string) => state.connectedRobots.has(robotId),
     [state.connectedRobots]
@@ -248,6 +282,22 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     };
   }, [removeConnectedRobot, setSelectedRobot, showAlert, state.selectedRobot]);
 
+  // Set up robot status update listener
+  useEffect(() => {
+    const handleRobotStatusUpdate = (status: import('../contexts/appContext').RobotStatusInfo) => {
+      console.log('Robot status update received:', status);
+      updateRobotStatus(status);
+    };
+
+    // Set up listener
+    window.electronAPI.robotConnection.onRobotStatusUpdate(handleRobotStatusUpdate);
+
+    // Cleanup on unmount
+    return () => {
+      window.electronAPI.robotConnection.removeRobotStatusListener();
+    };
+  }, [updateRobotStatus]);
+
   const contextValue = useMemo(
     () => ({
       ...state,
@@ -263,6 +313,9 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
       setRobotsList,
       addConnectedRobot,
       removeConnectedRobot,
+      updateRobotStatus,
+      getRobotStatus,
+      getRobotBattery,
       isRobotConnected,
       transformRobotData,
       setLoading,
@@ -284,6 +337,9 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
       setRobotsList,
       addConnectedRobot,
       removeConnectedRobot,
+      updateRobotStatus,
+      getRobotStatus,
+      getRobotBattery,
       isRobotConnected,
       transformRobotData,
       setLoading,

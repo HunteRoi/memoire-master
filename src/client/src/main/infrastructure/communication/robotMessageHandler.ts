@@ -73,7 +73,7 @@ export class RobotMessageHandler {
   handleRobotMessage(
     connectedRobot: ConnectedRobot,
     data: WebSocket.Data,
-    onPong?: (robotId: string, timestamp: number) => void
+    onPong?: (robotId: string, timestamp: number, batteryData?: any) => void
   ): void {
     try {
       const response: RobotResponse = JSON.parse(data.toString());
@@ -92,8 +92,16 @@ export class RobotMessageHandler {
 
       switch (response.type) {
         case 'pong':
+          // Update robot status from pong response
+          if (response.data) {
+            connectedRobot.batteryPercentage = response.data.battery || 0;
+            connectedRobot.batteryVoltage = response.data.battery_voltage || 0;
+            connectedRobot.robotStatus = response.data.status || 'unknown';
+            connectedRobot.hardwareStatus = response.data.hardware;
+          }
+          
           if (onPong) {
-            onPong(connectedRobot.robot.id, Date.now());
+            onPong(connectedRobot.robot.id, Date.now(), response.data);
           }
           break;
         case 'status':

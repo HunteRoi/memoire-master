@@ -132,10 +132,31 @@ export class MockRobotCommunicationService
       get_status: {
         status: 'running',
         battery: 85,
+        battery_voltage: 3.8,
         sensors: {
           proximity: [0, 0, 0, 0, 0, 0, 0, 0],
           light: [500, 500, 500, 500, 500, 500, 500, 500],
         },
+        hardware: {
+          motors: true,
+          leds: true,
+          audio: true,
+          sensors: true
+        }
+      },
+      read_battery: {
+        success: true,
+        action: 'read_battery_level',
+        data: {
+          epuck: {
+            voltage: 3.8,
+            percentage: 85
+          },
+          external: {
+            voltage: 0.0,
+            percentage: 0
+          }
+        }
       },
       move_forward: {
         action: 'move_forward',

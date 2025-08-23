@@ -1,5 +1,6 @@
 import type { Result } from './domain/result';
 import type { RobotConfig, RobotFeedback } from './domain/robot';
+import type { RobotStatusInfo } from '../presentation/contexts/appContext';
 
 export interface ElectronAPI {
   app: {
@@ -27,6 +28,8 @@ export interface ElectronAPI {
     removeFeedbackListener: () => void;
     onDisconnect: (callback: (robotId: string) => void) => void;
     removeDisconnectListener: () => void;
+    onRobotStatusUpdate: (callback: (status: RobotStatusInfo) => void) => void;
+    removeRobotStatusListener: () => void;
   };
   pythonCodeViewer: {
     openWindow: (code: string, title?: string) => Promise<boolean>;

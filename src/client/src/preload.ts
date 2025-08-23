@@ -3,6 +3,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 import type { RobotConfig, RobotFeedback } from './domain/robot';
+import type { RobotStatusInfo } from './presentation/contexts/appContext';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   app: {
@@ -45,6 +46,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ),
     removeDisconnectListener: () =>
       ipcRenderer.removeAllListeners('robotConnection:disconnected'),
+    onRobotStatusUpdate: (callback: (status: RobotStatusInfo) => void) =>
+      ipcRenderer.on('robotConnection:statusUpdate', (_, status) =>
+        callback(status)
+      ),
+    removeRobotStatusListener: () =>
+      ipcRenderer.removeAllListeners('robotConnection:statusUpdate'),
   },
   pythonCodeViewer: {
     openWindow: (code: string, title?: string) =>

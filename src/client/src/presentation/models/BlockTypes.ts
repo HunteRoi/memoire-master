@@ -212,25 +212,6 @@ export const soundBlocks: Block[] = [
     pythonTemplate: 'robot.play_melody("{{melody}}")',
   },
   {
-    id: 'set_volume',
-    name: 'Set Volume',
-    icon: '🔉',
-    category: 'sound',
-    description: 'Set the speaker volume',
-    parameters: [
-      {
-        id: 'volume',
-        name: 'Volume',
-        type: 'number',
-        defaultValue: 50,
-        min: 0,
-        max: 100,
-        unit: '%',
-      },
-    ],
-    pythonTemplate: 'robot.set_volume({{volume}})',
-  },
-  {
     id: 'stop_melody',
     name: 'Stop Melody',
     icon: '🔇',
@@ -241,93 +222,6 @@ export const soundBlocks: Block[] = [
 ];
 
 export const ledBlocks: Block[] = [
-  {
-    id: 'set_led_color',
-    name: 'Set LED Color',
-    icon: '💡',
-    category: 'leds',
-    description: 'Set LED to a specific color',
-    parameters: [
-      {
-        id: 'led_id',
-        name: 'LED',
-        type: 'select',
-        defaultValue: 'all',
-        options: [
-          { value: 'all', label: 'All LEDs' },
-          { value: 'front', label: 'Front LED' },
-          { value: 'body', label: 'Body LED' },
-          { value: 'left', label: 'Left LED' },
-          { value: 'right', label: 'Right LED' },
-        ],
-      },
-      {
-        id: 'color',
-        name: 'Color',
-        type: 'select',
-        defaultValue: 'red',
-        options: [
-          { value: 'red', label: 'Red' },
-          { value: 'green', label: 'Green' },
-          { value: 'blue', label: 'Blue' },
-          { value: 'yellow', label: 'Yellow' },
-          { value: 'purple', label: 'Purple' },
-          { value: 'cyan', label: 'Cyan' },
-          { value: 'white', label: 'White' },
-          { value: 'off', label: 'Turn Off' },
-        ],
-      },
-    ],
-    pythonTemplate: 'robot.set_led_color("{{led_id}}", "{{color}}")',
-  },
-  {
-    id: 'set_led_rgb',
-    name: 'Set LED RGB',
-    icon: '🌈',
-    category: 'leds',
-    description: 'Set LED with custom RGB values',
-    parameters: [
-      {
-        id: 'led_id',
-        name: 'LED',
-        type: 'select',
-        defaultValue: 'all',
-        options: [
-          { value: 'all', label: 'All LEDs' },
-          { value: 'front', label: 'Front LED' },
-          { value: 'body', label: 'Body LED' },
-          { value: 'left', label: 'Left LED' },
-          { value: 'right', label: 'Right LED' },
-        ],
-      },
-      {
-        id: 'red',
-        name: 'Red',
-        type: 'number',
-        defaultValue: 255,
-        min: 0,
-        max: 255,
-      },
-      {
-        id: 'green',
-        name: 'Green',
-        type: 'number',
-        defaultValue: 0,
-        min: 0,
-        max: 255,
-      },
-      {
-        id: 'blue',
-        name: 'Blue',
-        type: 'number',
-        defaultValue: 0,
-        min: 0,
-        max: 255,
-      },
-    ],
-    pythonTemplate:
-      'robot.set_led_rgb("{{led_id}}", {{red}}, {{green}}, {{blue}})',
-  },
   {
     id: 'blink_leds',
     name: 'Blink LEDs',
@@ -417,31 +311,12 @@ export const sensorBlocks: Block[] = [
       'robot.detect_floor_color("{{target_color}}", sensitivity={{sensitivity}})',
   },
   {
-    id: 'distance_sensor',
-    name: 'Distance Sensor',
-    icon: '📡',
+    id: 'read_battery',
+    name: 'Read Battery',
+    icon: '🔋',
     category: 'sensors',
-    description: 'Measure distance to obstacles',
-    parameters: [
-      {
-        id: 'max_distance',
-        name: 'Max Distance',
-        type: 'number',
-        defaultValue: 50,
-        min: 1,
-        max: 200,
-        unit: 'cm',
-      },
-    ],
-    pythonTemplate: 'robot.get_distance(max_distance={{max_distance}})',
-  },
-  {
-    id: 'light_sensor',
-    name: 'Light Sensor',
-    icon: '🌞',
-    category: 'sensors',
-    description: 'Measure ambient light level',
-    pythonTemplate: 'robot.get_light_level()',
+    description: 'Get robot battery level and voltage information',
+    pythonTemplate: 'robot.read_battery()',
   },
 ];
 

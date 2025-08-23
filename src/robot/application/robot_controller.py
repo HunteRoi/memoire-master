@@ -64,12 +64,50 @@ class RobotController(MessageHandlerInterface):
         }
     
     async def handle_ping(self) -> Dict[str, Any]:
-        """Handle ping request"""
+        """Handle ping request with battery and status info"""
         import asyncio
-        return {
-            "type": "pong",
-            "data": {"timestamp": asyncio.get_event_loop().time()}
-        }
+        
+        try:
+            # Get battery information
+            battery_result = await self.command_router.sensor.read_battery_level()
+            battery_data = battery_result.get('data', {})
+            
+            # Extract main battery percentage (e-puck battery)
+            epuck_battery = battery_data.get('epuck', {})
+            battery_percentage = epuck_battery.get('percentage', 0)
+            battery_voltage = epuck_battery.get('voltage', 0.0)
+            
+            # Get system status
+            client_count = self.notification_service.get_client_count()
+            
+            return {
+                "type": "pong",
+                "data": {
+                    "timestamp": asyncio.get_event_loop().time(),
+                    "battery": battery_percentage,
+                    "battery_voltage": battery_voltage,
+                    "status": "connected" if client_count > 0 else "idle",
+                    "client_count": client_count,
+                    "robot_id": "epuck2",
+                    "hardware": {
+                        "motors": self.command_router.motor.is_initialized,
+                        "leds": self.command_router.led.is_initialized,
+                        "audio": self.command_router.audio.is_initialized,
+                        "sensors": self.command_router.sensor.is_initialized
+                    }
+                }
+            }
+        except Exception as e:
+            self.logger.warning(f"⚠️ Failed to get detailed ping info: {e}")
+            # Fallback to basic ping response
+            return {
+                "type": "pong",
+                "data": {
+                    "timestamp": asyncio.get_event_loop().time(),
+                    "battery": 0,
+                    "status": "unknown"
+                }
+            }
     
     async def handle_status_message(self, status_data: Dict[str, Any]) -> None:
         """Handle status message from client"""
