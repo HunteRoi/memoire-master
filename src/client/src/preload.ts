@@ -39,6 +39,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ),
     removeFeedbackListener: () =>
       ipcRenderer.removeAllListeners('robotFeedback:message'),
+    onDisconnect: (callback: (robotId: string) => void) =>
+      ipcRenderer.on('robotConnection:disconnected', (_, robotId) =>
+        callback(robotId)
+      ),
+    removeDisconnectListener: () =>
+      ipcRenderer.removeAllListeners('robotConnection:disconnected'),
   },
   pythonCodeViewer: {
     openWindow: (code: string, title?: string) =>

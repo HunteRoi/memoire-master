@@ -2,6 +2,7 @@ import {
   type FC,
   type PropsWithChildren,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -222,6 +223,30 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
       console.error('Failed to load language from localStorage:', error);
     }
   }, [setLanguage]);
+
+  // Set up global disconnect listener
+  useEffect(() => {
+    const handleRobotDisconnect = (robotId: string) => {
+      console.log('Robot disconnected unexpectedly:', robotId);
+      removeConnectedRobot(robotId);
+      
+      // If the disconnected robot was the selected one, clear selection
+      if (state.selectedRobot === robotId) {
+        setSelectedRobot(null);
+      }
+      
+      // Show alert to user
+      showAlert('Robot disconnected unexpectedly', 'warning');
+    };
+
+    // Set up listener
+    window.electronAPI.robotConnection.onDisconnect(handleRobotDisconnect);
+
+    // Cleanup on unmount
+    return () => {
+      window.electronAPI.robotConnection.removeDisconnectListener();
+    };
+  }, [removeConnectedRobot, setSelectedRobot, showAlert, state.selectedRobot]);
 
   const contextValue = useMemo(
     () => ({

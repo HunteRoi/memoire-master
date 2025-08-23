@@ -28,8 +28,8 @@ export class Container {
     const isDevelopment = !app.isPackaged;
     this.logger = getLogger();
     this._robotCommunicationService = isDevelopment
-      ? new MockRobotCommunicationService(this.logger)
-      : new WebsocketRobotCommunicationService(this.logger);
+      ? new WebsocketRobotCommunicationService(this.logger)
+      : new MockRobotCommunicationService(this.logger);
     this._robotsConfigurationRepository =
       new FileSystemRobotsConfigurationRepository(this.logger);
 
@@ -60,5 +60,12 @@ export class Container {
   }
   get robotConnection(): ManageRobotConnection {
     return this._robotConnection;
+  }
+
+  setRobotDisconnectCallback(callback: (robotId: string) => void): void {
+    // Only set callback for WebSocket service (not mock)
+    if (this._robotCommunicationService instanceof WebsocketRobotCommunicationService) {
+      this._robotCommunicationService.setDisconnectCallback(callback);
+    }
   }
 }

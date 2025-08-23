@@ -65,7 +65,7 @@ export const ScriptExecutionContainer: React.FC<
   ScriptExecutionContainerProps
 > = ({ children, nodes, edges }) => {
   const { t } = useTranslation();
-  const { hasConnectedRobot, showAlert } = useRobotConnection();
+  const { hasConnectedRobot, selectedRobotData, showAlert } = useRobotConnection();
   const { blocksPanelLabels } = useVisualProgrammingLabels();
   const { addConsoleMessage } = useConsole();
 
@@ -148,7 +148,7 @@ export const ScriptExecutionContainer: React.FC<
 
   const executeNode = useCallback(
     async (node: Node, control: ExecutionControl) => {
-      const { blockName } = node.data;
+      const { blockName, blockType, blockParameters } = node.data;
 
       setCurrentlyExecutingNodeId(node.id);
       const message = consoleMessages.executingBlock;
@@ -158,6 +158,28 @@ export const ScriptExecutionContainer: React.FC<
         return;
       }
 
+      try {
+        // Get connected robot config from robot connection context
+        if (hasConnectedRobot && selectedRobotData) {
+          // Generate command based on block type and parameters
+          const command = generateRobotCommand(blockType, blockParameters);
+
+          // Send command to robot
+          await window.electronAPI.robotConnection.sendCommand(selectedRobotData, command);
+
+          // Add success message to console
+          addConsoleMessage('success', 'Command sent successfully: ' + command);
+        } else {
+          // No robot connected - simulate execution
+          addConsoleMessage('warning', 'No robot connected - simulating execution');
+        }
+      } catch (error) {
+        console.error('Failed to execute robot command:', error);
+        addConsoleMessage('error', `Failed to execute command: ${error}`);
+        throw error;
+      }
+
+      // Wait for command execution with cancellation support
       const delayDuration = 1000;
       const checkInterval = 100; // Check every 100ms
       let elapsed = 0;
@@ -175,8 +197,49 @@ export const ScriptExecutionContainer: React.FC<
         elapsed += checkInterval;
       }
     },
-    [addConsoleMessage, consoleMessages]
+    [addConsoleMessage, consoleMessages, hasConnectedRobot]
   );
+
+  // Helper function to generate robot commands from block data
+  const generateRobotCommand = useCallback((blockType: string, parameters: any = {}) => {
+    switch (blockType) {
+      case 'move_forward':
+        const speed = parameters?.speed || 50;
+        const duration = parameters?.duration || 1;
+        return `move_forward(speed=${speed}, duration=${duration})`;
+
+      case 'move_backward':
+        const backSpeed = parameters?.speed || 50;
+        const backDuration = parameters?.duration || 1;
+        return `move_backward(speed=${backSpeed}, duration=${backDuration})`;
+
+      case 'turn_left':
+        const leftAngle = parameters?.angle || 90;
+        const leftSpeed = parameters?.speed || 50;
+        return `turn_left(angle=${leftAngle}, speed=${leftSpeed})`;
+
+      case 'turn_right':
+        const rightAngle = parameters?.angle || 90;
+        const rightSpeed = parameters?.speed || 50;
+        return `turn_right(angle=${rightAngle}, speed=${rightSpeed})`;
+
+      case 'stop':
+        return 'stop()';
+
+      case 'play_beep':
+        const frequency = parameters?.frequency || 440;
+        const beepDuration = parameters?.duration || 0.5;
+        return `play_beep(frequency=${frequency}, duration=${beepDuration})`;
+
+      case 'set_led_color':
+        const ledId = parameters?.led_id || 'all';
+        const color = parameters?.color || 'red';
+        return `set_led_color("${ledId}", "${color}")`;
+
+      default:
+        return `execute_block("${blockType}")`;
+    }
+  }, []);
 
   const executeNodes = useCallback(
     async (startIndex: number, control: ExecutionControl) => {

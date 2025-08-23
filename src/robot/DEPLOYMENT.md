@@ -7,31 +7,31 @@
    scp -r robot/ pi@192.168.0.121:~/
    ```
 
-2. **Install dependencies and setup:**
+2. **Check system compatibility:**
    ```bash
    ssh pi@192.168.0.121
    cd ~/robot
-   make install
-   make config    # Creates .env file from .env.example
+   chmod +x check_system.sh
+   ./check_system.sh    # Checks hardware, Python versions, offers Python 3 install
    ```
 
-3. **Customize configuration (optional):**
+3. **Setup and run:**
    ```bash
-   nano .env      # Edit your settings
+   make setup     # Install dependencies and create config
+   nano .env      # Edit your settings (optional)
+   make run       # Start the robot server
    ```
 
-4. **Run the server:**
+   **Or with debug logging:**
    ```bash
-   make run
-   # Or with debug logging:
    make debug
    ```
 
 ## Requirements
 
-- **Python 2.7** (pre-installed on most Pi Zero W systems)
-- **pip for Python 2.7**: `sudo apt install python-pip` if not available
-- **Hardware libraries**: unifr-api-epuck, pi-puck (will install via pip)
+- **Python 3.11+** (install with `sudo apt install python3 python3-pip python3-venv`)
+- **Hardware libraries**: RPi.GPIO, gpiozero (will install automatically)
+- **Optional**: unifr-api-epuck, pi-puck (for advanced e-puck2 features)
 
 ## Configuration
 
@@ -47,12 +47,12 @@ The server auto-detects the robot's IP address on 192.168.0.xxx network.
 ```bash
 cp .env.example .env
 # Edit .env file with your settings
-python2.7 start_server.py
+make run
 ```
 
 **Method 2 - Command line arguments:**
 ```bash
-python2.7 start_server.py --host 192.168.0.121 --port 8765 --log-level INFO
+ROBOT_HOST=192.168.0.121 ROBOT_PORT=8765 LOG_LEVEL=INFO python3 main.py
 ```
 
 **Method 3 - Environment variables:**
@@ -60,19 +60,19 @@ python2.7 start_server.py --host 192.168.0.121 --port 8765 --log-level INFO
 export ROBOT_HOST=192.168.0.121
 export ROBOT_PORT=8765
 export LOG_LEVEL=DEBUG
-python2.7 start_server.py
+python3 main.py
 ```
 
 ## Testing
 
-1. **Test .env file loading:**
+1. **Test server startup:**
    ```bash
-   python2.7 test_env.py
+   make lint
    ```
 
 2. **Test WebSocket connection:**
    ```bash
-   python2.7 test_socket.py
+   make debug
    ```
 
 3. **From Electron client:**
@@ -84,35 +84,41 @@ python2.7 start_server.py
 
 ```
 robot/
-├── main.py              # Main server entry point
-├── start_server.py      # Startup script with argument parsing
-├── websocket_server.py  # Custom WebSocket implementation for Python 2.7
-├── requirements.txt     # Python 2.7 compatible dependencies
-├── Makefile            # Simple build/run commands
-├── test_socket.py      # WebSocket test client
-├── application/        # Business logic
-├── config/            # Configuration utilities
-├── domain/            # Core entities and interfaces
-└── infrastructure/    # Hardware implementations
+├── main.py            # Python 3 WebSocket server
+├── requirements.txt   # Python 3 dependencies
+├── Makefile          # Build/run commands with venv support
+├── .env.example      # Configuration template
+├── .env              # Your configuration (created by make config)
+├── venv/             # Virtual environment (created by make venv)
+├── check_system.sh   # System compatibility checker
+├── application/      # Business logic
+├── config/          # Configuration utilities
+├── domain/          # Core entities and interfaces
+└── infrastructure/  # Hardware implementations
 ```
 
 ## Available Makefile Commands
 
 ```bash
 make help         # Show all available commands
-make install      # Install Python dependencies  
+make setup        # Complete setup (venv + install + config)
+make venv         # Create virtual environment only
+make install      # Install Python dependencies in venv
 make config       # Create .env file from .env.example
 make config-force # Create .env file (overwrites existing)
-make run          # Start the robot server
-make debug        # Start server with debug logging
+make run          # Start the robot server (in venv)
+make debug        # Start server with debug logging (in venv)
 make clean        # Remove generated files
-make lint         # Basic syntax checking
+make clean-all    # Remove everything including venv
+make lint         # Basic syntax checking (in venv)
 ```
 
 ## Troubleshooting
 
 - **Import errors**: Ensure all __init__.py files are present
-- **Permission errors**: Use `sudo pip2.7 install` if needed
+- **Python 3.11+ missing**: Install with `sudo apt install python3 python3-pip python3-venv`
+- **Permission errors**: Virtual environment should prevent this
 - **Connection issues**: Check firewall and IP address
-- **Library missing**: Install with `sudo apt install python-dev` if compilation fails
+- **Library missing**: Install with `sudo apt install python3-dev` if compilation fails
 - **.env not working**: Run `make config` to create .env from .env.example
+- **Clean start**: Run `make clean-all && make setup` for fresh installation

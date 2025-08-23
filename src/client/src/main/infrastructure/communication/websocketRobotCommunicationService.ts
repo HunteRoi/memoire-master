@@ -167,4 +167,8 @@ export class WebsocketRobotCommunicationService
 
     this.messageHandler.sendFeedback(connectedRobotsMap, feedback);
   }
+
+  setDisconnectCallback(callback: (robotId: string) => void): void {
+    this.connectionManager.setDisconnectCallback(callback);
+  }
 }

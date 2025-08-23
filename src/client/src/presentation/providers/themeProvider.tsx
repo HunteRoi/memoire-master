@@ -10,6 +10,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+
 import { useAppContext } from '../hooks/useAppContext';
 import { Theme, ThemeType } from '../models/Theme';
 

@@ -11,7 +11,10 @@ import type {
 export class RobotMessageHandler {
   sendMessage(ws: WebSocket, message: RobotMessage): void {
     if (ws.readyState === WebSocket.OPEN) {
+      console.log('🚀 Sending message to robot:', JSON.stringify(message));
       ws.send(JSON.stringify(message));
+    } else {
+      console.error('❌ WebSocket not ready, state:', ws.readyState);
     }
   }
 
@@ -19,6 +22,8 @@ export class RobotMessageHandler {
     connectedRobot: ConnectedRobot,
     command: string
   ): Promise<unknown> {
+    console.log('📤 Attempting to send command:', command, 'to robot:', connectedRobot.robot.id);
+    
     if (!connectedRobot.connected) {
       throw new Error(`Robot ${connectedRobot.robot.id} is not connected`);
     }

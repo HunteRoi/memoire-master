@@ -1,161 +1,191 @@
 # E-puck2 Robot WebSocket Server
 
-A clean architecture implementation of a WebSocket server for controlling e-puck2 robots, built with Python 2.7 for Pi Zero W compatibility and following clean architecture principles.
+A Clean Architecture implementation of a WebSocket server for controlling e-puck2 robots, built with Python 3.7 and following proper dependency inversion principles.
 
 ## Architecture
 
-The codebase follows clean architecture with clear separation of concerns:
+The codebase follows Clean Architecture with proper separation of concerns and dependency inversion:
 
 ```
 src/robot/
-├── domain/           # Business logic and entities
-│   ├── entities.py   # Core entities (RobotState, commands, etc.)
-│   └── interfaces.py # Abstract interfaces
-├── application/      # Use cases and application services
-│   ├── use_cases.py  # Command execution, state management, health monitoring
-│   └── services.py   # Robot service and WebSocket service
-├── infrastructure/   # External dependencies and hardware implementations
-│   ├── epuck2_motor.py
-│   ├── epuck2_sensors.py
-│   ├── epuck2_leds.py
-│   └── epuck2_audio.py
-├── config/           # Configuration and logging
-│   └── logging.py
-├── main.py           # Main server orchestrator
-└── start_server.py   # Startup script
+├── domain/                     # Pure business entities (no dependencies)
+│   └── entities.py             # Core entities (RobotState, Commands, SensorReading, etc.)
+├── application/                # Application layer (business logic)
+│   ├── interfaces/             # Ports (contracts for dependency inversion)
+│   │   ├── hardware/           # Hardware interface contracts
+│   │   │   ├── motor_interface.py
+│   │   │   ├── sensor_interface.py
+│   │   │   ├── led_interface.py
+│   │   │   └── audio_interface.py
+│   │   ├── message_handler.py  # Message handling contract
+│   │   └── notification_service.py # Client notification contract
+│   ├── use_cases/              # Business logic (receive interfaces via DI)
+│   │   ├── motor_use_cases.py
+│   │   ├── sensor_use_cases.py
+│   │   ├── led_use_cases.py
+│   │   └── audio_use_cases.py
+│   ├── command_router.py       # Routes commands to use cases
+│   ├── robot_controller.py     # Main application orchestrator
+│   └── status_handler.py       # Robot status feedback logic
+├── infrastructure/             # External adapters (implement application interfaces)
+│   ├── hardware/               # GPIO/I2C hardware implementations
+│   │   ├── motors.py           # Implements MotorInterface
+│   │   ├── sensors.py          # Implements SensorInterface
+│   │   ├── leds.py             # Implements LEDInterface
+│   │   └── audio.py            # Implements AudioInterface
+│   └── websocket/              # WebSocket infrastructure
+│       └── websocket_server.py # Implements NotificationServiceInterface
+└── main.py                     # Dependency injection and server startup
 ```
+
+### Clean Architecture Principles Applied
+
+- **Dependency Inversion**: Infrastructure depends on Application, not vice versa
+- **Interface Segregation**: Separate interfaces for each hardware component
+- **Single Responsibility**: Each use case handles one specific business concern
+- **Dependency Injection**: Hardware interfaces injected into use cases at runtime
 
 ## Features
 
-- **WebSocket Communication**: Real-time communication with e-puck2 robots
+- **Clean Architecture**: Proper separation of concerns with dependency inversion
+- **WebSocket Communication**: Real-time communication with GUI clients
 - **Hardware Abstraction**: Clean interfaces for motor, sensor, LED, and audio control
-- **State Management**: Robust robot state transitions with visual/audio feedback
-- **Command Execution**: Safe Python command execution with sandboxed environment
-- **Health Monitoring**: Continuous sensor monitoring with automatic error detection
-- **Logging**: Comprehensive logging with rotation and configurable levels
-- **Graceful Shutdown**: Proper cleanup of hardware resources
+- **Direct GPIO Control**: No external dependencies, direct Pi GPIO control
+- **Optimized Installation**: Uses piwheels for fast Raspberry Pi package installation
+- **Command Routing**: Structured command routing to appropriate use cases
+- **Status Feedback**: Visual and audio feedback for robot operations
+- **Async Architecture**: Full async/await support throughout
 
 ## Installation
 
-1. Install Python dependencies:
+### Complete Setup (First Time)
 ```bash
-pip install -r requirements.txt
+make setup
+```
+This runs: install system deps → install Python 3.7 → create venv → install requirements
+
+### Quick Commands
+```bash
+make venv      # Create virtual environment and install requirements (fast with piwheels)
+make run       # Start the robot server
+make clean     # Clean everything
+make help      # Show all available commands
 ```
 
-2. Ensure your e-puck2 robot has the required packages:
-- `unifr-api-epuck` - Official e-puck2 API
-- `pi-puck` - Python interface for e-puck2
+### Manual Installation
+
+1. **Install System Dependencies**:
+```bash
+make install   # Installs pyenv, OpenCV deps, GPIO tools, SDL2, etc.
+```
+
+2. **Install Python 3.7**:
+```bash
+make install-python   # Uses pyenv to install Python 3.7.17
+```
+
+3. **Create Virtual Environment**:
+```bash
+make venv     # Uses piwheels for fast installation (no compilation!)
+```
+
+4. **Create Configuration**:
+```bash
+make config   # Creates .env from .env.example
+```
 
 ## Usage
 
-### Basic Usage
-
+### Start the Server
 ```bash
-python start_server.py
+make run
+# OR
+python main.py
 ```
 
-This starts the WebSocket server on `ws://0.0.0.0:8765/robot`
+Server starts on `ws://0.0.0.0:8765/robot`
 
-### Advanced Usage
+### Environment Configuration
 
+Create a `.env` file (copied from `.env.example`):
 ```bash
-# Custom host and port
-python start_server.py --host 192.168.0.100 --port 9000
+# Logging Configuration
+LOG_LEVEL=INFO
+LOG_FILE=logs/robot_server.log
+LOG_MAX_BYTES=10485760
+LOG_BACKUP_COUNT=5
 
-# Debug logging
-python start_server.py --log-level DEBUG
-
-# Using environment variables
-LOG_LEVEL=DEBUG ROBOT_PORT=9000 python start_server.py
+# WebSocket Server Configuration  
+ROBOT_HOST=0.0.0.0
+ROBOT_PORT=8765
 ```
-
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `LOG_LEVEL` | `INFO` | Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL) |
-| `LOG_FILE` | `logs/robot_server.log` | Log file path |
-| `LOG_MAX_BYTES` | `10485760` | Maximum log file size (10MB) |
-| `LOG_BACKUP_COUNT` | `5` | Number of backup log files |
-| `ROBOT_HOST` | `0.0.0.0` | Server host address |
-| `ROBOT_PORT` | `8765` | Server port |
 
 ## WebSocket Protocol
 
-### Message Format
+### Command Message Format
 
-All messages are JSON with the following structure:
+All messages are JSON with this structure:
 
-```json
-{
-  "type": "command|ping|status|success|error|pong",
-  "data": { ... },
-  "timestamp": 1234567890.123
-}
-```
-
-### Message Types
-
-#### Client → Server
-
-**Command Execution:**
 ```json
 {
   "type": "command",
   "data": {
-    "command": "motors.set_speed(50, -50)"
+    "command": "move_forward",
+    "speed": 50,
+    "duration": 2.0
   }
 }
 ```
 
-**Ping:**
+### Available Commands
+
+#### Motor Commands
 ```json
-{
-  "type": "ping",
-  "data": {}
-}
+{"command": "move_forward", "speed": 50, "duration": 2.0}
+{"command": "move_backward", "speed": 50, "duration": 2.0}
+{"command": "turn_left", "angle": 90, "speed": 50}
+{"command": "turn_right", "angle": 90, "speed": 50}
+{"command": "stop_motors"}
+{"command": "set_motor_speeds", "left_speed": 30, "right_speed": -30}
 ```
 
-**Status Request:**
+#### LED Commands
 ```json
-{
-  "type": "status",
-  "data": {
-    "status": "disconnecting"
-  }
-}
+{"command": "set_led_color", "color": "red"}
+{"command": "set_led_rgb", "red": 255, "green": 0, "blue": 0}
+{"command": "blink_led", "red": 0, "green": 0, "blue": 255, "count": 3, "speed": 0.5}
+{"command": "led_off"}
+{"command": "set_front_led", "enabled": true}
 ```
 
-#### Server → Client
+#### Audio Commands
+```json
+{"command": "play_tone", "frequency": 800, "duration": 0.5}
+{"command": "play_beep", "duration": 0.3}
+{"command": "stop_audio"}
+```
+
+#### Sensor Commands
+```json
+{"command": "read_sensors"}
+{"command": "read_proximity"}
+{"command": "read_light"}
+{"command": "read_imu"}
+{"command": "read_battery"}
+{"command": "detect_ground_color", "threshold": 1000}
+```
+
+### Server Responses
 
 **Success Response:**
 ```json
 {
   "type": "success",
   "data": {
-    "result": "Command executed successfully",
-    "command": "motors.set_speed(50, -50)"
-  },
-  "timestamp": 1234567890.123
-}
-```
-
-**Status Response:**
-```json
-{
-  "type": "status",
-  "data": {
-    "robot_id": "e-puck2",
-    "state": "connected",
-    "firmware_version": "1.0.0",
-    "sensors": {
-      "proximity": [0, 0, 0, 0, 0, 0, 0, 0],
-      "light": [0, 0, 0, 0, 0, 0, 0, 0],
-      "accelerometer": [0.0, 0.0, 9.8],
-      "gyroscope": [0.0, 0.0, 0.0],
-      "microphone": 0.0
-    },
-    "timestamp": 1234567890.123
+    "success": true,
+    "action": "move_forward",
+    "speed": 50,
+    "duration": 2.0
   }
 }
 ```
@@ -164,103 +194,63 @@ All messages are JSON with the following structure:
 ```json
 {
   "type": "error",
-  "message": "Command execution failed: Invalid syntax",
-  "timestamp": 1234567890.123
+  "data": {
+    "success": false,
+    "error": "Motor not initialized"
+  }
 }
 ```
 
-## Available Commands
+## Hardware Implementation
 
-The server provides a sandboxed Python environment with access to robot hardware:
+### Direct GPIO Control
+- **Motors**: Direct PWM control via Pi GPIO pins
+- **LEDs**: I2C communication with Pi-puck LED controller + GPIO front LED
+- **Audio**: GPIO PWM buzzer + optional pygame for file playback
+- **Sensors**: I2C communication for proximity, light, accelerometer, gyroscope
 
-### Motor Control
-```python
-# Set motor speeds (-100 to 100)
-motors.set_speed(50, -50)
-
-# Stop motors
-motors.stop()
-```
-
-### LED Control
-```python
-# Set body LED color and pattern
-leds.set_color("red", "blink")
-leds.set_color("blue", "pulse")
-
-# Set RGB values directly
-leds.set_body_led(255, 0, 0)
-
-# Front LED control
-leds.set_front_led(True)
-```
-
-### Audio
-```python
-# Play tones
-audio.play_tone(440, 0.5)  # A note for 0.5 seconds
-
-# Simple beep
-audio.play_beep()
-
-# Error sound
-audio.play_error_sound()
-```
-
-### Sensors
-```python
-# Get sensor readings
-proximity = sensors.get_proximity()
-light = sensors.get_light()
-accel = sensors.get_accelerometer()
-gyro = sensors.get_gyroscope()
-mic_level = sensors.get_microphone()
-
-# Get all readings at once
-all_sensors = sensors.get_all_readings()
-```
-
-### Utility Functions
-```python
-# Sleep/delays
-sleep(1.0)  # Sleep for 1 second
-
-# Basic Python functions
-len(proximity)
-range(8)
-print("Hello from e-puck2!")
-```
-
-## Robot States
-
-The robot maintains the following states with visual/audio feedback:
-
-- **IDLE**: Blue pulsing LED, A note (440Hz)
-- **CONNECTED**: Green solid LED, C# note (554Hz)
-- **RUNNING**: Yellow blinking LED, E note (659Hz)
-- **PAUSED**: Orange pulsing LED
-- **ERROR**: Red fast blinking LED, error sound sequence
+### Raspberry Pi Compatibility
+- **Optimized for Pi Zero W** with Python 3.7
+- **Fast installation** using piwheels (no compilation)
+- **Minimal dependencies** for reliable hardware control
 
 ## Development
 
-### Running Tests
+### Architecture Guidelines
+
+When adding new features:
+
+1. **Domain**: Add new entities to `domain/entities.py`
+2. **Application**: 
+   - Create interfaces in `application/interfaces/hardware/`
+   - Implement business logic in `application/use_cases/`
+3. **Infrastructure**: 
+   - Implement hardware interfaces in `infrastructure/hardware/`
+   - Use dependency injection in `main.py`
+
+### Testing
 
 ```bash
-# Install test dependencies
-pip install pytest pytest-asyncio
-
-# Run tests
+# Install test dependencies (included in requirements.txt)
 pytest tests/
+
+# Run with coverage
+pytest --cov=src tests/
 ```
 
-### Code Style
-
-The project follows PEP 8 and uses type hints throughout. Use tools like `black`, `flake8`, and `mypy` for code quality:
+### Code Quality
 
 ```bash
+# Install development tools
 pip install black flake8 mypy
+
+# Format code
 black src/
+
+# Check style
 flake8 src/
+
+# Type checking  
 mypy src/
 ```
 
@@ -268,19 +258,30 @@ mypy src/
 
 ### Common Issues
 
-1. **Permission denied accessing hardware**: Ensure the user has proper permissions to access GPIO/I2C devices
-2. **Connection refused**: Check if the robot is connected and the server port is available
-3. **Import errors**: Verify all dependencies are installed with `pip install -r requirements.txt`
+1. **Import errors**: Run `make venv` to reinstall dependencies
+2. **Permission denied**: Ensure user is in `gpio` and `i2c` groups
+3. **Slow installation**: Use `make venv` which uses piwheels (no compilation)
+4. **Hardware not responding**: Check GPIO/I2C connections and permissions
 
-### Logging
+### Debug Logging
 
-Enable debug logging for detailed troubleshooting:
-
+Enable debug logging in `.env`:
 ```bash
-LOG_LEVEL=DEBUG python start_server.py
+LOG_LEVEL=DEBUG
 ```
 
-Log files are rotated automatically and stored in the `logs/` directory.
+Or run with debug:
+```bash
+LOG_LEVEL=DEBUG make run
+```
+
+### Clean Installation
+
+If you encounter issues:
+```bash
+make clean      # Remove everything
+make setup      # Complete fresh setup
+```
 
 ## License
 

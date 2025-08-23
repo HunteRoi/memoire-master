@@ -151,6 +151,10 @@ const RobotCardComponent: FC<RobotCardProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
+          p: 2,
+          '&:last-child': {
+            pb: 2,
+          },
         }}
       >
         <Box

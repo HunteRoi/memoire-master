@@ -162,13 +162,15 @@ export class IpcValidator {
     }
 
     const dangerousPatterns = [
-      /[;&|`$()]/g, // Command injection characters
+      /[;&|`$]/g, // Command injection characters (removed parentheses for robot functions)
       /\.\./g, // Directory traversal
       /\/etc\//gi, // System file access
       /\/bin\//gi, // Binary execution
       /rm\s+-rf/gi, // Dangerous delete commands
       /sudo/gi, // Privilege escalation
       /chmod/gi, // Permission changes
+      /\bexec\s*\(/gi, // System execution commands (but allow execute_block)
+      /eval/gi, // Code evaluation
     ];
 
     for (const pattern of dangerousPatterns) {

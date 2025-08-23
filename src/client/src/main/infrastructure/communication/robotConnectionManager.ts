@@ -12,8 +12,13 @@ export class RobotConnectionManager implements Disposable {
   private connectedRobots: Map<string, ConnectedRobot> = new Map();
   private readonly connectionTimeout = 10000; // 10 seconds
   private disposed = false;
+  private onRobotDisconnected?: (robotId: string) => void;
 
   constructor(private logger: Logger) { }
+
+  setDisconnectCallback(callback: (robotId: string) => void): void {
+    this.onRobotDisconnected = callback;
+  }
 
   async connect(robot: Robot): Promise<Robot> {
     const robotKey = this.getRobotKey(robot);
@@ -217,6 +222,11 @@ export class RobotConnectionManager implements Disposable {
         robotKey,
         remainingConnections: this.connectedRobots.size,
       });
+
+      // Notify that robot has disconnected
+      if (this.onRobotDisconnected) {
+        this.onRobotDisconnected(connectedRobot.robot.id);
+      }
     }
   }
 }

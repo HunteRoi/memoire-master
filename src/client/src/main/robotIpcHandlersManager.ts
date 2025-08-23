@@ -27,6 +27,24 @@ export class RobotIpcHandlersManager {
     RobotIpcHandlersManager.registerRobotManagementHandlers();
     RobotIpcHandlersManager.registerRobotConnectionHandlers();
     RobotIpcHandlersManager.registerRobotFeedbackHandlers();
+    RobotIpcHandlersManager.setupRobotDisconnectCallback();
+  }
+
+  /**
+   * Sets up callback for when robots disconnect unexpectedly
+   */
+  private static setupRobotDisconnectCallback(): void {
+    // Set up disconnect callback for the communication service
+    const disconnectCallback = (robotId: string) => {
+      const mainWindow = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+      if (mainWindow) {
+        RobotIpcHandlersManager.logger.info('Robot disconnected unexpectedly', { robotId });
+        mainWindow.webContents.send('robotConnection:disconnected', robotId);
+      }
+    };
+
+    // Pass the callback to the container's communication service
+    RobotIpcHandlersManager.container.setRobotDisconnectCallback(disconnectCallback);
   }
 
   private static createSecureHandler<T extends unknown[], R>(
