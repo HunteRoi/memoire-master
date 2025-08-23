@@ -80,15 +80,21 @@ class SensorReading:
 @dataclass
 class MotorCommand:
     """Motor control command"""
-    left_speed: float
-    right_speed: float
+    action: str = "set_speed"
+    left_speed: Optional[float] = None
+    right_speed: Optional[float] = None
     duration: Optional[float] = None  # None means indefinite
 
 
 @dataclass
 class LEDCommand:
     """LED control command"""
-    color: str
+    action: str = "set_rgb"
+    red: Optional[int] = None
+    green: Optional[int] = None
+    blue: Optional[int] = None
+    enabled: Optional[bool] = None
+    color: Optional[str] = None
     pattern: str = "solid"  # solid, blink, pulse, blink_fast
     duration: Optional[float] = None
 
@@ -96,7 +102,10 @@ class LEDCommand:
 @dataclass
 class AudioCommand:
     """Audio playback command"""
+    action: str = "play_tone"
     frequency: Optional[int] = None
     duration: float = 0.5
     volume: float = 1.0
-    sound_type: str = "tone"  # tone, beep, error
+    file_path: Optional[str] = None
+    melody_name: Optional[str] = None
+    sound_type: str = "tone"  # tone, beep, error, melody, file

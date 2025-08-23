@@ -28,8 +28,8 @@ export class Container {
     const isDevelopment = !app.isPackaged;
     this.logger = getLogger();
     this._robotCommunicationService = isDevelopment
-      ? new WebsocketRobotCommunicationService(this.logger)
-      : new MockRobotCommunicationService(this.logger);
+      ? new MockRobotCommunicationService(this.logger)
+      : new WebsocketRobotCommunicationService(this.logger);
     this._robotsConfigurationRepository =
       new FileSystemRobotsConfigurationRepository(this.logger);
 

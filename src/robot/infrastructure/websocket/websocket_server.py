@@ -7,8 +7,8 @@ import websockets
 from typing import Set, Dict, Any, Optional
 from websockets.server import WebSocketServerProtocol
 
-from ...application.interfaces.message_handler import MessageHandlerInterface
-from ...application.interfaces.notification_service import NotificationServiceInterface
+from application.interfaces.message_handler import MessageHandlerInterface
+from application.interfaces.notification_service import NotificationServiceInterface
 
 
 class WebSocketService(NotificationServiceInterface):

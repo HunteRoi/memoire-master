@@ -17,7 +17,11 @@ class StatusHandler:
         """Provide feedback when client connects"""
         try:
             await self.led.set_led_color("green")
-            await self.audio.play_beep(0.2)
+            # Use connection sound WAV file if available, otherwise beep
+            try:
+                await self.audio.audio.play_connect_sound()
+            except:
+                await self.audio.play_beep(0.2)
         except Exception as e:
             self.logger.warning(f"Client connected feedback failed: {e}")
 
@@ -25,7 +29,11 @@ class StatusHandler:
         """Provide feedback when last client disconnects"""
         try:
             await self.led.set_led_color("red")
-            await self.audio.play_tone(300, 0.5)
+            # Use disconnection sound WAV file if available, otherwise tone
+            try:
+                await self.audio.audio.play_disconnect_sound()
+            except:
+                await self.audio.play_tone(300, 0.5)
         except Exception as e:
             self.logger.warning(f"Client disconnected feedback failed: {e}")
 
@@ -40,7 +48,11 @@ class StatusHandler:
         """Provide feedback when command fails"""
         try:
             await self.led.blink_led(255, 0, 0, 2, 0.2)  # Red blink for errors
-            await self.audio.play_tone(300, 0.3)  # Error tone
+            # Use error sound (disconnect) WAV file if available, otherwise tone
+            try:
+                await self.audio.audio.play_error_sound()
+            except:
+                await self.audio.play_tone(300, 0.3)
         except Exception as e:
             self.logger.warning(f"Command error feedback failed: {e}")
 
@@ -48,7 +60,11 @@ class StatusHandler:
         """Provide feedback on startup"""
         try:
             await self.led.set_led_color("blue")
-            await self.audio.play_tone(1000, 0.3)
+            # Use connection sound for startup if available, otherwise tone
+            try:
+                await self.audio.audio.play_connect_sound()
+            except:
+                await self.audio.play_tone(1000, 0.3)
         except Exception as e:
             self.logger.warning(f"Startup feedback failed: {e}")
 

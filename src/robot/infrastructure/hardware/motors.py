@@ -1,4 +1,4 @@
-"""Motor control for e-puck2 robot - GPIO + PWM implementation"""
+"""Motor control for e-puck2 robot - Pi-puck I2C implementation"""
 
 import asyncio
 import logging
@@ -8,52 +8,52 @@ from domain.entities import MotorCommand
 
 
 class MotorController(MotorInterface):
-    """E-puck2 motor control using direct GPIO"""
+    """E-puck2 motor control using Pi-puck I2C communication"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self._initialized = False
-        self.motor_pins = {}
-        self.pwm_left = None
-        self.pwm_right = None
+        self.i2c_bus = None
+        self.rob_addr = 0x1f  # Pi-puck e-puck2 I2C slave address
+        
+        # Pi-puck I2C register addresses for motor control (based on firmware)
+        self.motor_registers = {
+            'left_speed': 0x06,   # Left motor speed register
+            'right_speed': 0x07   # Right motor speed register  
+        }
     
     async def initialize(self) -> bool:
-        """Initialize GPIO motor control"""
+        """Initialize Pi-puck I2C motor control"""
         if self._initialized:
             return True
             
         try:
-            import RPi.GPIO as GPIO
+            import smbus2
             
-            # Setup GPIO mode
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setwarnings(False)
+            # Try Pi-puck I2C buses (primary and fallback)
+            for bus_num in [12, 4, 11, 3]:  # Pi-puck standard buses
+                try:
+                    self.i2c_bus = smbus2.SMBus(bus_num)
+                    
+                    # Test communication by reading from e-puck
+                    test_read = self.i2c_bus.read_byte(self.rob_addr)
+                    
+                    self.logger.info(f"✅ Motor controller initialized on I2C bus {bus_num}")
+                    self._initialized = True
+                    return True
+                    
+                except Exception as bus_e:
+                    if self.i2c_bus:
+                        self.i2c_bus.close()
+                        self.i2c_bus = None
+                    continue
             
-            # E-puck2 motor control pins (via Pi-puck extension)
-            self.motor_pins = {
-                'left_forward': 18,   # Left motor forward
-                'left_backward': 19,  # Left motor backward  
-                'right_forward': 20,  # Right motor forward
-                'right_backward': 21, # Right motor backward
-                'enable_left': 12,    # PWM enable for left motor
-                'enable_right': 13    # PWM enable for right motor
-            }
+            self.logger.error("❌ No Pi-puck I2C bus found for motor control")
+            return False
             
-            # Setup all motor control pins
-            for pin_name, pin_num in self.motor_pins.items():
-                GPIO.setup(pin_num, GPIO.OUT)
-                GPIO.output(pin_num, GPIO.LOW)
-            
-            # Setup PWM for motor speed control
-            self.pwm_left = GPIO.PWM(self.motor_pins['enable_left'], 1000)  # 1kHz
-            self.pwm_right = GPIO.PWM(self.motor_pins['enable_right'], 1000)
-            self.pwm_left.start(0)
-            self.pwm_right.start(0)
-            
-            self._initialized = True
-            self.logger.info("✅ Motor controller initialized")
-            return True
-            
+        except ImportError:
+            self.logger.error("❌ smbus2 not available for Pi-puck motor control")
+            return False
         except Exception as e:
             self.logger.error(f"❌ Motor controller initialization failed: {e}")
             return False
@@ -62,61 +62,49 @@ class MotorController(MotorInterface):
         """Cleanup motor resources"""
         if self._initialized:
             try:
-                import RPi.GPIO as GPIO
-                # Stop PWM
-                if self.pwm_left:
-                    self.pwm_left.stop()
-                if self.pwm_right:
-                    self.pwm_right.stop()
-                # Clean up GPIO
-                GPIO.cleanup()
+                # Stop motors before cleanup
+                await self.stop()
+                if self.i2c_bus:
+                    self.i2c_bus.close()
                 self.logger.info("🧹 Motor controller cleaned up")
             except Exception as e:
-                self.logger.error(f"❌ Error during motor cleanup: {e}")
+                self.logger.warning(f"⚠️ Error during motor cleanup: {e}")
         
         self._initialized = False
+        self.i2c_bus = None
     
     async def set_speed(self, left_speed: float, right_speed: float) -> None:
-        """Set motor speeds (-100 to 100)"""
-        if not self._initialized:
+        """Set motor speeds (-100 to 100) via Pi-puck I2C"""
+        if not self._initialized or not self.i2c_bus:
             raise RuntimeError("Motor controller not initialized")
         
         try:
-            import RPi.GPIO as GPIO
-            
             # Clamp speeds to valid range
             left_speed = max(-100, min(100, left_speed))
             right_speed = max(-100, min(100, right_speed))
             
-            # Set left motor direction and speed
-            if left_speed > 0:
-                GPIO.output(self.motor_pins['left_forward'], GPIO.HIGH)
-                GPIO.output(self.motor_pins['left_backward'], GPIO.LOW)
-                self.pwm_left.ChangeDutyCycle(abs(left_speed))
-            elif left_speed < 0:
-                GPIO.output(self.motor_pins['left_forward'], GPIO.LOW)
-                GPIO.output(self.motor_pins['left_backward'], GPIO.HIGH)
-                self.pwm_left.ChangeDutyCycle(abs(left_speed))
-            else:
-                GPIO.output(self.motor_pins['left_forward'], GPIO.LOW)
-                GPIO.output(self.motor_pins['left_backward'], GPIO.LOW)
-                self.pwm_left.ChangeDutyCycle(0)
+            # Convert from float percentage to signed 16-bit values
+            # Pi-puck expects values in range -1000 to 1000
+            left_value = int(left_speed * 10)
+            right_value = int(right_speed * 10)
             
-            # Set right motor direction and speed
-            if right_speed > 0:
-                GPIO.output(self.motor_pins['right_forward'], GPIO.HIGH)
-                GPIO.output(self.motor_pins['right_backward'], GPIO.LOW)
-                self.pwm_right.ChangeDutyCycle(abs(right_speed))
-            elif right_speed < 0:
-                GPIO.output(self.motor_pins['right_forward'], GPIO.LOW)
-                GPIO.output(self.motor_pins['right_backward'], GPIO.HIGH)
-                self.pwm_right.ChangeDutyCycle(abs(right_speed))
-            else:
-                GPIO.output(self.motor_pins['right_forward'], GPIO.LOW)
-                GPIO.output(self.motor_pins['right_backward'], GPIO.LOW)
-                self.pwm_right.ChangeDutyCycle(0)
+            # Convert to signed 16-bit bytes (little-endian)
+            left_bytes = left_value.to_bytes(2, byteorder='little', signed=True)
+            right_bytes = right_value.to_bytes(2, byteorder='little', signed=True)
             
-            self.logger.debug(f"🚗 Motors set - Left: {left_speed}%, Right: {right_speed}%")
+            # Send motor speeds via I2C
+            self.i2c_bus.write_i2c_block_data(
+                self.epuck_address, 
+                self.motor_registers['left_speed'], 
+                list(left_bytes)
+            )
+            self.i2c_bus.write_i2c_block_data(
+                self.epuck_address, 
+                self.motor_registers['right_speed'], 
+                list(right_bytes)
+            )
+            
+            self.logger.debug(f"🚗 Motor speeds set: left={left_speed}%, right={right_speed}%")
             
         except Exception as e:
             self.logger.error(f"❌ Failed to set motor speeds: {e}")
@@ -124,20 +112,26 @@ class MotorController(MotorInterface):
     
     async def stop(self) -> None:
         """Stop both motors"""
-        await self.set_speed(0, 0)
-        self.logger.debug("🛑 Motors stopped")
+        try:
+            await self.set_speed(0, 0)
+            self.logger.debug("🛑 Motors stopped")
+        except Exception as e:
+            self.logger.error(f"❌ Failed to stop motors: {e}")
+            raise
     
     async def execute_command(self, command: MotorCommand) -> None:
         """Execute a motor command"""
-        if command.action == "move":
-            await self.set_speed(command.left_speed or 0, command.right_speed or 0)
-            if command.duration and command.duration > 0:
-                await asyncio.sleep(command.duration)
+        try:
+            if command.action == "set_speed":
+                await self.set_speed(command.left_speed or 0, command.right_speed or 0)
+            elif command.action == "stop":
                 await self.stop()
-        elif command.action == "stop":
-            await self.stop()
-        else:
-            self.logger.warning(f"Unknown motor command: {command.action}")
+            else:
+                self.logger.warning(f"Unknown motor command: {command.action}")
+                
+        except Exception as e:
+            self.logger.error(f"❌ Motor command execution failed: {e}")
+            raise
     
     @property
     def is_initialized(self) -> bool:

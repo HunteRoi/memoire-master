@@ -100,9 +100,8 @@ class AudioUseCases:
             
             self.logger.info(f"🎵 Playing audio: {file_path} at volume {volume}")
             
-            # Note: This would need to be implemented in the domain interface
-            # For now, just use the tone interface as fallback
-            await self.audio.play_tone(1000, 1.0)  # Placeholder
+            # Use the hardware controller's file playback method
+            await self.audio.play_audio_file(file_path, volume)
             
             return {
                 "success": True,
@@ -129,8 +128,8 @@ class AudioUseCases:
             
             self.logger.info("🔇 Stopping audio playback")
             
-            # Note: This would need to be implemented in the domain interface
-            # For now, this is a placeholder
+            # Use the hardware controller's stop method
+            await self.audio.stop_audio()
             
             return {
                 "success": True,
@@ -139,6 +138,33 @@ class AudioUseCases:
             
         except Exception as e:
             self.logger.error(f"❌ Stop audio failed: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    async def play_melody(self, melody_name: str = "happy") -> Dict[str, Any]:
+        """Play a predefined melody"""
+        try:
+            if not await self._ensure_initialized():
+                return {
+                    "success": False,
+                    "error": "Audio not initialized"
+                }
+            
+            self.logger.info(f"🎵 Playing melody: {melody_name}")
+            
+            # Use the hardware controller's melody method
+            await self.audio.play_melody(melody_name)
+            
+            return {
+                "success": True,
+                "action": "play_melody",
+                "melody_name": melody_name
+            }
+            
+        except Exception as e:
+            self.logger.error(f"❌ Play melody failed: {e}")
             return {
                 "success": False,
                 "error": str(e)
