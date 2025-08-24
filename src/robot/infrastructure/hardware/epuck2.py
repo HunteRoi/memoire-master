@@ -9,6 +9,9 @@ try:
 except ImportError:
     smbus2 = None
 
+I2C_CHANNEL = 12
+LEGACY_I2C_CHANNEL = 4
+
 
 class EPuck2:
     """E-puck2 robot control using Pi-puck 20-byte I2C packet format
@@ -42,7 +45,7 @@ class EPuck2:
         self._initialized = False
 
         # I2C configuration
-        self._I2C_CHANNELS = [12, 4] if i2c_bus is None else [i2c_bus]
+        self._I2C_CHANNELS = [I2C_CHANNEL, LEGACY_I2C_CHANNEL] if i2c_bus is None else [i2c_bus]
 
         # Current state tracking
         self._left_motor_speed = 0
@@ -114,10 +117,18 @@ class EPuck2:
         payload[5] = self._front_leds
 
         # RGB LEDs (bytes 6-17)
-        payload[6:9] = self._led2_rgb
-        payload[9:12] = self._led4_rgb
-        payload[12:15] = self._led6_rgb
-        payload[15:18] = self._led8_rgb
+        payload[6] = self._led2_rgb[0]   # LED2 R
+        payload[7] = self._led2_rgb[1]   # LED2 G
+        payload[8] = self._led2_rgb[2]   # LED2 B
+        payload[9] = self._led4_rgb[0]   # LED4 R
+        payload[10] = self._led4_rgb[1]  # LED4 G
+        payload[11] = self._led4_rgb[2]  # LED4 B
+        payload[12] = self._led6_rgb[0]  # LED6 R
+        payload[13] = self._led6_rgb[1]  # LED6 G
+        payload[14] = self._led6_rgb[2]  # LED6 B
+        payload[15] = self._led8_rgb[0]  # LED8 R
+        payload[16] = self._led8_rgb[1]  # LED8 G
+        payload[17] = self._led8_rgb[2]  # LED8 B
 
         # Settings (byte 18)
         payload[18] = self._settings
@@ -132,6 +143,14 @@ class EPuck2:
         try:
             self._bus.write_i2c_block_data(self._address, 0, payload)
             self.logger.debug(f"📡 EPuck2 packet sent: motors=({self._left_motor_speed},{self._right_motor_speed}), speaker={self._speaker_id}")
+
+            # EXTRA DEBUGGING for Mario theme bug
+            if self._speaker_id != 0:
+                self.logger.warning(f"🚨 NON-ZERO SPEAKER in packet! speaker={self._speaker_id}")
+
+            # Debug payload bytes
+            self.logger.debug(f"📝 Full packet: {payload}")
+
         except Exception as e:
             self.logger.error(f"❌ EPuck2 I2C send failed: {e}")
             raise
@@ -281,18 +300,6 @@ class EPuck2:
         """
         self._speaker_id = max(0, min(2, sound_id))
         self._send_packet()
-
-    def play_beep(self) -> None:
-        """Play beep sound"""
-        self.set_speaker(1)
-
-    def play_mario(self) -> None:
-        """Play Mario theme"""
-        self.set_speaker(2)
-
-    def stop_sound(self) -> None:
-        """Stop sound playback"""
-        self.set_speaker(0)
 
     # Sensor Methods (mock implementation - would need actual sensor reading)
 

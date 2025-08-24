@@ -4,7 +4,6 @@ import asyncio
 import logging
 
 from application.interfaces.hardware.motor_interface import MotorInterface
-from domain.entities import MotorCommand
 
 
 class MotorController(MotorInterface):
@@ -23,7 +22,7 @@ class MotorController(MotorInterface):
         try:
             if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck:
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
-                
+
             self.logger.info("✅ Motor controller initialized using provided PiPuck")
             self._initialized = True
             return True
@@ -77,20 +76,6 @@ class MotorController(MotorInterface):
             self.logger.debug("🛑 Motors stopped")
         except Exception as e:
             self.logger.error(f"❌ Failed to stop motors: {e}")
-            raise
-
-    async def execute_command(self, command: MotorCommand) -> None:
-        """Execute a motor command"""
-        try:
-            if command.action == "set_speed":
-                await self.set_speed(command.left_speed or 0, command.right_speed or 0)
-            elif command.action == "stop":
-                await self.stop()
-            else:
-                self.logger.warning(f"Unknown motor command: {command.action}")
-
-        except Exception as e:
-            self.logger.error(f"❌ Motor command execution failed: {e}")
             raise
 
     @property

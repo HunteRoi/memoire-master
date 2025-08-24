@@ -21,8 +21,8 @@ class AudioUseCases:
             self._initialized = await self.audio.initialize()
         return self._initialized
 
-    async def play_tone(self, frequency: int, duration: float) -> Dict[str, Any]:
-        """Play a tone with specified frequency and duration"""
+    async def play_connect_sound(self) -> Dict[str, Any]:
+        """Play a sound indicating a client has connected"""
         try:
             if not await self._ensure_initialized():
                 return {
@@ -30,23 +30,64 @@ class AudioUseCases:
                     "error": "Audio not initialized"
                 }
 
-            # Validate parameters
-            frequency = max(50, min(5000, frequency))  # Reasonable audio range
-            duration = max(0.1, min(10.0, duration))   # Reasonable duration
-
-            self.logger.info(f"🔊 Playing tone: {frequency}Hz for {duration}s")
-
-            await self.audio.play_tone(frequency, duration)
+            self.logger.info("🔊 Playing connect sound")
+            await self.audio.play_beep(0.3)
 
             return {
                 "success": True,
-                "action": "play_tone",
-                "frequency": frequency,
-                "duration": duration
+                "action": "play_connect_sound"
             }
 
         except Exception as e:
-            self.logger.error(f"❌ Play tone failed: {e}")
+            self.logger.error(f"❌ Play connect sound failed: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+
+    async def play_disconnect_sound(self) -> Dict[str, Any]:
+        """Play a sound indicating a client has disconnected"""
+        try:
+            if not await self._ensure_initialized():
+                return {
+                    "success": False,
+                    "error": "Audio not initialized"
+                }
+
+            self.logger.info("🔊 Playing disconnect sound")
+            await self.audio.play_beep(0.3)
+
+            return {
+                "success": True,
+                "action": "play_disconnect_sound"
+            }
+
+        except Exception as e:
+            self.logger.error(f"❌ Play disconnect sound failed: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+
+    async def play_error_sound(self) -> Dict[str, Any]:
+        """Play a sound indicating an error occurred"""
+        try:
+            if not await self._ensure_initialized():
+                return {
+                    "success": False,
+                    "error": "Audio not initialized"
+                }
+
+            self.logger.info("🔊 Playing error sound")
+            await self.audio.play_beep(0.3)
+
+            return {
+                "success": True,
+                "action": "play_error_sound"
+            }
+
+        except Exception as e:
+            self.logger.error(f"❌ Play error sound failed: {e}")
             return {
                 "success": False,
                 "error": str(e)
@@ -81,42 +122,6 @@ class AudioUseCases:
                 "error": str(e)
             }
 
-    async def play_audio_file(self, file_path: str, volume: float = 0.7) -> Dict[str, Any]:
-        """Play audio file from storage"""
-        try:
-            if not await self._ensure_initialized():
-                return {
-                    "success": False,
-                    "error": "Audio not initialized"
-                }
-
-            if not file_path:
-                return {
-                    "success": False,
-                    "error": "Missing file path"
-                }
-
-            volume = max(0.0, min(1.0, volume))
-
-            self.logger.info(f"🎵 Playing audio: {file_path} at volume {volume}")
-
-            # Use the hardware controller's file playback method
-            await self.audio.play_audio_file(file_path, volume)
-
-            return {
-                "success": True,
-                "action": "play_audio_file",
-                "file_path": file_path,
-                "volume": volume
-            }
-
-        except Exception as e:
-            self.logger.error(f"❌ Play audio file failed: {e}")
-            return {
-                "success": False,
-                "error": str(e)
-            }
-
     async def stop_audio(self) -> Dict[str, Any]:
         """Stop all audio playback"""
         try:
@@ -143,7 +148,7 @@ class AudioUseCases:
                 "error": str(e)
             }
 
-    async def play_melody(self, melody_name: str = "happy") -> Dict[str, Any]:
+    async def play_melody(self, melody_name= "mario") -> Dict[str, Any]:
         """Play a predefined melody"""
         try:
             if not await self._ensure_initialized():

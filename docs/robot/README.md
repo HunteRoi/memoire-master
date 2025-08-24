@@ -37,7 +37,7 @@ Located in [`domain/entities.py`](../../src/robot/domain/entities.py):
 - **MessageType**: WebSocket message types for communication protocol
 - **RobotMessage**: Incoming messages from client applications
 - **RobotResponse**: Outgoing responses with automatic timestamp generation
-- **SensorReading**: Structured sensor data with proximity, light, accelerometer, gyroscope, and microphone readings
+- **SensorReading**: Structured sensor data with proximity, light, accelerometer, and gyroscope readings
 - **Command Objects**: Motor, LED, and Audio commands with validation
 
 #### Interfaces

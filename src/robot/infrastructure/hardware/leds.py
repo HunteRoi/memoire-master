@@ -6,6 +6,18 @@ from application.interfaces.hardware.led_interface import LEDInterface
 from domain.entities import LEDCommand
 
 
+_LED_COLOURS = {
+	'off': 0x00,
+	'black': 0x00,
+	'red': 0x01,
+	'green': 0x02,
+	'yellow': 0x03,
+	'blue': 0x04,
+	'magenta': 0x05,
+	'cyan': 0x06,
+	'white': 0x07
+}
+
 class LEDController(LEDInterface):
     """E-puck2 LED control using PiPuck with custom EPuck2 class"""
 
@@ -22,7 +34,7 @@ class LEDController(LEDInterface):
         try:
             if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck:
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
-                
+
             self.logger.info("✅ LED controller initialized using provided PiPuck")
             self._initialized = True
             return True
@@ -43,7 +55,7 @@ class LEDController(LEDInterface):
         self._initialized = False
 
     async def set_body_led(self, red: int, green: int, blue: int) -> None:
-        """Set e-puck2 body LEDs using EPuck2 class"""
+        """Set LEDs using both PiPuck native LEDs and EPuck2 packet"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             self.logger.warning("⚠️ LED controller not initialized")
             self.logger.info(f"💡 [Body LED] RGB({red}, {green}, {blue}) (not initialized)")
@@ -55,15 +67,15 @@ class LEDController(LEDInterface):
         blue = max(0, min(255, blue))
 
         try:
-            self.logger.info(f"💡 Setting e-puck2 body LEDs to RGB({red}, {green}, {blue})")
+            self.logger.info(f"💡 Setting LEDs to RGB({red}, {green}, {blue})")
 
-            # Use PiPuck EPuck2 class to set RGB LEDs
+            self.pipuck.set_leds_rgb(red > 0, green > 0, blue > 0)
             self.pipuck.epuck.set_body_led_rgb(red, green, blue)
-            
-            self.logger.info(f"✅ E-puck2 LEDs set to RGB({red}, {green}, {blue}) via EPuck2")
+
+            self.logger.info(f"✅ LEDs set to RGB({red}, {green}, {blue}) via dual approach")
 
         except Exception as e:
-            self.logger.error(f"❌ E-puck2 LED control failed: {e}")
+            self.logger.error(f"❌ LED control failed: {e}")
             raise e
 
     async def set_front_led(self, enabled: bool) -> None:
@@ -81,30 +93,12 @@ class LEDController(LEDInterface):
                 self.pipuck.epuck.set_front_leds(True, True, True, True)  # All 4 front LEDs on
             else:
                 self.pipuck.epuck.set_front_leds(False, False, False, False)  # All 4 front LEDs off
-            
+
             self.logger.debug(f"✅ Front LED {'ON' if enabled else 'OFF'} via EPuck2")
 
         except Exception as e:
             self.logger.warning(f"⚠️ Front LED control failed: {e}")
             self.logger.info(f"💡 [Front LED] {'ON' if enabled else 'OFF'} (error)")
-
-    async def execute_command(self, command: LEDCommand) -> None:
-        """Execute an LED command"""
-        try:
-            if command.action == "set_rgb":
-                await self.set_body_led(
-                    command.red or 0,
-                    command.green or 0,
-                    command.blue or 0
-                )
-            elif command.action == "front_led":
-                await self.set_front_led(command.enabled or False)
-            else:
-                self.logger.warning(f"Unknown LED command: {command.action}")
-
-        except Exception as e:
-            self.logger.error(f"❌ LED command execution failed: {e}")
-            raise
 
     @property
     def is_initialized(self) -> bool:

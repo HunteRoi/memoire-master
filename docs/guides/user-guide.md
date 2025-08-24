@@ -88,7 +88,6 @@ Perfect for beginners and educational environments.
 - **Read Proximity**: Detects obstacles around the robot
 - **Read Light**: Measures ambient light levels
 - **Read Accelerometer**: Detects robot orientation and movement
-- **Read Microphone**: Captures sound levels
 
 **Control Blocks**:
 - **If/Then/Else**: Conditional logic based on sensor readings
@@ -126,7 +125,8 @@ motors.stop()  # Stop both motors immediately
 **Sensor Reading**:
 ```python
 proximity = sensors.get_proximity()  # Returns array of 8 values
-light = sensors.get_light()  # Returns array of 8 values  
+light = sensors.get_light()  # Returns array of 8 values
+magno = sensors.get_magnetometer() # Returns [x, y, z] values
 accel = sensors.get_accelerometer()  # Returns [x, y, z] values
 gyro = sensors.get_gyroscope()  # Returns [x, y, z] values
 mic_level = sensors.get_microphone()  # Returns current sound level
@@ -141,9 +141,8 @@ leds.set_front_led(True)  # Enable/disable front LED
 
 **Audio Output**:
 ```python
-audio.play_tone(frequency, duration, volume)  # Generate tone
 audio.play_beep()  # Quick beep sound
-audio.play_error_sound()  # Error indicator sound
+audio.play_melody()  # Melody sound (Mario theme)
 ```
 
 #### Python Programming Tips

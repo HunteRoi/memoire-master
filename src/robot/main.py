@@ -86,7 +86,7 @@ class EPuck2Server:
             self.logger.info("🔧 Initializing shared PiPuck with custom EPuck2...")
 
             # Initialize PiPuck
-            self.pipuck = PiPuck(epuck_version=2, tof_sensors=[False]*6, yrl_expansion=False)
+            self.pipuck = PiPuck(epuck_version=2, tof_sensors=[False]*6, yrl_expansion=True)
 
             # Replace PiPuck's epuck with our custom EPuck2 class
             self.pipuck.epuck = EPuck2()
@@ -127,12 +127,6 @@ class EPuck2Server:
         # Start WebSocket server (infrastructure layer)
         self.server = await self.websocket_service.start_server(self.host, self.port)
         self.logger.info(f"🌐 Server ready on ws://{self.host}:{self.port}")
-
-        # Keep server running until stopped
-        try:
-            await self.server.wait_closed()
-        except asyncio.CancelledError:
-            self.logger.info("📡 Server shutdown requested")
 
     async def stop_server(self):
         """Stop the server"""

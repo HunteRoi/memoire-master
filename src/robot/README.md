@@ -167,7 +167,6 @@ All messages are JSON with this structure:
 
 #### Audio Commands
 ```json
-{"command": "play_tone", "frequency": 800, "duration": 0.5}
 {"command": "play_beep", "duration": 0.3}
 {"command": "stop_audio"}
 ```

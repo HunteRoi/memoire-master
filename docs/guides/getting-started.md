@@ -44,7 +44,7 @@ python main.py
 3. **Choose a theme** - Pick your preferred visual theme
 4. **Select programming mode** - Start with "Visual Programming" for beginners
 5. **Add your robot**:
-   - Click "Add New Robot" 
+   - Click "Add New Robot"
    - Enter your robot's IP address (check robot's network settings)
    - Use port 8765 (default)
    - Click "Test Connection" to verify
@@ -83,7 +83,7 @@ Perfect for beginners and educational settings:
 - **Real-time code generation** - see the Python code as you build
 - **Error prevention** - blocks connect only in valid ways
 
-#### Python Mode  
+#### Python Mode
 For advanced users and complex programs:
 - **Full Python editor** with syntax highlighting
 - **Direct hardware access** through safe interfaces
@@ -109,7 +109,7 @@ Combines both approaches:
 
 #### Connection Status
 - **Green indicator**: Robot is connected and ready
-- **Gray indicator**: Robot is configured but not connected  
+- **Gray indicator**: Robot is configured but not connected
 - **Red indicator**: Connection failed or robot is unavailable
 
 #### Multi-Robot Support
@@ -124,7 +124,7 @@ Combines both approaches:
 # Move forward
 motors.set_speed(50, 50)
 
-# Turn right  
+# Turn right
 motors.set_speed(50, -50)
 
 # Stop
@@ -141,6 +141,12 @@ light = sensors.get_light()
 
 # Read accelerometer
 accel = sensors.get_accelerometer()
+
+# Read magnetometer
+magnetic = sensors.get_magnetometer()
+
+# Read gyroscope
+gyro = sensors.get_gyroscope()
 ```
 
 ### LED Control
@@ -154,11 +160,11 @@ leds.set_color("blue", "blink")
 
 ### Audio Feedback
 ```python
-# Play a tone
-audio.play_tone(440, 0.5)  # A note for 0.5 seconds
-
 # Play a beep
 audio.play_beep()
+
+# Play a melody
+audio.play_melody()
 ```
 
 ## Educational Workflows
@@ -170,7 +176,7 @@ audio.play_beep()
 4. Build simple obstacle avoidance programs
 5. Gradually introduce loops and conditions
 
-### For Intermediate Users (Ages 13-17)  
+### For Intermediate Users (Ages 13-17)
 1. Begin with **Visual Programming**, transition to **Hybrid mode**
 2. Learn programming concepts through blocks
 3. Introduce Python syntax gradually
@@ -236,7 +242,7 @@ Once you're comfortable with the basics:
 ## Additional Resources
 
 - **[Installation Guide](./installation.md)** - Detailed setup instructions
-- **[User Guide](./user-guide.md)** - Comprehensive feature documentation  
+- **[User Guide](./user-guide.md)** - Comprehensive feature documentation
 - **[API Reference](../client/api-reference.md)** - Technical API documentation
 - **[Troubleshooting](./troubleshooting.md)** - Common issues and solutions
 - **[Development Guide](./development.md)** - Contributing to the project

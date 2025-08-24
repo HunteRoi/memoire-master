@@ -41,9 +41,9 @@ class SensorUseCases:
                 "data": {
                     "proximity": sensor_data.proximity,
                     "light": sensor_data.light,
+                    "magnetometer": sensor_data.magnetometer,
                     "accelerometer": sensor_data.accelerometer,
                     "gyroscope": sensor_data.gyroscope,
-                    "microphone": sensor_data.microphone,
                     "timestamp": sensor_data.timestamp
                 }
             }
@@ -162,6 +162,7 @@ class SensorUseCases:
                 }
 
             # Get accelerometer and gyroscope data
+            magneto = await self.sensor.get_magnetometer()
             accel = await self.sensor.get_accelerometer()
             gyro = await self.sensor.get_gyroscope()
 
@@ -178,6 +179,11 @@ class SensorUseCases:
                         "x": gyro[0],
                         "y": gyro[1],
                         "z": gyro[2]
+                    },
+                    "magnetometer": {
+                        "x": magneto[0],
+                        "y": magneto[1],
+                        "z": magneto[2]
                     }
                 }
             }

@@ -79,7 +79,7 @@ Used for robot status queries and client disconnection signaling.
 #### Robot Status Response
 - **type**: `"status"`
 - **data**: Object containing comprehensive robot status:
-  - **robot_id**: Robot identifier (typically "e-puck2")
+  - **robot_id**: Robot identifier (typically the last digits of the IP)
   - **state**: Current operational state (idle/connected/running/paused/error)
   - **firmware_version**: Robot firmware version
   - **sensors**: Object containing current sensor readings:
@@ -87,7 +87,6 @@ Used for robot status queries and client disconnection signaling.
     - **light**: Array of 8 light sensor values
     - **accelerometer**: Array of [x, y, z] acceleration values
     - **gyroscope**: Array of [x, y, z] rotation values
-    - **microphone**: Current microphone level
   - **timestamp**: Sensor reading timestamp
 
 ### ERROR Messages
@@ -128,7 +127,7 @@ The robot maintains several operational states that affect behavior:
 - LED indicator: Blue pulsing
 - Audio: Low A note (440 Hz)
 
-### CONNECTED  
+### CONNECTED
 - At least one active client connection
 - LED indicator: Green solid
 - Audio: C# note (554 Hz)
@@ -191,7 +190,7 @@ The robot maintains several operational states that affect behavior:
 
 ### Status Query
 1. **Client** → **Robot**: `{"type": "status", "data": {}}`
-2. **Robot** → **Client**: `{"type": "status", "data": {"robot_id": "e-puck2", "state": "connected", ...}, "timestamp": 1634567890.123}`
+2. **Robot** → **Client**: `{"type": "status", "data": {"robot_id": "121", "state": "connected", ...}, "timestamp": 1634567890.123}`
 
 ### Error Handling
 1. **Client** → **Robot**: `{"type": "command", "data": {"command": "invalid_function()"}}`
