@@ -1,7 +1,7 @@
 """LED control for e-puck2 robot - Pi-puck implementation"""
 
 import logging
-from pipuck import PiPuck
+from pipuck.pipuck import PiPuck
 
 from application.interfaces.hardware.led_interface import LEDInterface
 from domain.entities import LEDCommand
@@ -23,10 +23,10 @@ class LEDController(LEDInterface):
         try:
             # Initialize PiPuck for e-puck2 with no ToF sensors
             self.pipuck = PiPuck(epuck_version=2, tof_sensors=[False]*6, yrl_expansion=False)
-            
+
             # Turn off all LEDs initially
             self.pipuck.set_leds_colour('off')
-            
+
             self.logger.info("✅ LED controller initialized with PiPuck library")
             self._initialized = True
             return True
@@ -40,11 +40,14 @@ class LEDController(LEDInterface):
 
     async def cleanup(self):
         """Cleanup LED resources"""
-        if self._initialized:
+        if self._initialized and self.pipuck:
             try:
                 # Turn off all LEDs
-                if self.pipuck:
-                    self.pipuck.set_leds_colour('off')
+                self.pipuck.set_leds_colour('off')
+                
+                # Properly close PiPuck connection
+                if hasattr(self.pipuck, 'close'):
+                    self.pipuck.close()
 
                 self.logger.info("🧹 LED controller cleaned up - all LEDs turned off")
             except Exception as e:
@@ -68,14 +71,15 @@ class LEDController(LEDInterface):
         try:
             self.logger.info(f"💡 Setting e-puck2 body LEDs to RGB({red}, {green}, {blue})")
 
+            # TEMPORARILY DISABLED TO TEST BEEPING ISSUE
             # Use PiPuck RGB control
             red_on = red > 127
             green_on = green > 127
             blue_on = blue > 127
-            
-            self.pipuck.set_leds_rgb(red=red_on, green=green_on, blue=blue_on)
-            
-            self.logger.info(f"✅ E-puck2 LEDs set via PiPuck library")
+
+            # self.pipuck.set_leds_rgb(red=red_on, green=green_on, blue=blue_on)
+
+            self.logger.info(f"✅ E-puck2 LEDs set via PiPuck library (DISABLED FOR TESTING)")
 
         except Exception as e:
             self.logger.error(f"❌ E-puck2 LED control failed: {e}")
@@ -94,7 +98,7 @@ class LEDController(LEDInterface):
                 self.pipuck.set_leds_colour('white')
             else:
                 self.pipuck.set_leds_colour('off')
-            
+
             self.logger.debug(f"💡 Front LED {'ON' if enabled else 'OFF'} via PiPuck")
 
         except Exception as e:

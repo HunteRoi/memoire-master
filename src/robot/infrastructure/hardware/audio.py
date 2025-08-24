@@ -24,8 +24,8 @@ class AudioController(AudioInterface):
         self.buzzer_pin = 18  # GPIO pin for buzzer (supports hardware PWM)
         self.pi = None  # pigpio instance
 
-        # Audio file paths
-        self.audio_files_dir = os.path.join(os.path.dirname(__file__), '..', 'sound_files')
+        # Audio file paths - sound_files is in the hardware folder
+        self.audio_files_dir = os.path.join(os.path.dirname(__file__), 'sound_files')
         self.audio_files = {
             'beep': os.path.join(self.audio_files_dir, 'robot_beep.wav'),
             'melody': os.path.join(self.audio_files_dir, 'robot_melody.wav'),
@@ -116,7 +116,19 @@ class AudioController(AudioInterface):
     async def _set_pcm_volume(self):
         """Set PCM volume to 100% using amixer"""
         try:
-            self.logger.info("🔊 Setting PCM volume to 100%...")
+            self.logger.info("🔊 Setting up audio system...")
+            
+            # First, try to reload the audio driver
+            try:
+                subprocess.run(['sudo', 'modprobe', '-r', 'snd_bcm2835'], 
+                              capture_output=True, timeout=5)
+                subprocess.run(['sudo', 'modprobe', 'snd_bcm2835'], 
+                              capture_output=True, timeout=5)
+                self.logger.debug("🔧 Audio driver reloaded")
+            except:
+                pass  # Continue if driver reload fails
+            
+            # Set PCM volume to 100%
             result = subprocess.run(['amixer', 'set', 'PCM', '100%'], 
                                   capture_output=True, text=True, timeout=10)
             
@@ -127,6 +139,14 @@ class AudioController(AudioInterface):
             else:
                 stderr_text = result.stderr.strip() if result.stderr else 'No error message'
                 self.logger.warning(f"⚠️ Failed to set PCM volume: {stderr_text}")
+
+            # Also try to set Master volume as backup
+            try:
+                subprocess.run(['amixer', 'set', 'Master', '100%'], 
+                              capture_output=True, text=True, timeout=5)
+                self.logger.debug("🔧 Master volume also set to 100%")
+            except:
+                pass
 
         except Exception as e:
             self.logger.warning(f"⚠️ Could not set PCM volume: {e}")
@@ -177,24 +197,15 @@ class AudioController(AudioInterface):
                 self.logger.info(f"🔊 Playing beep from file: {self.audio_files['beep']}")
                 await self.play_audio_file(self.audio_files['beep'])
             else:
-                # Fallback to tone generation
-                self.logger.info("🔊 Beep file not found, using tone fallback")
-                await self.play_tone(800, duration)
+                self.logger.warning("🔊 Beep file not found")
         except Exception as e:
             self.logger.error(f"❌ Failed to play beep: {e}")
-            # Final fallback to tone
-            await self.play_tone(800, duration)
 
     async def play_error_sound(self) -> None:
         """Play error sound sequence - distinctive from connect/disconnect sounds"""
         try:
-            # Use distinctive error tone sequence (never use disconnect WAV file)
-            # Three short low-pitched beeps to indicate error
-            for i in range(3):
-                await self.play_tone(300, 0.2)  # Low pitch error tone
-                if i < 2:  # Don't wait after last beep
-                    await asyncio.sleep(0.1)
-            self.logger.debug("✅ Error sound sequence completed")
+            # Just log the error sound, don't play anything if hardware isn't available
+            self.logger.info("🔊 Error sound requested (no audio hardware)")
         except Exception as e:
             self.logger.error(f"❌ Failed to play error sound: {e}")
 
@@ -259,45 +270,16 @@ class AudioController(AudioInterface):
             cmd_str = ' '.join(cmd)
             self.logger.debug(f"🔊 Executing: {cmd_str}")
             
+            # Try os.system first since it behaves more like terminal
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-                
-                if result.returncode == 0:
-                    self.logger.info(f"✅ Audio playback finished successfully: {file_path}")
-                    if result.stdout:
-                        self.logger.debug(f"🔊 Audio stdout: {result.stdout.strip()}")
-                    
-                    # Add a small delay to prevent clicking sounds
+                exit_code = os.system(f"{cmd_str} 2>/dev/null")
+                if exit_code == 0:
+                    self.logger.info("✅ Audio played successfully")
                     await asyncio.sleep(0.1)
                 else:
-                    stderr_text = result.stderr.strip() if result.stderr else 'No error message'
-                    stdout_text = result.stdout.strip() if result.stdout else 'No output' 
-                    self.logger.error(f"❌ Audio player failed with return code {result.returncode}")
-                    self.logger.error(f"❌ STDERR: {stderr_text}")
-                    self.logger.error(f"❌ STDOUT: {stdout_text}")
-                    
-                    # Try to play via buzzer as final fallback
-                    self.logger.info("🔊 Attempting buzzer fallback for audio notification")
-                    await self.play_tone(800, 0.5)  # Simple beep as fallback
-                    
-            except subprocess.TimeoutExpired:
-                self.logger.error("❌ Audio playback timed out")
-                await self.play_tone(800, 0.5)  # Fallback beep
-            except Exception as sub_e:
-                self.logger.error(f"❌ Subprocess execution failed: {sub_e}")
-                # Try os.system as final fallback
-                try:
-                    self.logger.info(f"🔊 Trying os.system fallback: {cmd_str}")
-                    exit_code = os.system(f"{cmd_str} >/dev/null 2>&1")
-                    if exit_code == 0:
-                        self.logger.info("✅ Audio played with os.system")
-                        await asyncio.sleep(0.1)
-                    else:
-                        self.logger.error(f"❌ os.system also failed with code: {exit_code}")
-                        await self.play_tone(800, 0.5)
-                except Exception as os_e:
-                    self.logger.error(f"❌ os.system fallback failed: {os_e}")
-                    await self.play_tone(800, 0.5)
+                    self.logger.warning(f"⚠️ Audio playback failed with exit code: {exit_code}")
+            except Exception as e:
+                self.logger.warning(f"⚠️ Audio playback failed: {e}")
 
         except FileNotFoundError as e:
             self.logger.error(f"❌ Audio player not found: {e}")
@@ -325,35 +307,17 @@ class AudioController(AudioInterface):
             self.logger.error(f"❌ Failed to stop audio: {e}")
 
     async def play_melody(self, melody_name: str = "happy") -> None:
-        """Play a predefined melody using WAV file or tone sequences"""
+        """Play a predefined melody using WAV file"""
         if not self._initialized:
             raise RuntimeError("Audio controller not initialized")
 
         try:
-            # First try to use the robot_melody.wav file
+            # Try to use the robot_melody.wav file
             if os.path.exists(self.audio_files['melody']):
                 self.logger.info(f"🎵 Playing melody from file: {self.audio_files['melody']}")
                 await self.play_audio_file(self.audio_files['melody'])
-                return
-
-            # Fallback to tone sequences if no file found
-            self.logger.info(f"🎵 Melody file not found, using tone sequence for: {melody_name}")
-
-            # Define melody patterns as fallback
-            melodies = {
-                "happy": [(523, 0.3), (587, 0.3), (659, 0.3), (698, 0.6)],  # C-D-E-F
-                "sad": [(349, 0.5), (330, 0.5), (294, 0.8)],                   # F-E-D
-                "victory": [(523, 0.2), (659, 0.2), (784, 0.2), (1047, 0.6)], # C-E-G-C
-                "alarm": [(800, 0.3), (400, 0.3)] * 3,                         # High-low pattern
-            }
-
-            melody = melodies.get(melody_name, melodies["happy"])
-
-            for frequency, duration in melody:
-                await self.play_tone(frequency, duration)
-                await asyncio.sleep(0.1)  # Small pause between notes
-
-            self.logger.debug(f"✅ Melody '{melody_name}' finished")
+            else:
+                self.logger.warning(f"🎵 Melody file not found: {self.audio_files['melody']}")
 
         except Exception as e:
             self.logger.error(f"❌ Failed to play melody '{melody_name}': {e}")

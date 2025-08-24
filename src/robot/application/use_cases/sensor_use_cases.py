@@ -229,12 +229,8 @@ class SensorUseCases:
                     "error": "Sensors not initialized"
                 }
             
-            # Note: This would need to be added to domain interface
-            # For now, return mock data
-            battery_info = {
-                "epuck": {"voltage": 3.7, "percentage": 75},
-                "external": {"voltage": 0.0, "percentage": 0}
-            }
+            # Get actual battery information from sensor controller
+            battery_info = await self.sensor.get_battery_level()
             
             return {
                 "success": True,

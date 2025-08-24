@@ -112,6 +112,8 @@ const RobotCardComponent: FC<RobotCardProps> = ({
     () => ({
       height: '100%',
       minHeight: 200,
+      minWidth: 320, // Ensure minimum width for button layout
+      maxWidth: 400, // Prevent cards from becoming too wide
       border: selected ? 2 : 1,
       borderColor: selected ? 'primary.main' : 'divider',
       display: 'flex',
@@ -192,6 +194,9 @@ const RobotCardComponent: FC<RobotCardProps> = ({
           justifyContent='space-between'
           alignItems='flex-start'
           mb={2}
+          sx={{
+            minHeight: 40, // Ensure consistent height for button area
+          }}
         >
           <Box display='flex' alignItems='center' gap={1}>
             <Typography variant='h6'>{robotDisplayName}</Typography>
@@ -204,12 +209,11 @@ const RobotCardComponent: FC<RobotCardProps> = ({
           </Box>
           <Box 
             display='flex' 
-            flexWrap='wrap' 
             alignItems='center' 
             gap={0.5}
             sx={{
-              flexDirection: { xs: 'column', sm: 'row' },
-              alignItems: { xs: 'flex-end', sm: 'center' }
+              flexShrink: 0, // Prevent buttons from shrinking
+              minWidth: 'fit-content', // Ensure buttons always have space
             }}
           >
             {connected ? (

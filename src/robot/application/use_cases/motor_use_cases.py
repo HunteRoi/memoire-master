@@ -104,7 +104,7 @@ class MotorUseCases:
             speed = max(10, min(100, speed))
             
             # Calculate duration based on angle (approximate)
-            duration = angle / 90.0 * 0.5  # Rough estimate: 90 degrees = 0.5 seconds at medium speed
+            duration = angle / 90.0 * 1.5  # Rough estimate: 90 degrees = 1.5 seconds at medium speed
             
             self.logger.info(f"🚗 Turning left: angle={angle}°, speed={speed}%")
             
@@ -142,7 +142,7 @@ class MotorUseCases:
             speed = max(10, min(100, speed))
             
             # Calculate duration based on angle (approximate)
-            duration = angle / 90.0 * 0.5
+            duration = angle / 90.0 * 1.5  # Rough estimate: 90 degrees = 1.5 seconds at medium speed
             
             self.logger.info(f"🚗 Turning right: angle={angle}°, speed={speed}%")
             
