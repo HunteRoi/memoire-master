@@ -112,8 +112,6 @@ const RobotCardComponent: FC<RobotCardProps> = ({
     () => ({
       height: '100%',
       minHeight: 200,
-      minWidth: 320, // Ensure minimum width for button layout
-      maxWidth: 400, // Prevent cards from becoming too wide
       border: selected ? 2 : 1,
       borderColor: selected ? 'primary.main' : 'divider',
       display: 'flex',
@@ -200,16 +198,10 @@ const RobotCardComponent: FC<RobotCardProps> = ({
         >
           <Box display='flex' alignItems='center' gap={1}>
             <Typography variant='h6'>{robotDisplayName}</Typography>
-            <Chip
-              icon={connected ? <Wifi /> : <WifiOff />}
-              label={connected ? labels.connected : labels.disconnected}
-              color={connected ? 'success' : 'default'}
-              size='small'
-            />
           </Box>
-          <Box 
-            display='flex' 
-            alignItems='center' 
+          <Box
+            display='flex'
+            alignItems='center'
             gap={0.5}
             sx={{
               flexShrink: 0, // Prevent buttons from shrinking
@@ -266,6 +258,12 @@ const RobotCardComponent: FC<RobotCardProps> = ({
           <Typography variant='body2' color='text.secondary' gutterBottom>
             IP: {robot.ipAddress}:{robot.port}
           </Typography>
+          <Chip
+            icon={connected ? <Wifi /> : <WifiOff />}
+            label={connected ? labels.connected : labels.disconnected}
+            color={connected ? 'success' : 'default'}
+            size='small'
+          />
           {connected && batteryPercentage > 0 && (
             <Box display='flex' alignItems='center' gap={1} mt={1}>
               <Chip
