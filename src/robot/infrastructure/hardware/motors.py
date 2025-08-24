@@ -3,6 +3,12 @@
 import asyncio
 import logging
 from typing import Optional
+
+try:
+    import smbus2
+except ImportError:
+    smbus2 = None
+
 from application.interfaces.hardware.motor_interface import MotorInterface
 from domain.entities import MotorCommand
 
@@ -16,10 +22,17 @@ class MotorController(MotorInterface):
         self.i2c_bus = None
         self.rob_addr = 0x1f  # Pi-puck e-puck2 I2C slave address
         
-        # Pi-puck I2C register addresses for motor control (based on firmware)
+        # Pi-puck I2C register addresses for motor control (based on Pi-puck firmware)
         self.motor_registers = {
-            'left_speed': 0x06,   # Left motor speed register
-            'right_speed': 0x07   # Right motor speed register  
+            'left_speed': 0x46,   # Left motor speed register (Pi-puck standard)
+            'right_speed': 0x47   # Right motor speed register (Pi-puck standard)
+        }
+        
+        # Additional Pi-puck control registers that might be needed
+        self.control_registers = {
+            'enable': 0x01,       # Enable register (might need to be set)
+            'mode': 0x02,         # Mode register  
+            'status': 0x00        # Status register for reading
         }
     
     async def initialize(self) -> bool:
@@ -28,7 +41,8 @@ class MotorController(MotorInterface):
             return True
             
         try:
-            import smbus2
+            if not smbus2:
+                raise ImportError("smbus2 not available")
             
             # Try Pi-puck I2C buses (primary and fallback)
             for bus_num in [12, 4, 11, 3]:  # Pi-puck standard buses
@@ -51,8 +65,8 @@ class MotorController(MotorInterface):
             self.logger.error("❌ No Pi-puck I2C bus found for motor control")
             return False
             
-        except ImportError:
-            self.logger.error("❌ smbus2 not available for Pi-puck motor control")
+        except ImportError as ie:
+            self.logger.error(f"❌ Required library not available for Pi-puck motor control: {ie}")
             return False
         except Exception as e:
             self.logger.error(f"❌ Motor controller initialization failed: {e}")
@@ -92,19 +106,36 @@ class MotorController(MotorInterface):
             left_bytes = left_value.to_bytes(2, byteorder='little', signed=True)
             right_bytes = right_value.to_bytes(2, byteorder='little', signed=True)
             
-            # Send motor speeds via I2C
-            self.i2c_bus.write_i2c_block_data(
-                self.epuck_address, 
-                self.motor_registers['left_speed'], 
-                list(left_bytes)
-            )
-            self.i2c_bus.write_i2c_block_data(
-                self.epuck_address, 
-                self.motor_registers['right_speed'], 
-                list(right_bytes)
-            )
+            self.logger.info(f"🚗 Setting motor speeds: left={left_speed}% ({left_value}), right={right_speed}% ({right_value})")
+            self.logger.debug(f"🚗 Left bytes: {list(left_bytes)}, Right bytes: {list(right_bytes)}")
             
-            self.logger.debug(f"🚗 Motor speeds set: left={left_speed}%, right={right_speed}%")
+            # Send left motor speed via I2C
+            try:
+                self.logger.debug(f"🔌 I2C: Writing to addr=0x{self.rob_addr:02x}, reg=0x{self.motor_registers['left_speed']:02x}, data={list(left_bytes)}")
+                self.i2c_bus.write_i2c_block_data(
+                    self.rob_addr, 
+                    self.motor_registers['left_speed'], 
+                    list(left_bytes)
+                )
+                self.logger.debug(f"✅ Left motor speed set successfully")
+            except Exception as left_e:
+                self.logger.error(f"❌ Failed to set left motor speed: {left_e}")
+                raise left_e
+            
+            # Send right motor speed via I2C
+            try:
+                self.logger.debug(f"🔌 I2C: Writing to addr=0x{self.rob_addr:02x}, reg=0x{self.motor_registers['right_speed']:02x}, data={list(right_bytes)}")
+                self.i2c_bus.write_i2c_block_data(
+                    self.rob_addr, 
+                    self.motor_registers['right_speed'], 
+                    list(right_bytes)
+                )
+                self.logger.debug(f"✅ Right motor speed set successfully")
+            except Exception as right_e:
+                self.logger.error(f"❌ Failed to set right motor speed: {right_e}")
+                raise right_e
+                
+            self.logger.info(f"✅ Both motor speeds set successfully: left={left_speed}%, right={right_speed}%")
             
         except Exception as e:
             self.logger.error(f"❌ Failed to set motor speeds: {e}")

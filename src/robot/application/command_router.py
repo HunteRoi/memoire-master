@@ -49,7 +49,7 @@ class CommandRouter:
                 return await self._handle_motor_command(command, command_data)
 
             # LED commands
-            elif command in ["set_led_color", "set_led_rgb", "blink_led", "led_off", "set_front_led"]:
+            elif command in ["set_led_color", "set_led_rgb", "blink_led", "blink_leds", "led_off", "set_front_led"]:
                 return await self._handle_led_command(command, command_data)
 
             # Audio commands
@@ -70,12 +70,18 @@ class CommandRouter:
                 # Extract block name from execute_block("block_name") format
                 command_str = str(command_data.get("command", ""))
                 if "execute_block(" in command_str:
-                    import re
                     match = re.search(r'execute_block\("([^"]+)"\)', command_str)
                     if match:
                         block_name = match.group(1)
                         command_data["block_name"] = block_name
                         self.logger.debug(f"Extracted block name: {block_name}")
+                    else:
+                        # Try with single quotes
+                        match = re.search(r"execute_block\('([^']+)'\)", command_str)
+                        if match:
+                            block_name = match.group(1)
+                            command_data["block_name"] = block_name
+                            self.logger.debug(f"Extracted block name (single quotes): {block_name}")
                 return await self._handle_execute_block(command_data)
                 
             else:
@@ -166,6 +172,20 @@ class CommandRouter:
             count = data.get("count", 3)
             speed = data.get("speed", 0.5)
             return await self.led.blink_led(red, green, blue, count, speed)
+        elif command == "blink_leds":
+            # Special command for multicolor LED blinking sequence
+            try:
+                self.logger.info("✨ Executing multicolor LED blink sequence")
+                await self.led.blink_led(255, 255, 0, 3, 0.3)  # Yellow blink
+                await self.led.blink_led(0, 255, 255, 3, 0.3)  # Cyan blink  
+                await self.led.blink_led(255, 0, 255, 3, 0.3)  # Magenta blink
+                return {
+                    "success": True,
+                    "action": "blink_leds",
+                    "message": "LED blink sequence completed"
+                }
+            except Exception as e:
+                return {"success": False, "error": f"LED blink sequence failed: {e}"}
         elif command == "led_off":
             return await self.led.led_off()
         elif command == "set_front_led":
@@ -224,34 +244,86 @@ class CommandRouter:
         """Handle execute block command from GUI"""
         try:
             # Extract block name or code from the execute block
-            block_name = data.get("block_name", data.get("command", ""))
+            block_name = data.get("block_name", "")
+            if not block_name:
+                # If no block_name was extracted, try to get it from command
+                command_str = data.get("command", "")
+                if "execute_block(" in command_str:
+                    # Parse the command string to extract block name
+                    match = re.search(r'execute_block\("([^"]+)"\)', command_str)
+                    if match:
+                        block_name = match.group(1)
+                    else:
+                        # Try with single quotes
+                        match = re.search(r"execute_block\('([^']+)'\)", command_str)
+                        if match:
+                            block_name = match.group(1)
+                else:
+                    block_name = command_str
+            
             code = data.get("code", "")
+            
+            self.logger.debug(f"🔍 _handle_execute_block: block_name='{block_name}', code='{code}', data={data}")
             
             # Handle predefined blocks
             if block_name == "blink_leds":
                 self.logger.info("✨ Executing predefined block: blink_leds")
-                # Execute LED blinking with red color, 2 times, 0.2s intervals
-                result = await self.led.blink_led(255, 0, 0, 2, 0.2)
-                # Play completion beep using WAV file
-                await self.audio.play_beep(0.3)
-                return {
-                    "success": True,
-                    "action": "execute_block",
-                    "block_name": "blink_leds",
-                    "message": "Blink LEDs block executed successfully"
-                }
+                try:
+                    # Execute LED blinking with multicolor pattern for a few seconds
+                    await self.led.blink_led(255, 255, 0, 3, 0.3)  # Yellow blink, 3 times
+                    await self.led.blink_led(0, 255, 255, 3, 0.3)  # Cyan blink, 3 times  
+                    await self.led.blink_led(255, 0, 255, 3, 0.3)  # Magenta blink, 3 times
+                    self.logger.info("✅ blink_leds block completed successfully")
+                    return {
+                        "success": True,
+                        "action": "execute_block",
+                        "block_name": "blink_leds",
+                        "message": "Blink LEDs block executed successfully"
+                    }
+                except Exception as e:
+                    self.logger.error(f"❌ blink_leds block failed: {e}")
+                    return {"success": False, "error": f"blink_leds failed: {e}"}
                 
             elif block_name == "play_melody":
                 self.logger.info("🎵 Executing predefined block: play_melody")
-                # Execute melody playback and LED blinking
-                await self.led.blink_led(255, 0, 0, 2, 0.2)  # Red blink during melody
-                result = await self.audio.play_melody("happy")  # Will use robot_melody.wav
-                return {
-                    "success": True,
-                    "action": "execute_block", 
-                    "block_name": "play_melody",
-                    "message": "Play melody block executed successfully"
-                }
+                try:
+                    # Execute melody playback
+                    melody_result = await self.audio.play_melody("happy")
+                    self.logger.info("✅ play_melody block completed successfully")
+                    return {
+                        "success": True,
+                        "action": "execute_block", 
+                        "block_name": "play_melody",
+                        "message": "Play melody block executed successfully"
+                    }
+                except Exception as e:
+                    self.logger.error(f"❌ play_melody block failed: {e}")
+                    return {"success": False, "error": f"play_melody failed: {e}"}
+                
+            elif block_name == "read_battery":
+                self.logger.info("🔋 Executing predefined block: read_battery")
+                try:
+                    # Execute battery reading and log the result
+                    battery_result = await self.sensor.read_battery_level()
+                    if battery_result.get("success", False):
+                        battery_data = battery_result.get("data", {})
+                        epuck_battery = battery_data.get("epuck", {})
+                        battery_percentage = epuck_battery.get("percentage", 0)
+                        self.logger.info(f"🔋 Battery level: {battery_percentage}% - {battery_data}")
+                        return {
+                            "success": True,
+                            "action": "execute_block",
+                            "block_name": "read_battery", 
+                            "message": f"Battery level: {battery_percentage}%",
+                            "data": battery_data
+                        }
+                    else:
+                        error_msg = battery_result.get("error", "Unknown battery read error")
+                        self.logger.error(f"❌ Battery read failed: {error_msg}")
+                        return {"success": False, "error": f"read_battery failed: {error_msg}"}
+                except Exception as e:
+                    self.logger.error(f"❌ read_battery block failed: {e}")
+                    return {"success": False, "error": f"read_battery failed: {e}"}
             
             # Handle generic code execution
             elif code:

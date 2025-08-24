@@ -15,13 +15,12 @@ install:
 	sudo apt update
 	@echo "Installing pyenv dependencies..."
 	sudo apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev
-	@echo "Installing OpenCV system dependencies..."
-	sudo apt install -y libopenblas-dev libatlas-base-dev libjpeg-dev libtiff5-dev libpng-dev
-	sudo apt install -y libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev
 	@echo "Installing GPIO and I2C tools..."
 	sudo apt install -y i2c-tools python3-smbus
-	@echo "Installing SDL2 dependencies for pygame..."
-	sudo apt install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libfreetype6-dev libportmidi-dev
+	@echo "Installing pigpio daemon..."
+	sudo apt install -y pigpio
+	@echo "Installing audio utilities..."
+	sudo apt install -y alsa-utils mplayer
 	@echo "Installing git (required for pyenv)..."
 	sudo apt install -y git
 	@echo "Installing pyenv..."
@@ -67,13 +66,7 @@ venv:
 	@mkdir -p $(VENV_DIR)/pip && cp pip.conf $(VENV_DIR)/pip/pip.conf
 	@echo "Installing core requirements (using piwheels - no compilation needed!)..."
 	$(PIP) install --only-binary=all -r requirements.txt
-	@echo "Installing pygame (optional audio support)..."
-	@if ! $(PIP) install --only-binary=all pygame>=2.0.0; then \
-		echo "⚠️  pygame installation failed - audio file playback will not be available"; \
-		echo "✅ Core robot functionality will work without pygame"; \
-	else \
-		echo "✅ pygame installed successfully - audio file playback available"; \
-	fi
+	@echo "✅ Audio support provided by system commands (aplay/mplayer) - no Python libraries needed"
 	@echo "✅ Virtual environment created and requirements installed"
 
 # Force recreate virtual environment (removes existing one first)
@@ -90,13 +83,7 @@ venv-force:
 	mkdir -p $(VENV_DIR)/pip && cp pip.conf $(VENV_DIR)/pip/pip.conf
 	@echo "Installing core requirements (using piwheels - no compilation needed!)..."
 	$(PIP) install --only-binary=all -r requirements.txt
-	@echo "Installing pygame (optional audio support)..."
-	@if ! $(PIP) install --only-binary=all pygame>=2.0.0; then \
-		echo "⚠️  pygame installation failed - audio file playback will not be available"; \
-		echo "✅ Core robot functionality will work without pygame"; \
-	else \
-		echo "✅ pygame installed successfully - audio file playback available"; \
-	fi
+	@echo "✅ Audio support provided by system commands (aplay/mplayer) - no Python libraries needed"
 	@echo "✅ Virtual environment forcefully recreated and requirements installed"
 
 # Create config file from example
@@ -121,6 +108,26 @@ clean:
 	rm -rf logs/ 2>/dev/null || true
 	@echo "✅ Everything cleaned"
 
+# Stop pigpio daemon
+stop-pigpio:
+	@echo "🛑 Stopping pigpio daemon..."
+	@if pgrep -x "pigpiod" > /dev/null; then \
+		sudo killall pigpiod; \
+		echo "✅ pigpio daemon stopped"; \
+	else \
+		echo "ℹ️  pigpio daemon not running"; \
+	fi
+
+# Check pigpio daemon status
+status-pigpio:
+	@echo "🔍 Checking pigpio daemon status..."
+	@if pgrep -x "pigpiod" > /dev/null; then \
+		echo "✅ pigpio daemon is running (PID: $$(pgrep -x pigpiod))"; \
+	else \
+		echo "❌ pigpio daemon is not running"; \
+		echo "💡 Run 'make run' or 'sudo pigpiod' to start it"; \
+	fi
+
 # Run the robot server
 run:
 	@echo "🚀 Starting e-puck2 robot server..."
@@ -128,7 +135,30 @@ run:
 		echo "❌ Virtual environment not found. Please run 'make venv' first"; \
 		exit 1; \
 	fi
+	@echo "🔧 Starting pigpio daemon..."
+	@if ! pgrep -x "pigpiod" > /dev/null; then \
+		sudo pigpiod; \
+		echo "✅ pigpio daemon started"; \
+	else \
+		echo "✅ pigpio daemon already running"; \
+	fi
 	$(PYTHON_VENV) main.py
+
+# Run the robot server with debug logging
+run-debug:
+	@echo "🚀 Starting e-puck2 robot server with DEBUG logging..."
+	@if [ ! -d "$(VENV_DIR)" ]; then \
+		echo "❌ Virtual environment not found. Please run 'make venv' first"; \
+		exit 1; \
+	fi
+	@echo "🔧 Starting pigpio daemon..."
+	@if ! pgrep -x "pigpiod" > /dev/null; then \
+		sudo pigpiod; \
+		echo "✅ pigpio daemon started"; \
+	else \
+		echo "✅ pigpio daemon already running"; \
+	fi
+	LOG_LEVEL=DEBUG $(PYTHON_VENV) main.py
 
 # Complete setup: install -> install-python -> venv -> config
 setup: install install-python venv config
@@ -141,14 +171,17 @@ help:
 	@echo ""
 	@echo "📋 Available Commands:"
 	@echo ""
-	@echo "  install         Install system dependencies (pyenv, opencv, gpio tools, smbus, etc.)"
+	@echo "  install         Install system dependencies (pyenv, pigpio, gpio tools, audio utilities, etc.)"
 	@echo "  install-python  Install Python 3.7 using pyenv"
 	@echo "  venv            Create/update virtual environment and install requirements"
 	@echo "  venv-force      Force recreate virtual environment (removes existing one)"
 	@echo "  config          Create configuration file from .env.example"
 	@echo "  clean           Clean and delete everything (venv, cache, config)"
 	@echo "  run             Start the robot server with venv"
+	@echo "  run-debug       Start the robot server with DEBUG logging"
 	@echo "  help            Show this help message"
+	@echo "  stop-pigpio     Stop the pigpio daemon"
+	@echo "  status-pigpio   Check pigpio daemon status"
 	@echo ""
 	@echo "  setup           Run install -> install-python -> venv -> config (complete setup)"
 	@echo ""

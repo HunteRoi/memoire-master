@@ -14,9 +14,9 @@ class StatusHandler:
         self.logger = logging.getLogger(__name__)
 
     async def on_client_connected(self):
-        """Provide feedback when client connects"""
+        """Provide feedback when client connects - LED should be BLUE when connected"""
         try:
-            await self.led.set_led_color("green")
+            await self.led.set_led_color("blue")  # Blue when client is connected
             # Use connection sound WAV file if available, otherwise beep
             try:
                 await self.audio.audio.play_connect_sound()
@@ -26,9 +26,9 @@ class StatusHandler:
             self.logger.warning(f"Client connected feedback failed: {e}")
 
     async def on_client_disconnected(self):
-        """Provide feedback when last client disconnects"""
+        """Provide feedback when last client disconnects - LED should be GREEN when waiting"""
         try:
-            await self.led.set_led_color("red")
+            await self.led.set_led_color("green")  # Green when waiting for connection
             # Use disconnection sound WAV file if available, otherwise tone
             try:
                 await self.audio.audio.play_disconnect_sound()
@@ -57,14 +57,12 @@ class StatusHandler:
             self.logger.warning(f"Command error feedback failed: {e}")
 
     async def on_startup(self):
-        """Provide feedback on startup"""
+        """Provide feedback on startup - LED should be GREEN when waiting for connection"""
         try:
-            await self.led.set_led_color("blue")
-            # Use connection sound for startup if available, otherwise tone
-            try:
-                await self.audio.audio.play_connect_sound()
-            except:
-                await self.audio.play_tone(1000, 0.3)
+            await self.led.set_led_color("green")  # Green when waiting for connection
+            # No sound on startup - robot should be quiet when starting
+            # Sound will only play when client connects
+            self.logger.info("🚀 Robot startup complete - waiting for client connection")
         except Exception as e:
             self.logger.warning(f"Startup feedback failed: {e}")
 

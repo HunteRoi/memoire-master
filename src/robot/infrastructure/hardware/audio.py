@@ -5,18 +5,25 @@ import logging
 import os
 import subprocess
 from typing import Optional
+
+try:
+    import pigpio
+except ImportError:
+    pigpio = None
+
 from application.interfaces.hardware.audio_interface import AudioInterface
 from domain.entities import AudioCommand
 
 
 class AudioController(AudioInterface):
-    """E-puck2 audio control using GPIO buzzer + pygame for files"""
+    """E-puck2 audio control using pigpio buzzer + system audio commands"""
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self._initialized = False
-        self.buzzer_pin = 16  # GPIO pin for buzzer
-        
+        self.buzzer_pin = 18  # GPIO pin for buzzer (supports hardware PWM)
+        self.pi = None  # pigpio instance
+
         # Audio file paths
         self.audio_files_dir = os.path.join(os.path.dirname(__file__), '..', 'sound_files')
         self.audio_files = {
@@ -32,35 +39,98 @@ class AudioController(AudioInterface):
             return True
 
         try:
-            import RPi.GPIO as GPIO
+            if not pigpio:
+                raise ImportError("pigpio not available")
+
+            # Initialize pigpio for buzzer control
+            self.pi = pigpio.pi()
+            if not self.pi.connected:
+                raise RuntimeError("Could not connect to pigpio daemon. Please run 'sudo pigpiod' to start the daemon.")
 
             # Setup buzzer GPIO pin
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setwarnings(False)
-            GPIO.setup(self.buzzer_pin, GPIO.OUT)
-            GPIO.output(self.buzzer_pin, GPIO.LOW)
+            self.pi.set_mode(self.buzzer_pin, pigpio.OUTPUT)
+            self.pi.write(self.buzzer_pin, 0)  # Turn off initially
+
+            # Set PCM volume to 100% using amixer
+            await self._set_pcm_volume()
+
+            # Run audio diagnostics
+            await self._run_audio_diagnostics()
 
             self._initialized = True
             self.logger.info("✅ Audio controller initialized")
             return True
 
+        except ImportError as ie:
+            self.logger.error(f"❌ Required library not available for audio controller: {ie}")
+            return False
         except Exception as e:
             self.logger.error(f"❌ Audio controller initialization failed: {e}")
             return False
+
+    async def _run_audio_diagnostics(self):
+        """Run audio system diagnostics"""
+        try:
+            self.logger.debug("🔍 Running audio diagnostics...")
+
+            # Check available audio devices
+            try:
+                process = await asyncio.create_subprocess_exec(
+                    'aplay', '-l',
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+                stdout, stderr = await process.communicate()
+                if process.returncode == 0:
+                    devices = stdout.decode().strip()
+                    self.logger.debug(f"🔊 Available audio devices:\n{devices}")
+                else:
+                    self.logger.debug(f"⚠️ Could not list audio devices: {stderr.decode().strip()}")
+            except Exception as e:
+                self.logger.debug(f"⚠️ Audio device listing failed: {e}")
+
+            # Check audio files
+            for file_name, file_path in self.audio_files.items():
+                if os.path.exists(file_path):
+                    size = os.path.getsize(file_path)
+                    self.logger.debug(f"✅ Audio file '{file_name}': {file_path} ({size} bytes)")
+                else:
+                    self.logger.warning(f"⚠️ Missing audio file '{file_name}': {file_path}")
+
+        except Exception as e:
+            self.logger.debug(f"⚠️ Audio diagnostics failed: {e}")
 
     async def cleanup(self):
         """Cleanup audio resources"""
         if self._initialized:
             try:
-                import RPi.GPIO as GPIO
-                GPIO.setmode(GPIO.BCM)
-                GPIO.setwarnings(False)
-                GPIO.output(self.buzzer_pin, GPIO.LOW)
+                if self.pi and self.pi.connected:
+                    self.pi.write(self.buzzer_pin, 0)  # Turn off buzzer
+                    self.pi.stop()  # Disconnect from pigpio daemon
                 self.logger.info("🧹 Audio controller cleaned up")
             except Exception as e:
                 self.logger.warning(f"⚠️ Error during audio cleanup: {e}")
 
         self._initialized = False
+
+    async def _set_pcm_volume(self):
+        """Set PCM volume to 100% using amixer"""
+        try:
+            self.logger.info("🔊 Setting PCM volume to 100%...")
+            result = subprocess.run(['amixer', 'set', 'PCM', '100%'], 
+                                  capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                self.logger.info("✅ PCM volume set to 100%")
+                if result.stdout:
+                    self.logger.debug(f"🔊 amixer output: {result.stdout.strip()}")
+            else:
+                stderr_text = result.stderr.strip() if result.stderr else 'No error message'
+                self.logger.warning(f"⚠️ Failed to set PCM volume: {stderr_text}")
+
+        except Exception as e:
+            self.logger.warning(f"⚠️ Could not set PCM volume: {e}")
+
 
     async def play_tone(self, frequency: int, duration: float, volume: float = 1.0) -> None:
         """Play a tone using GPIO buzzer (fallback only)"""
@@ -68,21 +138,33 @@ class AudioController(AudioInterface):
             raise RuntimeError("Audio controller not initialized")
 
         try:
-            import RPi.GPIO as GPIO
+            if not self.pi or not self.pi.connected:
+                raise RuntimeError("pigpio not connected")
 
-            # Generate tone using PWM
-            buzzer_pwm = GPIO.PWM(self.buzzer_pin, frequency)
-            buzzer_pwm.start(50)  # 50% duty cycle
+            # Try hardware PWM first, fall back to software PWM
+            try:
+                # Generate tone using pigpio hardware PWM
+                self.pi.hardware_PWM(self.buzzer_pin, frequency, 500000)  # 50% duty cycle
+                await asyncio.sleep(duration)
+                self.pi.hardware_PWM(self.buzzer_pin, 0, 0)  # Stop hardware PWM
+                self.logger.debug(f"🔊 Played tone: {frequency}Hz for {duration}s (hardware PWM)")
 
-            await asyncio.sleep(duration)
+            except Exception as hw_e:
+                # Hardware PWM not available, try software PWM
+                self.logger.debug(f"Hardware PWM failed ({hw_e}), trying software PWM")
 
-            buzzer_pwm.stop()
-            GPIO.output(self.buzzer_pin, GPIO.LOW)
+                # Software PWM fallback
+                self.pi.set_PWM_frequency(self.buzzer_pin, frequency)
+                self.pi.set_PWM_dutycycle(self.buzzer_pin, 128)  # 50% duty cycle (0-255)
 
-            self.logger.debug(f"🔊 Played tone: {frequency}Hz for {duration}s")
+                await asyncio.sleep(duration)
+
+                # Stop software PWM
+                self.pi.set_PWM_dutycycle(self.buzzer_pin, 0)
+                self.logger.debug(f"🔊 Played tone: {frequency}Hz for {duration}s (software PWM)")
 
         except Exception as e:
-            self.logger.warning(f"⚠️ GPIO buzzer not available: {e}")
+            self.logger.warning(f"⚠️ pigpio buzzer not available: {e}")
             # Fallback: just log the tone
             self.logger.info(f"🔊 [BEEP] {frequency}Hz for {duration}s (no hardware)")
             await asyncio.sleep(duration)
@@ -104,18 +186,15 @@ class AudioController(AudioInterface):
             await self.play_tone(800, duration)
 
     async def play_error_sound(self) -> None:
-        """Play error sound sequence"""
+        """Play error sound sequence - distinctive from connect/disconnect sounds"""
         try:
-            # Try to use disconnect sound for errors (or could create error.wav)
-            if os.path.exists(self.audio_files['disconnect']):
-                await self.play_audio_file(self.audio_files['disconnect'])
-            else:
-                # Fallback to tone sequence
-                await self.play_tone(300, 0.2)
-                await asyncio.sleep(0.1)
-                await self.play_tone(300, 0.2)
-                await asyncio.sleep(0.1)
-                await self.play_tone(300, 0.2)
+            # Use distinctive error tone sequence (never use disconnect WAV file)
+            # Three short low-pitched beeps to indicate error
+            for i in range(3):
+                await self.play_tone(300, 0.2)  # Low pitch error tone
+                if i < 2:  # Don't wait after last beep
+                    await asyncio.sleep(0.1)
+            self.logger.debug("✅ Error sound sequence completed")
         except Exception as e:
             self.logger.error(f"❌ Failed to play error sound: {e}")
 
@@ -151,37 +230,74 @@ class AudioController(AudioInterface):
             # Check if file exists
             if not os.path.exists(file_path):
                 self.logger.error(f"❌ Audio file not found: {file_path}")
-                return
+                # Also try relative to current directory as fallback
+                fallback_path = os.path.join(os.getcwd(), 'infrastructure', 'sound_files', os.path.basename(file_path))
+                if os.path.exists(fallback_path):
+                    self.logger.info(f"🔍 Found audio file at fallback path: {fallback_path}")
+                    file_path = fallback_path
+                else:
+                    self.logger.error(f"❌ Audio file not found at fallback path either: {fallback_path}")
+                    return
 
             # Determine file type and choose appropriate player
             file_ext = os.path.splitext(file_path.lower())[1]
-            
+
             if file_ext in ['.wav', '.wave']:
-                # Use aplay for WAV files
                 cmd = ['aplay', file_path]
                 self.logger.info(f"🎵 Playing WAV file with aplay: {file_path}")
             elif file_ext in ['.mp3', '.mp4', '.m4a', '.avi', '.mov']:
-                # Use mplayer for MP3 and other formats
-                cmd = ['mplayer', '-really-quiet', '-volume', str(int(volume * 100)), file_path]
-                self.logger.info(f"🎵 Playing media file with mplayer: {file_path}")
+                cmd = ['mplayer', '-volume', str(int(volume * 100)), file_path]
+                self.logger.info(f"🎵 Playing media file with mplayer (volume {int(volume * 100)}%): {file_path}")
             else:
-                # Try aplay as fallback
+                # Try aplay as fallback for unknown formats (no volume control)
                 cmd = ['aplay', file_path]
                 self.logger.info(f"🎵 Playing unknown format with aplay: {file_path}")
 
-            # Execute the command asynchronously
-            process = await asyncio.create_subprocess_exec(
-                *cmd,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
+            self.logger.info(f"🔊 Executing audio command: {' '.join(cmd)}")
+
+            # Execute the command using os.system for better reliability
+            cmd_str = ' '.join(cmd)
+            self.logger.debug(f"🔊 Executing: {cmd_str}")
             
-            stdout, stderr = await process.communicate()
-            
-            if process.returncode == 0:
-                self.logger.debug(f"✅ Audio playback finished: {file_path}")
-            else:
-                self.logger.warning(f"⚠️ Audio player returned code {process.returncode}: {stderr.decode()}")
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                
+                if result.returncode == 0:
+                    self.logger.info(f"✅ Audio playback finished successfully: {file_path}")
+                    if result.stdout:
+                        self.logger.debug(f"🔊 Audio stdout: {result.stdout.strip()}")
+                    
+                    # Add a small delay to prevent clicking sounds
+                    await asyncio.sleep(0.1)
+                else:
+                    stderr_text = result.stderr.strip() if result.stderr else 'No error message'
+                    stdout_text = result.stdout.strip() if result.stdout else 'No output' 
+                    self.logger.error(f"❌ Audio player failed with return code {result.returncode}")
+                    self.logger.error(f"❌ STDERR: {stderr_text}")
+                    self.logger.error(f"❌ STDOUT: {stdout_text}")
+                    
+                    # Try to play via buzzer as final fallback
+                    self.logger.info("🔊 Attempting buzzer fallback for audio notification")
+                    await self.play_tone(800, 0.5)  # Simple beep as fallback
+                    
+            except subprocess.TimeoutExpired:
+                self.logger.error("❌ Audio playback timed out")
+                await self.play_tone(800, 0.5)  # Fallback beep
+            except Exception as sub_e:
+                self.logger.error(f"❌ Subprocess execution failed: {sub_e}")
+                # Try os.system as final fallback
+                try:
+                    self.logger.info(f"🔊 Trying os.system fallback: {cmd_str}")
+                    exit_code = os.system(f"{cmd_str} >/dev/null 2>&1")
+                    if exit_code == 0:
+                        self.logger.info("✅ Audio played with os.system")
+                        await asyncio.sleep(0.1)
+                    else:
+                        self.logger.error(f"❌ os.system also failed with code: {exit_code}")
+                        await self.play_tone(800, 0.5)
+                except Exception as os_e:
+                    self.logger.error(f"❌ os.system fallback failed: {os_e}")
+                    await self.play_tone(800, 0.5)
 
         except FileNotFoundError as e:
             self.logger.error(f"❌ Audio player not found: {e}")
@@ -203,7 +319,7 @@ class AudioController(AudioInterface):
                     await process.communicate()
                 except Exception:
                     pass  # Ignore errors if no processes found
-                    
+
             self.logger.debug("🔇 Audio playback stopped")
         except Exception as e:
             self.logger.error(f"❌ Failed to stop audio: {e}")
@@ -212,17 +328,17 @@ class AudioController(AudioInterface):
         """Play a predefined melody using WAV file or tone sequences"""
         if not self._initialized:
             raise RuntimeError("Audio controller not initialized")
-        
+
         try:
             # First try to use the robot_melody.wav file
             if os.path.exists(self.audio_files['melody']):
                 self.logger.info(f"🎵 Playing melody from file: {self.audio_files['melody']}")
                 await self.play_audio_file(self.audio_files['melody'])
                 return
-                
+
             # Fallback to tone sequences if no file found
             self.logger.info(f"🎵 Melody file not found, using tone sequence for: {melody_name}")
-            
+
             # Define melody patterns as fallback
             melodies = {
                 "happy": [(523, 0.3), (587, 0.3), (659, 0.3), (698, 0.6)],  # C-D-E-F
@@ -232,13 +348,13 @@ class AudioController(AudioInterface):
             }
 
             melody = melodies.get(melody_name, melodies["happy"])
-            
+
             for frequency, duration in melody:
                 await self.play_tone(frequency, duration)
                 await asyncio.sleep(0.1)  # Small pause between notes
-                
+
             self.logger.debug(f"✅ Melody '{melody_name}' finished")
-            
+
         except Exception as e:
             self.logger.error(f"❌ Failed to play melody '{melody_name}': {e}")
 
@@ -253,7 +369,7 @@ class AudioController(AudioInterface):
                 await self.play_tone(1000, 0.3)
         except Exception as e:
             self.logger.error(f"❌ Failed to play connect sound: {e}")
-            
+
     async def play_disconnect_sound(self) -> None:
         """Play disconnection sound"""
         try:

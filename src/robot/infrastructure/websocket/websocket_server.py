@@ -124,15 +124,49 @@ class WebSocketService(NotificationServiceInterface):
 
     # NotificationServiceInterface implementation
     async def notify_client_connected(self) -> Dict[str, Any]:
-        """Generate welcome message for new client"""
+        """Generate welcome message for new client with battery and status info"""
         import asyncio
+        from application.interfaces.message_handler import MessageHandlerInterface
+        
+        # Get battery and status info from message handler if available
+        if hasattr(self, 'message_handler') and self.message_handler:
+            try:
+                ping_response = await self.message_handler.handle_ping()
+                ping_data = ping_response.get('data', {})
+                
+                return {
+                    "type": "status",
+                    "data": {
+                        "robot_id": ping_data.get("robot_id", "epuck2"),
+                        "state": "connected",
+                        "firmware_version": "1.0.0",
+                        "timestamp": ping_data.get("timestamp", asyncio.get_event_loop().time()),
+                        "battery": ping_data.get("battery", 0),
+                        "battery_voltage": ping_data.get("battery_voltage", 0.0),
+                        "status": ping_data.get("status", "connected"),
+                        "client_count": ping_data.get("client_count", 1),
+                        "hardware": ping_data.get("hardware", {
+                            "motors": False,
+                            "leds": False,
+                            "audio": False,
+                            "sensors": False
+                        })
+                    }
+                }
+            except Exception as e:
+                # Fallback to basic status if there's an error getting detailed info
+                pass
+        
+        # Fallback basic message
         return {
             "type": "status",
             "data": {
-                "robot_id": "e-puck2",
+                "robot_id": "epuck2",
                 "state": "connected",
                 "firmware_version": "1.0.0",
-                "timestamp": asyncio.get_event_loop().time()
+                "timestamp": asyncio.get_event_loop().time(),
+                "battery": 0,
+                "status": "connected"
             }
         }
     

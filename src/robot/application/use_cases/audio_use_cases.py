@@ -53,7 +53,7 @@ class AudioUseCases:
             }
     
     async def play_beep(self, duration: float = 0.3) -> Dict[str, Any]:
-        """Play a simple beep sound"""
+        """Play a simple beep sound using WAV file"""
         try:
             if not await self._ensure_initialized():
                 return {
@@ -63,10 +63,10 @@ class AudioUseCases:
             
             duration = max(0.1, min(3.0, duration))
             
-            self.logger.info(f"🔊 Playing beep for {duration}s")
+            self.logger.info(f"🔊 Playing beep sound")
             
-            # Standard beep frequency
-            await self.audio.play_tone(800, duration)
+            # Use beep WAV file (hardware controller handles fallback to tone if file missing)
+            await self.audio.play_beep(duration)
             
             return {
                 "success": True,

@@ -1,5 +1,6 @@
 """Robot controller - Application layer orchestrator"""
 
+import asyncio
 import logging
 from typing import Dict, Any
 
@@ -65,7 +66,6 @@ class RobotController(MessageHandlerInterface):
     
     async def handle_ping(self) -> Dict[str, Any]:
         """Handle ping request with battery and status info"""
-        import asyncio
         
         try:
             # Get battery information
@@ -90,10 +90,10 @@ class RobotController(MessageHandlerInterface):
                     "client_count": client_count,
                     "robot_id": "epuck2",
                     "hardware": {
-                        "motors": self.command_router.motor.is_initialized,
-                        "leds": self.command_router.led.is_initialized,
-                        "audio": self.command_router.audio.is_initialized,
-                        "sensors": self.command_router.sensor.is_initialized
+                        "motors": self.command_router.motor.motor.is_initialized,
+                        "leds": self.command_router.led.led.is_initialized,
+                        "audio": self.command_router.audio.audio.is_initialized,
+                        "sensors": self.command_router.sensor.sensor.is_initialized
                     }
                 }
             }

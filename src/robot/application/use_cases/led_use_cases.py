@@ -51,7 +51,10 @@ class LEDUseCases:
             
             self.logger.info(f"💡 Setting LED to RGB({red}, {green}, {blue})")
             
+            # This should throw an exception if I2C communication fails
             await self.led.set_body_led(red, green, blue)
+            
+            self.logger.info(f"✅ LED RGB successfully set to ({red}, {green}, {blue})")
             
             return {
                 "success": True,
@@ -90,7 +93,10 @@ class LEDUseCases:
             
             self.logger.info(f"💡 Setting LED to {color_name} RGB({red}, {green}, {blue})")
             
+            # This should throw an exception if I2C communication fails
             await self.led.set_body_led(red, green, blue)
+            
+            self.logger.info(f"✅ LED color successfully set to {color_name}")
             
             return {
                 "success": True,
@@ -126,14 +132,18 @@ class LEDUseCases:
             
             self.logger.info(f"💡 Blinking LED RGB({red}, {green}, {blue}) {count} times at {speed}s intervals")
             
-            for _ in range(count):
+            for i in range(count):
+                self.logger.debug(f"💡 Blink {i+1}/{count}: turning ON")
                 # Turn on
                 await self.led.set_body_led(red, green, blue)
                 await asyncio.sleep(speed)
                 
+                self.logger.debug(f"💡 Blink {i+1}/{count}: turning OFF")
                 # Turn off
                 await self.led.set_body_led(0, 0, 0)
                 await asyncio.sleep(speed)
+                
+            self.logger.info(f"✅ LED blink sequence completed successfully")
             
             return {
                 "success": True,

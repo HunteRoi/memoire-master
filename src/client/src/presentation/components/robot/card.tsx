@@ -202,7 +202,16 @@ const RobotCardComponent: FC<RobotCardProps> = ({
               size='small'
             />
           </Box>
-          <Box>
+          <Box 
+            display='flex' 
+            flexWrap='wrap' 
+            alignItems='center' 
+            gap={0.5}
+            sx={{
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'flex-end', sm: 'center' }
+            }}
+          >
             {connected ? (
               <Tooltip title={disconnectTooltip}>
                 <IconButton

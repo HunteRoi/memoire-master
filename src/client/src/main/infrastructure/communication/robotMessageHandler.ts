@@ -105,6 +105,19 @@ export class RobotMessageHandler {
           }
           break;
         case 'status':
+          // Update robot status from status messages (including connection status with battery info)
+          if (response.data) {
+            connectedRobot.batteryPercentage = response.data.battery || 0;
+            connectedRobot.batteryVoltage = response.data.battery_voltage || 0;
+            connectedRobot.robotStatus = response.data.status || 'unknown';
+            connectedRobot.hardwareStatus = response.data.hardware;
+            
+            // Trigger status update callback if available
+            if (onPong) {
+              onPong(connectedRobot.robot.id, Date.now(), response.data);
+            }
+          }
+          break;
         case 'error':
           break;
         default:

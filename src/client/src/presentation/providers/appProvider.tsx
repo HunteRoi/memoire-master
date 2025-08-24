@@ -63,8 +63,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
       newConnectedRobots.delete(action.payload);
       const newRobotStatus = new Map(state.robotStatus);
       newRobotStatus.delete(action.payload);
-      return { 
-        ...state, 
+      return {
+        ...state,
         connectedRobots: newConnectedRobots,
         robotStatus: newRobotStatus
       };
@@ -263,12 +263,12 @@ export const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     const handleRobotDisconnect = (robotId: string) => {
       console.log('Robot disconnected unexpectedly:', robotId);
       removeConnectedRobot(robotId);
-      
+
       // If the disconnected robot was the selected one, clear selection
       if (state.selectedRobot === robotId) {
         setSelectedRobot(null);
       }
-      
+
       // Show alert to user
       showAlert('Robot disconnected unexpectedly', 'warning');
     };

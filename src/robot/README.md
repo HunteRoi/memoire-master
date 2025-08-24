@@ -76,7 +76,7 @@ make help      # Show all available commands
 
 1. **Install System Dependencies**:
 ```bash
-make install   # Installs pyenv, OpenCV deps, GPIO tools, SDL2, etc.
+make install   # Installs pyenv, pigpio, GPIO tools, audio utilities, etc.
 ```
 
 2. **Install Python 3.7**:
@@ -98,9 +98,16 @@ make config   # Creates .env from .env.example
 
 ### Start the Server
 ```bash
-make run
+make run     # Automatically starts pigpio daemon if needed
 # OR
 python main.py
+```
+
+**Note**: The robot requires the pigpio daemon for GPIO control. If you get pigpio connection errors:
+```bash
+sudo pigpiod          # Start the daemon manually
+make status-pigpio    # Check if daemon is running
+make stop-pigpio      # Stop the daemon if needed
 ```
 
 Server starts on `ws://0.0.0.0:8765/robot`
@@ -206,7 +213,7 @@ All messages are JSON with this structure:
 ### Direct GPIO Control
 - **Motors**: Direct PWM control via Pi GPIO pins
 - **LEDs**: I2C communication with Pi-puck LED controller + GPIO front LED
-- **Audio**: GPIO PWM buzzer + optional pygame for file playback
+- **Audio**: pigpio PWM buzzer + system audio commands (aplay/mplayer) for file playback
 - **Sensors**: I2C communication for proximity, light, accelerometer, gyroscope
 
 ### Raspberry Pi Compatibility
