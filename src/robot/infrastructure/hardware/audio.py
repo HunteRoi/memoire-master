@@ -4,6 +4,8 @@ import asyncio
 import logging
 
 from application.interfaces.hardware.audio_interface import AudioInterface
+from .epuck2 import (SOUND_OFF, SOUND_MARIO, SOUND_UNDERWORLD, SOUND_STARWARS, 
+                     SOUND_TONE_4KHZ, SOUND_TONE_10KHZ, SOUND_STOP)
 
 
 class AudioController(AudioInterface):
@@ -14,11 +16,6 @@ class AudioController(AudioInterface):
         self._initialized = False
         self.pipuck = pipuck
 
-        # Speaker sound IDs from Pi-puck documentation
-        # 0 = no sound, 1 = beep, 2 = mario theme
-        self.SOUND_NONE = 0
-        self.SOUND_BEEP = 1
-        self.SOUND_MARIO = 2
 
     async def initialize(self) -> bool:
         """Initialize audio controller (PiPuck should already be initialized)"""
@@ -40,7 +37,7 @@ class AudioController(AudioInterface):
         """Cleanup audio resources (PiPuck cleanup handled by container)"""
         if self._initialized:
             try:
-                await self._send_sound(self.SOUND_NONE)
+                await self._send_sound(SOUND_OFF)
                 self.logger.info("🧹 Audio controller cleaned up")
             except Exception as e:
                 self.logger.warning(f"⚠️ Error during audio cleanup: {e}")
@@ -61,12 +58,12 @@ class AudioController(AudioInterface):
             raise
 
     async def play_beep(self, duration: float = 0.1) -> None:
-        """Play a simple beep using I2C Speaker"""
+        """Play a 4KHz tone as beep"""
         try:
-            self.logger.info("🔊 Playing beep sound via I2C")
-            await self._send_sound(self.SOUND_BEEP)
+            self.logger.info("🔊 Playing beep sound (4KHz tone) via I2C")
+            await self._send_sound(SOUND_TONE_4KHZ)
             await asyncio.sleep(duration)
-            await self._send_sound(self.SOUND_NONE)
+            await self._send_sound(SOUND_STOP)
 
         except Exception as e:
             self.logger.error(f"❌ Failed to play beep: {e}")
@@ -75,9 +72,18 @@ class AudioController(AudioInterface):
         """Play a melody via I2C"""
         try:
             self.logger.info(f"🎵 Playing melody '{melody_name}' via I2C")
-            await self._send_sound(self.SOUND_MARIO)
+            
+            # Select sound based on melody name
+            sound_map = {
+                "mario": SOUND_MARIO,
+                "underworld": SOUND_UNDERWORLD, 
+                "starwars": SOUND_STARWARS
+            }
+            
+            sound_id = sound_map.get(melody_name.lower(), SOUND_MARIO)
+            await self._send_sound(sound_id)
             await asyncio.sleep(3.0)
-            await self._send_sound(self.SOUND_NONE)
+            await self._send_sound(SOUND_STOP)
 
         except Exception as e:
             self.logger.error(f"❌ Failed to play melody '{melody_name}': {e}")
@@ -85,7 +91,7 @@ class AudioController(AudioInterface):
     async def stop_audio(self) -> None:
         """Stop currently playing audio"""
         try:
-            await self._send_sound(self.SOUND_NONE)
+            await self._send_sound(SOUND_STOP)
             self.logger.debug("🔇 Audio stopped")
         except Exception as e:
             self.logger.error(f"❌ Failed to stop audio: {e}")

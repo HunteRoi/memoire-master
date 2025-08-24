@@ -53,9 +53,8 @@ class MotorController(MotorInterface):
 
             # Convert from percentage to e-puck2 speed values (signed 16-bit)
             # e-puck2 expects values like -1000 to 1000
-            # NOTE: Motors are reversed - negate values to fix forward/backward
-            left_value = int(-left_speed * 10)
-            right_value = int(-right_speed * 10)
+            left_value = int(left_speed * 10)
+            right_value = int(right_speed * 10)
 
             self.logger.info(f"🚗 Setting motor speeds: left={left_speed}% ({left_value}), right={right_speed}% ({right_value})")
 

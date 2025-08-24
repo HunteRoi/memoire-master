@@ -33,8 +33,8 @@ class LEDController(LEDInterface):
         """Cleanup LED resources (PiPuck cleanup handled by container)"""
         if self._initialized:
             try:
-                # Turn off all LEDs
-                await self.set_body_led(0, 0, 0)
+                # Turn off all LEDs using EPuck2's method
+                self.pipuck.epuck.set_all_leds_off()
                 self.logger.info("🧹 LED controller cleaned up - all LEDs turned off")
             except Exception as e:
                 self.logger.warning(f"⚠️ Error during LED cleanup: {e}")
@@ -75,11 +75,8 @@ class LEDController(LEDInterface):
         try:
             self.logger.debug(f"💡 Front LED {'ON' if enabled else 'OFF'}")
 
-            # Use PiPuck EPuck2 class to set front LEDs
-            if enabled:
-                self.pipuck.epuck.set_front_leds(True, True, True, True)  # All 4 front LEDs on
-            else:
-                self.pipuck.epuck.set_front_leds(False, False, False, False)  # All 4 front LEDs off
+            # Use PiPuck EPuck2 class to set front LED (dedicated bit)
+            self.pipuck.epuck.set_front_led(enabled)
 
             self.logger.debug(f"✅ Front LED {'ON' if enabled else 'OFF'} via EPuck2")
 

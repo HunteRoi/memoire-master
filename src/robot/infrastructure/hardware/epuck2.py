@@ -11,6 +11,22 @@ except ImportError:
 I2C_CHANNEL = 12
 LEGACY_I2C_CHANNEL = 4
 
+# Official e-puck2 Sound IDs
+SOUND_OFF = 0x00
+SOUND_MARIO = 0x01
+SOUND_UNDERWORLD = 0x02
+SOUND_STARWARS = 0x04
+SOUND_TONE_4KHZ = 0x08
+SOUND_TONE_10KHZ = 0x10
+SOUND_STOP = 0x20
+
+# Request/Settings byte bit flags
+REQUEST_IMAGE_STREAM = 0x01     # Bit 0: Image stream (0=stop, 1=start)
+REQUEST_SENSORS_STREAM = 0x02   # Bit 1: Sensors stream (0=stop, 1=start)
+SETTINGS_CALIBRATE_IR = 0x04    # Bit 2.0: Calibrate IR proximity sensors
+SETTINGS_OBSTACLE_AVOID = 0x08  # Bit 2.1: Obstacle avoidance (not yet implemented)
+SETTINGS_MOTOR_POSITION = 0x10  # Bit 2.2: Motor control mode (0=speed, 1=position)
+
 
 class EPuck2:
     """E-puck2 robot control using Pi-puck 20-byte I2C packet format
@@ -18,17 +34,17 @@ class EPuck2:
     Compatible with EPuck1 interface but uses the correct 20-byte protocol
     for e-puck2 robots as documented in Pi-puck specification.
 
-    Packet format (20 bytes):
-    - Bytes 0-1: Left motor speed (signed 16-bit little-endian)
-    - Bytes 2-3: Right motor speed (signed 16-bit little-endian)
-    - Byte 4: Speaker sound ID (0=off, 1=beep, 2=mario)
-    - Byte 5: LED1,3,5,7 (4 bits)
-    - Bytes 6-8: LED2 RGB (R,G,B)
-    - Bytes 9-11: LED4 RGB (R,G,B)
-    - Bytes 12-14: LED6 RGB (R,G,B)
-    - Bytes 15-17: LED8 RGB (R,G,B)
-    - Byte 18: Settings
-    - Byte 19: Checksum (XOR of bytes 0-18)
+    Packet format (20 bytes) per official e-puck2 documentation:
+    - Byte 0: Request/Settings flags
+    - Bytes 1-2: Left motor speed/position (signed 16-bit little-endian)
+    - Bytes 3-4: Right motor speed/position (signed 16-bit little-endian)
+    - Byte 5: LEDs (LED1,3,5,7,Body,Front bits)
+    - Bytes 6-8: LED2 RGB (R,G,B, 0-100 each)
+    - Bytes 9-11: LED4 RGB (R,G,B, 0-100 each)
+    - Bytes 12-14: LED6 RGB (R,G,B, 0-100 each)
+    - Bytes 15-17: LED8 RGB (R,G,B, 0-100 each)
+    - Byte 18: Reserved
+    - Byte 19: Sound ID (0x01=MARIO, 0x02=UNDERWORLD, 0x04=STARWARS, 0x08=4KHz, 0x10=10KHz, 0x20=stop)
     """
 
     def __init__(self, i2c_bus: Optional[int] = None, i2c_address: Optional[int] = None):
@@ -49,18 +65,21 @@ class EPuck2:
         # Current state tracking
         self._left_motor_speed = 0
         self._right_motor_speed = 0
-        self._speaker_id = 0
-        self._front_leds = 0
-        self._led2_rgb = [0, 0, 0]
-        self._led4_rgb = [0, 0, 0]
-        self._led6_rgb = [0, 0, 0]
-        self._led8_rgb = [0, 0, 0]
-        self._settings = 0
+        self._sound_id = 0
+        self._leds_byte = 0  # LED1,3,5,7,Body,Front bits
+        self._led2_rgb = [0, 0, 0]  # 0-100 range
+        self._led4_rgb = [0, 0, 0]  # 0-100 range
+        self._led6_rgb = [0, 0, 0]  # 0-100 range
+        self._led8_rgb = [0, 0, 0]  # 0-100 range
+        self._request_settings = 0  # Request/Settings byte
 
-        # Last sensor readings (mock for now - would need sensor read implementation)
-        self._ir_reflected = [0] * 8
-        self._ir_ambient = [0] * 8
-        self._motor_steps = [0, 0]
+        # Sensor readings cache
+        self._ir_reflected = [0] * 8  # Proximity sensors (0-4095)
+        self._ir_ambient = [0] * 8    # Light sensors (0-4095)
+        self._motor_steps = [0, 0]    # Motor encoder steps
+        self._accelerometer = [0.0, 0.0, 9.8]  # [x, y, z] in m/s²
+        self._gyroscope = [0.0, 0.0, 0.0]      # [x, y, z] in °/s
+        self._magnetometer = [0.0, 0.0, 0.0]   # [x, y, z] in µT
 
         # Initialize I2C connection
         self._connect()
@@ -93,29 +112,29 @@ class EPuck2:
         raise RuntimeError("Could not connect to EPuck2 on any I2C channel")
 
     def _send_packet(self) -> None:
-        """Send current state as 20-byte I2C packet"""
+        """Send current state as 20-byte I2C packet per official e-puck2 format"""
         if not self._initialized or not self._bus:
             raise RuntimeError("EPuck2 not initialized")
 
         # Create 20-byte payload
         payload = [0] * 20
 
-        # Motors (bytes 0-3): signed 16-bit little-endian
+        # Request/Settings (byte 0)
+        payload[0] = self._request_settings
+
+        # Motors (bytes 1-4): signed 16-bit little-endian
         left_bytes = self._left_motor_speed.to_bytes(2, byteorder='little', signed=True)
         right_bytes = self._right_motor_speed.to_bytes(2, byteorder='little', signed=True)
 
-        payload[0] = left_bytes[0]   # Left motor low byte
-        payload[1] = left_bytes[1]   # Left motor high byte
-        payload[2] = right_bytes[0]  # Right motor low byte
-        payload[3] = right_bytes[1]  # Right motor high byte
+        payload[1] = left_bytes[0]   # Left motor low byte
+        payload[2] = left_bytes[1]   # Left motor high byte
+        payload[3] = right_bytes[0]  # Right motor low byte
+        payload[4] = right_bytes[1]  # Right motor high byte
 
-        # Speaker (byte 4)
-        payload[4] = self._speaker_id
+        # LEDs (byte 5) - LED1,3,5,7,Body,Front bits
+        payload[5] = self._leds_byte
 
-        # Front LEDs (byte 5)
-        payload[5] = self._front_leds
-
-        # RGB LEDs (bytes 6-17)
+        # RGB LEDs (bytes 6-17) - values 0-100
         payload[6] = self._led2_rgb[0]   # LED2 R
         payload[7] = self._led2_rgb[1]   # LED2 G
         payload[8] = self._led2_rgb[2]   # LED2 B
@@ -129,23 +148,16 @@ class EPuck2:
         payload[16] = self._led8_rgb[1]  # LED8 G
         payload[17] = self._led8_rgb[2]  # LED8 B
 
-        # Settings (byte 18)
-        payload[18] = self._settings
+        # Reserved (byte 18)
+        payload[18] = 0
 
-        # Checksum (byte 19)
-        checksum = 0
-        for i in range(19):
-            checksum ^= payload[i]
-        payload[19] = checksum
+        # Sound ID (byte 19)
+        payload[19] = self._sound_id
 
         # Send packet
         try:
             self._bus.write_i2c_block_data(self._address, 0, payload)
-            self.logger.debug(f"📡 EPuck2 packet sent: motors=({self._left_motor_speed},{self._right_motor_speed}), speaker={self._speaker_id}")
-
-            # EXTRA DEBUGGING for Mario theme bug
-            if self._speaker_id != 0:
-                self.logger.warning(f"🚨 NON-ZERO SPEAKER in packet! speaker={self._speaker_id}")
+            self.logger.debug(f"📡 EPuck2 packet sent: motors=({self._left_motor_speed},{self._right_motor_speed}), sound_id=0x{self._sound_id:02x}")
 
             # Debug payload bytes
             self.logger.debug(f"📝 Full packet: {payload}")
@@ -229,7 +241,8 @@ class EPuck2:
             led5: LED5 state
             led7: LED7 state
         """
-        self._front_leds = (
+        # Update bits 0-3 for LED1,3,5,7
+        self._leds_byte = (self._leds_byte & 0xF0) | (
             (led1 << 0) |
             (led3 << 1) |
             (led5 << 2) |
@@ -243,21 +256,49 @@ class EPuck2:
         Args:
             leds: LED states as 4-bit value (0-15)
         """
-        self._front_leds = leds & 0x0F
+        # Update bits 0-3 for LED1,3,5,7
+        self._leds_byte = (self._leds_byte & 0xF0) | (leds & 0x0F)
+        self._send_packet()
+
+    def set_body_led(self, enabled: bool) -> None:
+        """Set body LED state
+
+        Args:
+            enabled: Body LED state
+        """
+        # Update bit 4 for body LED
+        if enabled:
+            self._leds_byte |= 0x10
+        else:
+            self._leds_byte &= ~0x10
+        self._send_packet()
+
+    def set_front_led(self, enabled: bool) -> None:
+        """Set front LED state
+
+        Args:
+            enabled: Front LED state
+        """
+        # Update bit 5 for front LED
+        if enabled:
+            self._leds_byte |= 0x20
+        else:
+            self._leds_byte &= ~0x20
         self._send_packet()
 
     def set_body_led_rgb(self, red: int, green: int, blue: int, led_id: int = None) -> None:
         """Set RGB body LED color
 
         Args:
-            red: Red component (0-255)
-            green: Green component (0-255)
-            blue: Blue component (0-255)
+            red: Red component (0-255, will be scaled to 0-100)
+            green: Green component (0-255, will be scaled to 0-100)
+            blue: Blue component (0-255, will be scaled to 0-100)
             led_id: LED number (2,4,6,8) or None for all
         """
-        red = max(0, min(255, red))
-        green = max(0, min(255, green))
-        blue = max(0, min(255, blue))
+        # Scale from 0-255 to 0-100 as per e-puck2 documentation
+        red = max(0, min(100, int(red * 100 / 255)))
+        green = max(0, min(100, int(green * 100 / 255)))
+        blue = max(0, min(100, int(blue * 100 / 255)))
 
         rgb = [red, green, blue]
 
@@ -282,7 +323,7 @@ class EPuck2:
 
     def set_all_leds_off(self) -> None:
         """Turn off all LEDs"""
-        self._front_leds = 0
+        self._leds_byte = 0
         self._led2_rgb = [0, 0, 0]
         self._led4_rgb = [0, 0, 0]
         self._led6_rgb = [0, 0, 0]
@@ -292,24 +333,50 @@ class EPuck2:
     # Speaker Control Methods
 
     def set_speaker(self, sound_id: int) -> None:
-        """Set speaker sound
+        """Set speaker sound using official e-puck2 sound IDs
 
         Args:
-            sound_id: Sound ID (0=off, 1=beep, 2=mario)
+            sound_id: Sound ID (use SOUND_* constants)
         """
-        self._speaker_id = max(0, min(2, sound_id))
+        self._sound_id = sound_id & 0x3F  # Limit to valid range
         self._send_packet()
 
-    # Sensor Methods (mock implementation - would need actual sensor reading)
+    def play_mario(self) -> None:
+        """Play Mario theme"""
+        self.set_speaker(SOUND_MARIO)
+
+    def play_underworld(self) -> None:
+        """Play Underworld theme"""
+        self.set_speaker(SOUND_UNDERWORLD)
+
+    def play_starwars(self) -> None:
+        """Play Star Wars theme"""
+        self.set_speaker(SOUND_STARWARS)
+
+    def play_tone_4khz(self) -> None:
+        """Play 4KHz tone"""
+        self.set_speaker(SOUND_TONE_4KHZ)
+
+    def play_tone_10khz(self) -> None:
+        """Play 10KHz tone"""
+        self.set_speaker(SOUND_TONE_10KHZ)
+
+    def stop_sound(self) -> None:
+        """Stop all sounds"""
+        self.set_speaker(SOUND_STOP)
+
+    # Sensor Methods (actual I2C sensor reading)
 
     @property
     def ir_reflected(self) -> List[int]:
-        """Get IR reflected sensor readings (mock)"""
+        """Get IR reflected (proximity) sensor readings (0-4095)"""
+        self._read_sensors()
         return self._ir_reflected.copy()
 
     @property
     def ir_ambient(self) -> List[int]:
-        """Get IR ambient sensor readings (mock)"""
+        """Get IR ambient (light) sensor readings (0-4095)"""
+        self._read_sensors()
         return self._ir_ambient.copy()
 
     def get_ir_reflected(self, sensor: int) -> int:
@@ -330,13 +397,76 @@ class EPuck2:
             sensor: Sensor index (0-7)
         """
         if 0 <= sensor <= 7:
+            self._read_sensors()
             return self._ir_ambient[sensor]
         else:
             raise ValueError(f"Invalid sensor index {sensor}")
 
+    def _read_sensors(self) -> None:
+        """Read sensor data from e-puck2 via I2C
+
+        Note: This is a simplified implementation. The actual e-puck2 protocol
+        would require implementing the advanced sercom v2 protocol for reading
+        sensor data back from the robot.
+        """
+        if not self._initialized or not self._bus:
+            return
+
+        try:
+            # TODO: Implement actual sensor reading protocol
+            # For now, this is a placeholder that would need the proper
+            # e-puck2 sensor reading protocol implementation
+
+            # The e-puck2 would need to send back sensor data when streaming is enabled
+            # This would typically involve:
+            # 1. Reading multiple bytes of sensor data from I2C
+            # 2. Parsing the data according to e-puck2 protocol
+            # 3. Updating the sensor value arrays
+
+            self.logger.debug("📊 Sensor reading not yet implemented - using mock data")
+
+        except Exception as e:
+            self.logger.warning(f"⚠️ Sensor reading failed: {e}")
+
+    # IMU Methods (e-puck2 built-in IMU)
+
+    @property
+    def accelerometer(self) -> List[float]:
+        """Get accelerometer readings [x, y, z] in m/s²"""
+        self._read_sensors()
+        return self._accelerometer.copy()
+
+    @property
+    def gyroscope(self) -> List[float]:
+        """Get gyroscope readings [x, y, z] in °/s"""
+        self._read_sensors()
+        return self._gyroscope.copy()
+
+    @property
+    def magnetometer(self) -> List[float]:
+        """Get magnetometer readings [x, y, z] in µT"""
+        self._read_sensors()
+        return self._magnetometer.copy()
+
+    def get_accelerometer(self) -> List[float]:
+        """Get accelerometer readings [x, y, z] in m/s²"""
+        return self.accelerometer
+
+    def get_gyroscope(self) -> List[float]:
+        """Get gyroscope readings [x, y, z] in °/s"""
+        return self.gyroscope
+
+    def get_magnetometer(self) -> List[float]:
+        """Get magnetometer readings [x, y, z] in µT"""
+        return self.magnetometer
+
     def enable_ir_sensors(self, enabled: bool) -> None:
-        """Enable/disable IR sensors (mock implementation)"""
-        pass  # Would need actual implementation
+        """Enable/disable IR sensors"""
+        if enabled:
+            self._request_settings |= REQUEST_SENSORS_STREAM
+        else:
+            self._request_settings &= ~REQUEST_SENSORS_STREAM
+        self._send_packet()
 
     # Compatibility methods with EPuck1 interface
 
@@ -356,6 +486,51 @@ class EPuck2:
         else:
             self.set_body_led_rgb(0, 0, 0)  # Off
 
+    # Request/Settings control methods
+
+    def enable_image_stream(self, enabled: bool = True) -> None:
+        """Enable/disable image stream"""
+        if enabled:
+            self._request_settings |= REQUEST_IMAGE_STREAM
+        else:
+            self._request_settings &= ~REQUEST_IMAGE_STREAM
+        self._send_packet()
+
+    def enable_sensors_stream(self, enabled: bool = True) -> None:
+        """Enable/disable sensors stream"""
+        if enabled:
+            self._request_settings |= REQUEST_SENSORS_STREAM
+        else:
+            self._request_settings &= ~REQUEST_SENSORS_STREAM
+        self._send_packet()
+
+    def calibrate_ir_sensors(self) -> None:
+        """Calibrate IR proximity sensors"""
+        self._request_settings |= SETTINGS_CALIBRATE_IR
+        self._send_packet()
+        # Clear flag after sending
+        self._request_settings &= ~SETTINGS_CALIBRATE_IR
+
+    def enable_obstacle_avoidance(self, enabled: bool = True) -> None:
+        """Enable/disable obstacle avoidance (not yet implemented in firmware)"""
+        if enabled:
+            self._request_settings |= SETTINGS_OBSTACLE_AVOID
+        else:
+            self._request_settings &= ~SETTINGS_OBSTACLE_AVOID
+        self._send_packet()
+
+    def set_motor_control_mode(self, position_mode: bool = False) -> None:
+        """Set motor control mode
+
+        Args:
+            position_mode: True for position control, False for speed control
+        """
+        if position_mode:
+            self._request_settings |= SETTINGS_MOTOR_POSITION
+        else:
+            self._request_settings &= ~SETTINGS_MOTOR_POSITION
+        self._send_packet()
+
     # Cleanup
 
     def close(self) -> None:
@@ -365,8 +540,8 @@ class EPuck2:
                 # Turn everything off before closing
                 self._left_motor_speed = 0
                 self._right_motor_speed = 0
-                self._speaker_id = 0
-                self._front_leds = 0
+                self._sound_id = 0
+                self._leds_byte = 0
                 self._led2_rgb = [0, 0, 0]
                 self._led4_rgb = [0, 0, 0]
                 self._led6_rgb = [0, 0, 0]

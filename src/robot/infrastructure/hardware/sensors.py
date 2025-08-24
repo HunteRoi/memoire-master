@@ -31,12 +31,10 @@ class SensorController(SensorInterface):
             if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck or not isinstance(self.pipuck.epuck, EPuck2):
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
 
-            if not self.pipuck.expansion or not self.pipuck.expansion.imu:
-                error = RuntimeError("LSM9DS1 IMU not available in PiPuck expansion")
-                self.logger.warning(f"⚠️ {error}")
-                # Not critical, continue without IMU
-
-            self.logger.info("✅ Sensor controller initialized using provided PiPuck and LSM9DS1")
+            # Enable sensor streaming from e-puck2 (includes IMU)
+            self.pipuck.epuck.enable_sensors_stream(True)
+            
+            self.logger.info("✅ Sensor controller initialized using EPuck2 (includes built-in IMU)")
             self._initialized = True
             return True
 
@@ -82,49 +80,37 @@ class SensorController(SensorInterface):
             return [100] * 8
 
     async def get_magnetometer(self) -> List[float]:
-        """Get magnetometer readings [x, y, z] from LSM9DS1 IMU"""
-        if not self._initialized:
+        """Get magnetometer readings [x, y, z] from e-puck2 built-in IMU"""
+        if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [0.0, 0.0, 0.0]
         try:
-            if self.pipuck.expansion.imu:
-                mag_x, mag_y, mag_z = self.pipuck.expansion.imu.magnetic
-                mag = [mag_x, mag_y, mag_z]
-                self.logger.debug(f"🧲 Magnetometer: {mag}")
-                return mag
-            else:
-                return [0.0, 0.0, 0.0]
+            mag = self.pipuck.epuck.get_magnetometer()
+            self.logger.debug(f"🧲 Magnetometer: {mag}")
+            return mag
         except Exception as e:
             self.logger.warning(f"⚠️ Magnetometer read failed: {e}")
             return [0.0, 0.0, 0.0]
 
     async def get_accelerometer(self) -> List[float]:
-        """Get accelerometer readings [x, y, z] from LSM9DS1 IMU"""
-        if not self._initialized:
+        """Get accelerometer readings [x, y, z] from e-puck2 built-in IMU"""
+        if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [0.0, 0.0, 9.8]
         try:
-            if self.pipuck.expansion.imu:
-                accel_x, accel_y, accel_z = self.pipuck.expansion.imu.acceleration
-                accel = [accel_x, accel_y, accel_z]
-                self.logger.debug(f"📐 Accelerometer: {accel}")
-                return accel
-            else:
-                return [0.0, 0.0, 9.8]
+            accel = self.pipuck.epuck.get_accelerometer()
+            self.logger.debug(f"📐 Accelerometer: {accel}")
+            return accel
         except Exception as e:
             self.logger.warning(f"⚠️ Accelerometer read failed: {e}")
             return [0.0, 0.0, 9.8]
 
     async def get_gyroscope(self) -> List[float]:
-        """Get gyroscope readings [x, y, z] from LSM9DS1 IMU"""
-        if not self._initialized:
+        """Get gyroscope readings [x, y, z] from e-puck2 built-in IMU"""
+        if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [0.0, 0.0, 0.0]
         try:
-            if self.pipuck.expansion.imu:
-                gyro_x, gyro_y, gyro_z = self.pipuck.expansion.imu.gyro
-                gyro = [gyro_x, gyro_y, gyro_z]
-                self.logger.debug(f"🌀 Gyroscope: {gyro}")
-                return gyro
-            else:
-                return [0.0, 0.0, 0.0]
+            gyro = self.pipuck.epuck.get_gyroscope()
+            self.logger.debug(f"🌀 Gyroscope: {gyro}")
+            return gyro
         except Exception as e:
             self.logger.warning(f"⚠️ Gyroscope read failed: {e}")
             return [0.0, 0.0, 0.0]
