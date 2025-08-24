@@ -5,10 +5,11 @@
 python-dotenv>=0.15.0,<1.0.0     # Configuration management
 websockets>=8.0,<10.0             # WebSocket server
 
-# Development and Testing
-pytest>=5.0.0,<7.0.0              # Testing framework
-pytest-asyncio>=0.12.0,<0.20.0    # Async testing support
-
 # Hardware Dependencies (for e-puck2 robot with Pi-puck)
-pigpio>=1.78                      # GPIO control for motors and buzzer (more reliable than RPi.GPIO)
-smbus2>=0.3.0,<0.5.0              # I2C communication for Pi-puck sensors
+VL53L1X
+VL53L1X2
+pigpio
+RPi.GPIO
+smbus
+smbus2
+pipuck

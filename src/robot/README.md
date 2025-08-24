@@ -122,7 +122,7 @@ LOG_FILE=logs/robot_server.log
 LOG_MAX_BYTES=10485760
 LOG_BACKUP_COUNT=5
 
-# WebSocket Server Configuration  
+# WebSocket Server Configuration
 ROBOT_HOST=0.0.0.0
 ROBOT_PORT=8765
 ```
@@ -228,22 +228,12 @@ All messages are JSON with this structure:
 When adding new features:
 
 1. **Domain**: Add new entities to `domain/entities.py`
-2. **Application**: 
+2. **Application**:
    - Create interfaces in `application/interfaces/hardware/`
    - Implement business logic in `application/use_cases/`
-3. **Infrastructure**: 
+3. **Infrastructure**:
    - Implement hardware interfaces in `infrastructure/hardware/`
    - Use dependency injection in `main.py`
-
-### Testing
-
-```bash
-# Install test dependencies (included in requirements.txt)
-pytest tests/
-
-# Run with coverage
-pytest --cov=src tests/
-```
 
 ### Code Quality
 
@@ -257,7 +247,7 @@ black src/
 # Check style
 flake8 src/
 
-# Type checking  
+# Type checking
 mypy src/
 ```
 

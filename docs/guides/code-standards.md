@@ -112,20 +112,6 @@ export const RobotCard: FC<Props> = () => {}; // PascalCase for components
 - Implement graceful degradation for hardware failures
 - Never let exceptions crash the server
 
-## Testing Standards
-
-### Unit Tests
-- Test business logic in isolation
-- Use descriptive test names that explain the scenario
-- Follow Arrange-Act-Assert pattern
-- Mock external dependencies appropriately
-
-### Integration Tests
-- Test component interactions
-- Use realistic test data
-- Test error scenarios and edge cases
-- Maintain test independence
-
 ## Documentation Standards
 
 ### Code Comments

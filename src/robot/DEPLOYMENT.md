@@ -39,7 +39,7 @@ The server auto-detects the robot's IP address on 192.168.0.xxx network.
 
 **Configuration priority (highest to lowest):**
 1. Command line arguments
-2. Environment variables  
+2. Environment variables
 3. .env file
 4. Default values
 
@@ -62,23 +62,6 @@ export ROBOT_PORT=8765
 export LOG_LEVEL=DEBUG
 python3 main.py
 ```
-
-## Testing
-
-1. **Test server startup:**
-   ```bash
-   make lint
-   ```
-
-2. **Test WebSocket connection:**
-   ```bash
-   make debug
-   ```
-
-3. **From Electron client:**
-   - Connect to `ws://192.168.0.121:8765`
-   - Should receive status message immediately
-   - Can send ping/command messages
 
 ## File Structure
 
@@ -107,7 +90,7 @@ make install      # Install Python dependencies in venv
 make config       # Create .env file from .env.example
 make config-force # Create .env file (overwrites existing)
 make run          # Start the robot server (in venv)
-make debug        # Start server with debug logging (in venv)
+make run-debug    # Start server with debug logging (in venv)
 make clean        # Remove generated files
 make clean-all    # Remove everything including venv
 make lint         # Basic syntax checking (in venv)
