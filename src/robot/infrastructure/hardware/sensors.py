@@ -1,47 +1,38 @@
-"""Sensor control for e-puck2 robot - Pi-puck implementation"""
+"""Sensor control for e-puck2 robot using custom EPuck2 class"""
 
 import logging
 from typing import List
-from pipuck.epuck2 import EPuck2
 from pipuck.lsm9ds1 import LSM9DS1
 from pipuck.pipuck import PiPuck
 
+from .epuck2 import EPuck2
 from application.interfaces.hardware.sensor_interface import SensorInterface
 from domain.entities import SensorReading
 
 
 class SensorController(SensorInterface):
-    """E-puck2 sensor control using Pi-puck EPuck2 library and LSM9DS1 IMU"""
+    """E-puck2 sensor control using custom EPuck2 class and LSM9DS1 IMU"""
 
-    def __init__(self):
+    def __init__(self, pipuck=None):
         self.logger = logging.getLogger(__name__)
         self._initialized = False
-        self.epuck = None
         self.imu = None
-        self.pipuck = None
+        self.pipuck = pipuck
 
     async def initialize(self) -> bool:
-        """Initialize EPuck2 and LSM9DS1 sensor control"""
+        """Initialize sensor controller (PiPuck should already be initialized)"""
         if self._initialized:
             return True
 
         try:
-            # Initialize EPuck2 instance for robot-specific sensors
-            self.epuck = EPuck2()
-
-            # Initialize PiPuck for battery monitoring
-            try:
-                self.pipuck = PiPuck(epuck_version=2, tof_sensors=[False]*6, yrl_expansion=False)
-                self.logger.info("✅ PiPuck initialized for battery monitoring")
-            except Exception as pipuck_e:
-                self.logger.warning(f"⚠️ PiPuck not available for battery monitoring: {pipuck_e}")
-                self.pipuck = None
+            if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck:
+                raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
 
             # Initialize LSM9DS1 IMU for accelerometer and gyroscope
             # Try same I2C channels as motor controller
             I2C_CHANNEL = 12
             LEGACY_I2C_CHANNEL = 4
-            
+
             try:
                 # Try primary I2C channel first
                 try:
@@ -51,12 +42,12 @@ class SensorController(SensorInterface):
                     # Fallback to legacy I2C channel
                     self.imu = LSM9DS1(i2c_bus=LEGACY_I2C_CHANNEL)
                     self.logger.info(f"✅ LSM9DS1 IMU initialized on I2C channel {LEGACY_I2C_CHANNEL}")
-                    
+
             except Exception as imu_e:
                 self.logger.warning(f"⚠️ LSM9DS1 IMU not available: {imu_e}")
                 self.imu = None
 
-            self.logger.info("✅ Sensor controller initialized with EPuck2, PiPuck and LSM9DS1 libraries")
+            self.logger.info("✅ Sensor controller initialized using provided PiPuck and LSM9DS1")
             self._initialized = True
             return True
 
@@ -68,34 +59,27 @@ class SensorController(SensorInterface):
             return False
 
     async def cleanup(self):
-        """Cleanup sensor resources"""
+        """Cleanup sensor resources (PiPuck cleanup handled by container)"""
         if self._initialized:
             try:
                 if self.imu and hasattr(self.imu, 'close'):
                     self.imu.close()
-                    
-                if self.pipuck and hasattr(self.pipuck, 'close'):
-                    self.pipuck.close()
-                    
+
                 self.logger.info("🧹 Sensor controller cleaned up")
             except Exception as e:
                 self.logger.warning(f"⚠️ Error during sensor cleanup: {e}")
 
         self._initialized = False
-        self.epuck = None
         self.imu = None
-        self.pipuck = None
 
     async def get_proximity(self) -> List[int]:
         """Get proximity sensor readings (8 sensors) via EPuck2"""
-        if not self._initialized or not self.epuck:
+        if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [0] * 8
 
         try:
-            # Note: EPuck2 proximity sensor methods need to be determined from library documentation
-            # This is a placeholder until proper EPuck2 sensor methods are identified
-            self.logger.debug("📡 Proximity sensor reading via EPuck2 (placeholder)")
-            proximity = [0] * 8
+            # Use our EPuck2 class IR reflected sensor readings
+            proximity = self.pipuck.epuck.ir_reflected
             self.logger.debug(f"📡 Proximity sensors: {proximity}")
             return proximity
 
@@ -105,14 +89,12 @@ class SensorController(SensorInterface):
 
     async def get_light(self) -> List[int]:
         """Get light sensor readings (8 sensors) via EPuck2"""
-        if not self._initialized or not self.epuck:
+        if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [100] * 8
 
         try:
-            # Note: EPuck2 light sensor methods need to be determined from library documentation
-            # This is a placeholder until proper EPuck2 sensor methods are identified
-            self.logger.debug("💡 Light sensor reading via EPuck2 (placeholder)")
-            light = [100] * 8
+            # Use our EPuck2 class IR ambient sensor readings for light sensors
+            light = self.pipuck.epuck.ir_ambient
             self.logger.debug(f"💡 Light sensors: {light}")
             return light
 
@@ -162,7 +144,7 @@ class SensorController(SensorInterface):
 
     async def get_microphone(self) -> float:
         """Get microphone level from e-puck via EPuck2"""
-        if not self._initialized or not self.epuck:
+        if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return 0.0
 
         try:
