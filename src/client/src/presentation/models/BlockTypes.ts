@@ -168,15 +168,6 @@ export const soundBlocks: Block[] = [
     description: 'Play a beep sound',
     parameters: [
       {
-        id: 'frequency',
-        name: 'Frequency',
-        type: 'number',
-        defaultValue: 440,
-        min: 100,
-        max: 2000,
-        unit: 'Hz',
-      },
-      {
         id: 'duration',
         name: 'Duration',
         type: 'number',
@@ -187,7 +178,7 @@ export const soundBlocks: Block[] = [
       },
     ],
     pythonTemplate:
-      'robot.play_beep(frequency={{frequency}}, duration={{duration}})',
+      'robot.play_beep(duration={{duration}})',
   },
   {
     id: 'play_melody',
@@ -280,7 +271,7 @@ export const ledBlocks: Block[] = [
 
 export const sensorBlocks: Block[] = [
   {
-    id: 'floor_sensor',
+    id: 'read_ground',
     name: 'Floor Color Sensor',
     icon: '🔍',
     category: 'sensors',

@@ -231,13 +231,28 @@ export const ScriptExecutionContainer: React.FC<
         const beepDuration = parameters?.duration || 0.5;
         return `play_beep(frequency=${frequency}, duration=${beepDuration})`;
 
-      case 'set_led_color':
-        const ledId = parameters?.led_id || 'all';
+      case 'play_melody':
+        const melodyName = parameters?.melody_name || 'default';
+        return `play_melody("${melodyName}")`;
+
+      case 'stop_melody':
+        return `stop_melody()`;
+
+      case 'blink_leds':
+        const led_id = parameters?.led_id || 'all';
         const color = parameters?.color || 'red';
-        return `set_led_color("${ledId}", "${color}")`;
+        const times = parameters?.times || 1;
+        const interval = parameters?.interval || 0.5;
+        return `blink_leds(led_id="${led_id}", color="${color}", times=${times}, interval=${interval})`;
+
+      case 'read_battery':
+        return `read_battery()`;
 
       default:
-        return `execute_block("${blockType}")`;
+        const formatted_parameters = Object.entries(parameters)
+          .map(array => `${array[0]}=${typeof array[1] === 'string' ? '"'+array[1]+'"' : array[1]}`)
+          .join(', ');
+        return `${blockType}(${formatted_parameters})`;
     }
   }, []);
 

@@ -2,7 +2,6 @@
 
 import asyncio
 import logging
-import math
 from typing import Dict, Any
 
 from application.interfaces.hardware.motor_interface import MotorInterface
@@ -15,6 +14,11 @@ class MotorUseCases:
         self.motor = motor_interface
         self.logger = logging.getLogger(__name__)
         self._initialized = False
+
+    @property
+    def is_initialized(self) -> bool:
+        """Check if motor is initialized"""
+        return self._initialized
 
     async def _ensure_initialized(self) -> bool:
         """Ensure motor is initialized"""

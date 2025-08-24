@@ -1,6 +1,5 @@
 """Sensor use cases - Application layer business logic"""
 
-import asyncio
 import logging
 from typing import Dict, Any, List
 
@@ -14,6 +13,11 @@ class SensorUseCases:
         self.sensor = sensor_interface
         self.logger = logging.getLogger(__name__)
         self._initialized = False
+
+    @property
+    def is_initialized(self) -> bool:
+        """Check if sensor is initialized"""
+        return self._initialized
 
     async def _ensure_initialized(self) -> bool:
         """Ensure sensor is initialized"""

@@ -1,27 +1,23 @@
-"""WebSocket server - Infrastructure layer adapter"""
-
-import asyncio
 import json
 import logging
 import websockets
 from typing import Set, Dict, Any
 from websockets.server import WebSocketServerProtocol
 
-from application.interfaces.message_handler import MessageHandlerInterface
-from application.interfaces.notification_service import NotificationServiceInterface
+from application.robot_controller import RobotController
 
+class WebsocketManager:
+    """Manages WebSocket connections and delegates to RobotController for handling events."""
 
-class WebSocketService(NotificationServiceInterface):
-    """WebSocket server adapter - Infrastructure implements Application interface"""
-
-    def __init__(self, message_handler: MessageHandlerInterface):
-        self.message_handler = message_handler  # Application layer interface
-        self.websocket_server = None
-        self.connected_clients: Set[WebSocketServerProtocol] = set()
+    def __init__(self, robot_controller: RobotController):
+        """Initialize with RobotController instance."""
         self.logger = logging.getLogger(__name__)
+        self.robot_controller = robot_controller
+        self.connected_clients: Set[WebSocketServerProtocol] = set()
+        self.websocket_server = None
 
     async def start_server(self, host: str = '0.0.0.0', port: int = 8765):
-        """Start the WebSocket server"""
+        """Start the WebSocket server."""
         try:
             self.logger.info(f"🌐 Starting WebSocket server on {host}:{port}")
 
@@ -30,17 +26,18 @@ class WebSocketService(NotificationServiceInterface):
                 host,
                 port
             )
-
             self.logger.info(f"✅ WebSocket server started on {host}:{port}")
-            return self.websocket_server
 
+            await self.robot_controller.on_startup()
+            return self.websocket_server
         except Exception as e:
             self.logger.error(f"❌ Failed to start WebSocket server: {e}")
             raise
 
     async def stop_server(self):
-        """Stop the WebSocket server"""
+        """Stop the WebSocket server."""
         try:
+            self.robot_controller.on_shutdown()
             if self.websocket_server:
                 self.websocket_server.close()
                 await self.websocket_server.wait_closed()
@@ -53,64 +50,48 @@ class WebSocketService(NotificationServiceInterface):
         client_id = f"{websocket.remote_address[0]}:{websocket.remote_address[1]}"
 
         try:
-            # Register client
             self.connected_clients.add(websocket)
             self.logger.debug(f"🔗 WebSocket client connected: {client_id}")
 
-            # Delegate to application layer
-            welcome_message = await self.message_handler.handle_client_connected()
+            welcome_message = await self.robot_controller.handle_client_connected(self.client_count)
             await websocket.send(json.dumps(welcome_message))
 
-            # Handle messages from this client
             async for message in websocket:
-                await self._handle_message(websocket, message)
+                await self.handle_message(websocket, message)
 
         except websockets.exceptions.ConnectionClosed:
             pass
         except Exception as e:
             self.logger.error(f"❌ Error handling client {client_id}: {e}")
-        finally:
-            # Cleanup on disconnect
+        finally: # Cleanup on disconnect
             self.connected_clients.discard(websocket)
             self.logger.debug(f"🔌 WebSocket client disconnected: {client_id}")
+            await self.robot_controller.handle_client_disconnected(self.client_count)
 
-            # Delegate to application layer
-            await self.message_handler.handle_client_disconnected()
-
-    async def _handle_message(self, websocket: WebSocketServerProtocol, message_data: str):
+    async def handle_message(self, websocket: WebSocketServerProtocol, message_data: str):
         """Handle incoming message from client - Pure adapter logic"""
         try:
-            # Parse JSON message
             data = json.loads(message_data)
             msg_type = data.get('type')
             msg_data = data.get('data', {})
 
             self.logger.debug(f"📨 WebSocket received {msg_type}")
 
-            # Route to appropriate application layer handler
             response = None
-
             if msg_type == 'ping':
-                response = await self.message_handler.handle_ping()
-
+                response = await self.robot_controller.handle_ping(self.client_count)
             elif msg_type == 'command':
-                response = await self.message_handler.handle_command(msg_data)
-
+                response = await self.robot_controller.handle_command(msg_data)
             elif msg_type == 'battery_check':
-                response = await self.message_handler.handle_battery_check()
-
+                response = await self.robot_controller.handle_battery_check()
             elif msg_type == 'status':
-                await self.message_handler.handle_status_message(msg_data)
-                # No response needed for status messages
-
-            else:
-                # Unknown message type
+                await self.robot_controller.handle_status_message(msg_data)
+            else: # Unknown message type
                 response = {
                     "type": "error",
                     "message": f"Unknown message type: {msg_type}"
                 }
 
-            # Send response if there is one
             if response:
                 await websocket.send(json.dumps(response))
 
@@ -121,36 +102,6 @@ class WebSocketService(NotificationServiceInterface):
             self.logger.error(f"❌ WebSocket message error: {e}")
             error = {"type": "error", "message": str(e)}
             await websocket.send(json.dumps(error))
-
-    # NotificationServiceInterface implementation
-    async def notify_client_connected(self) -> Dict[str, Any]:
-        """Generate welcome message for new client with battery and status info"""
-        # Get battery and status info from message handler if available
-        try:
-            ping_response = await self.message_handler.handle_ping()
-            ping_data = ping_response.get('data', {})
-            return {
-                "type": "status",
-                "data": {
-                    "robot_id": ping_data.get("robot_id", "121"),
-                    "state": "connected",
-                    "firmware_version": "1.0.0",
-                    "timestamp": ping_data.get("timestamp", asyncio.get_event_loop().time()),
-                    "battery": ping_data.get("battery", 0),
-                    "battery_voltage": ping_data.get("battery_voltage", 0.0),
-                    "status": ping_data.get("status", "connected"),
-                    "client_count": ping_data.get("client_count", 1),
-                    "hardware": ping_data.get("hardware", {
-                        "motors": False,
-                        "leds": False,
-                        "audio": False,
-                        "sensors": False
-                    })
-                }
-            }
-        except Exception as e:
-            # Fallback to basic status if there's an error getting detailed info
-            pass
 
     async def broadcast_status(self, status_data: Dict[str, Any]) -> None:
         """Broadcast status to all connected clients"""
@@ -175,6 +126,7 @@ class WebSocketService(NotificationServiceInterface):
         for websocket in disconnected:
             self.connected_clients.discard(websocket)
 
-    def get_client_count(self) -> int:
+    @property
+    def client_count(self) -> int:
         """Get number of connected clients"""
         return len(self.connected_clients)

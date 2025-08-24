@@ -1,6 +1,5 @@
 """Motor control for e-puck2 robot using PiPuck with custom EPuck2 class"""
 
-import asyncio
 import logging
 
 from application.interfaces.hardware.motor_interface import MotorInterface

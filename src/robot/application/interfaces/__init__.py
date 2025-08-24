@@ -6,14 +6,9 @@ from .hardware import (
     LEDInterface,
     AudioInterface
 )
-from .message_handler import MessageHandlerInterface
-from .notification_service import NotificationServiceInterface
-
 __all__ = [
     'MotorInterface',
     'SensorInterface',
     'LEDInterface',
-    'AudioInterface',
-    'MessageHandlerInterface',
-    'NotificationServiceInterface'
+    'AudioInterface'
 ]

@@ -3,8 +3,6 @@
 import logging
 import os
 from typing import List
-from pipuck.lsm9ds1 import LSM9DS1
-from pipuck.pipuck import PiPuck
 
 from .epuck2 import EPuck2
 from application.interfaces.hardware.sensor_interface import SensorInterface
@@ -17,8 +15,12 @@ class SensorController(SensorInterface):
     def __init__(self, pipuck=None):
         self.logger = logging.getLogger(__name__)
         self._initialized = False
-        self.pipuck.expansion.imu = None
         self.pipuck = pipuck
+
+    @property
+    def is_initialized(self) -> bool:
+        """Check if sensor controller is initialized"""
+        return self._initialized
 
     async def initialize(self) -> bool:
         """Initialize sensor controller (PiPuck should already be initialized)"""
@@ -30,7 +32,9 @@ class SensorController(SensorInterface):
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
 
             if not self.pipuck.expansion or not self.pipuck.expansion.imu:
-                raise RuntimeError("LSM9DS1 IMU not available in PiPuck expansion")
+                error = RuntimeError("LSM9DS1 IMU not available in PiPuck expansion")
+                self.logger.warning(f"⚠️ {error}")
+                # Not critical, continue without IMU
 
             self.logger.info("✅ Sensor controller initialized using provided PiPuck and LSM9DS1")
             self._initialized = True
@@ -255,8 +259,3 @@ class SensorController(SensorInterface):
         percentage = min(max(percentage, 0.0), 100.0)
 
         return voltage, percentage
-
-    @property
-    def is_initialized(self) -> bool:
-        """Check if sensor controller is initialized"""
-        return self._initialized

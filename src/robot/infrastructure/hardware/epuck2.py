@@ -1,7 +1,6 @@
 """E-puck2 robot interface using 20-byte I2C packet format"""
 
 import logging
-import time
 from typing import List, Tuple, Optional
 
 try:

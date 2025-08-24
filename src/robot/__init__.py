@@ -4,4 +4,5 @@ Provides WebSocket-based control interface for e-puck2 robots.
 """
 
 __version__ = "1.0.0"
-__author__ = "PuckLab Team"
+__author__ = "Tinaël DEVRESSE"
+__license__ = "MIT"

@@ -29,6 +29,11 @@ class LEDUseCases:
             "off": (0, 0, 0)
         }
 
+    @property
+    def is_initialized(self) -> bool:
+        """Check if LED interface is initialized"""
+        return self._initialized
+
     async def _ensure_initialized(self) -> bool:
         """Ensure LED is initialized"""
         if not self._initialized:
