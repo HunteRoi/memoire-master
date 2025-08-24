@@ -7,7 +7,7 @@ PYTHON = python3.7
 PIP = $(VENV_DIR)/bin/pip
 PYTHON_VENV = $(VENV_DIR)/bin/python
 
-.PHONY: install install-python venv venv-force config clean run help setup
+.PHONY: install install-python venv venv-force config clean run help setup test
 
 # Install system dependencies (pyenv, opencv, gpio tools, smbus, etc.)
 install:
@@ -160,6 +160,22 @@ run-debug:
 	fi
 	LOG_LEVEL=DEBUG $(PYTHON_VENV) main.py
 
+# Hardware diagnostic tests (always runs all tests in debug mode)
+test:
+	@echo "🔧 Running complete hardware diagnostic tests (DEBUG mode)..."
+	@if [ ! -d "$(VENV_DIR)" ]; then \
+		echo "❌ Virtual environment not found. Please run 'make venv' first"; \
+		exit 1; \
+	fi
+	@echo "🔧 Starting pigpio daemon for Pi-puck LEDs..."
+	@if ! pgrep -x "pigpiod" > /dev/null; then \
+		sudo pigpiod; \
+		echo "✅ pigpio daemon started"; \
+	else \
+		echo "✅ pigpio daemon already running"; \
+	fi
+	LOG_LEVEL=DEBUG $(PYTHON_VENV) main.py --test
+
 # Complete setup: install -> install-python -> venv -> config
 setup: install install-python venv config
 	@echo "🎉 Complete setup finished!"
@@ -179,6 +195,7 @@ help:
 	@echo "  clean           Clean and delete everything (venv, cache, config)"
 	@echo "  run             Start the robot server with venv"
 	@echo "  run-debug       Start the robot server with DEBUG logging"
+	@echo "  test            Run complete hardware diagnostic tests (DEBUG mode)"
 	@echo "  help            Show this help message"
 	@echo "  stop-pigpio     Stop the pigpio daemon"
 	@echo "  status-pigpio   Check pigpio daemon status"
@@ -187,5 +204,6 @@ help:
 	@echo ""
 	@echo "💡 Quick Start:"
 	@echo "  make setup      # Complete setup (first time)"
+	@echo "  make test       # Test hardware (recommended first step)"
 	@echo "  make run        # Start the server"
 	@echo "  make clean      # Clean everything"

@@ -58,7 +58,7 @@ class MotorController(MotorInterface):
 
             self.logger.info(f"🚗 Setting motor speeds: left={left_speed}% ({left_value}), right={right_speed}% ({right_value})")
 
-            # Use PiPuck EPuck2 class to set motor speeds
+            # Use PiPuck EPuck2 class to set motor speeds (differential fix applied in EPuck2 class)
             self.pipuck.epuck.set_motor_speeds(left_value, right_value)
 
             self.logger.info(f"✅ Motor speeds set via PiPuck EPuck2: left={left_speed}%, right={right_speed}%")

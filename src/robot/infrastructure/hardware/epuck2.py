@@ -1,6 +1,7 @@
 """E-puck2 robot interface using 20-byte I2C packet format"""
 
 import logging
+import time
 from typing import List, Tuple, Optional
 
 try:
@@ -10,6 +11,9 @@ except ImportError:
 
 I2C_CHANNEL = 12
 LEGACY_I2C_CHANNEL = 4
+
+# Common I2C addresses for e-puck/pi-puck debugging
+COMMON_EPUCK_ADDRESSES = [0x1f, 0x1e, 0x20, 0x08, 0x0a]
 
 # Official e-puck2 Sound IDs
 SOUND_OFF = 0x00
@@ -59,6 +63,8 @@ class EPuck2:
         self._bus = None
         self._initialized = False
 
+        self.logger.info(f"🤖 EPuck2 initializing with I2C address: 0x{self._address:02x}")
+
         # I2C configuration
         self._I2C_CHANNELS = [I2C_CHANNEL, LEGACY_I2C_CHANNEL] if i2c_bus is None else [i2c_bus]
 
@@ -81,6 +87,10 @@ class EPuck2:
         self._gyroscope = [0.0, 0.0, 0.0]      # [x, y, z] in °/s
         self._magnetometer = [0.0, 0.0, 0.0]   # [x, y, z] in µT
 
+        # Sensor reading timing
+        self._last_sensor_read = 0
+        self._sensor_read_interval = 0.01  # 100Hz max sensor reading
+
         # Initialize I2C connection
         self._connect()
 
@@ -96,11 +106,24 @@ class EPuck2:
         for channel in self._I2C_CHANNELS:
             try:
                 self._bus = smbus2.SMBus(channel)
-                # Test communication
-                self._bus.read_byte(self._address)
-                self.logger.info(f"✅ EPuck2 connected on I2C channel {channel}")
+                # Test communication - try different approaches
+                try:
+                    # Method 1: Try reading a byte
+                    test_byte = self._bus.read_byte(self._address)
+                    self.logger.info(f"✅ EPuck2 I2C communication test successful on channel {channel} (read byte: 0x{test_byte:02x})")
+                except OSError as read_error:
+                    # Method 2: If read fails, try a write test instead
+                    try:
+                        self._bus.write_byte(self._address, 0)
+                        self.logger.info(f"✅ EPuck2 I2C write test successful on channel {channel} (read failed: {read_error})")
+                    except Exception as write_error:
+                        raise Exception(f"Both I2C read and write tests failed: read={read_error}, write={write_error}")
+
                 self._initialized = True
+                self.logger.info(f"✅ EPuck2 connected on I2C channel {channel}, address 0x{self._address:02x}")
+
                 # Send initial safe packet
+                self.logger.info("📡 Sending initial safe packet...")
                 self._send_packet()
                 return
             except Exception as e:
@@ -109,32 +132,103 @@ class EPuck2:
                     self._bus = None
                 self.logger.debug(f"I2C channel {channel} failed: {e}")
 
+        self.logger.error("❌ Could not connect to EPuck2 on any I2C channel")
+        self.logger.error(f"❌ Tried channels: {self._I2C_CHANNELS}, address: 0x{self._address:02x}")
         raise RuntimeError("Could not connect to EPuck2 on any I2C channel")
 
+    def test_i2c_communication(self) -> bool:
+        """Test I2C communication with diagnostic information"""
+        if not self._initialized or not self._bus:
+            self.logger.error("❌ EPuck2 not initialized for I2C test")
+            return False
+
+        try:
+            # Test 1: Simple ping
+            self.logger.info("🔍 Testing I2C communication...")
+
+            # Test 2: Send a minimal packet
+            test_packet = [0] * 20  # All zeros
+            self._bus.write_i2c_block_data(self._address, 0, test_packet)
+            self.logger.info("✅ I2C write test successful")
+
+            # Test 3: Comprehensive motor movement test
+            self.logger.info("🔍 Testing motor movement patterns...")
+
+            import time
+
+            # Test Forward - try slight differential to see if it works
+            self.logger.info("➡️ Testing FORWARD (slight differential)")
+            self.set_motor_speeds(500, 480)  # Slightly different speeds
+            time.sleep(1)
+            self.set_motor_speeds(0, 0)
+            time.sleep(0.5)
+
+            # Test Forward - exact same speeds
+            self.logger.info("➡️ Testing FORWARD (exact same speeds)")
+            self.set_motor_speeds(500, 500)
+            time.sleep(1)
+            self.set_motor_speeds(0, 0)
+            time.sleep(0.5)
+
+            # Test Backward - slight differential
+            self.logger.info("⬅️ Testing BACKWARD (slight differential)")
+            self.set_motor_speeds(-500, -480)
+            time.sleep(1)
+            self.set_motor_speeds(0, 0)
+            time.sleep(0.5)
+
+            # Test Backward - exact same speeds
+            self.logger.info("⬅️ Testing BACKWARD (exact same speeds)")
+            self.set_motor_speeds(-500, -500)
+            time.sleep(1)
+            self.set_motor_speeds(0, 0)
+            time.sleep(0.5)
+
+            # Test Left Turn
+            self.logger.info("🔄 Testing LEFT TURN (left slower/negative, right positive)")
+            self.set_motor_speeds(-300, 300)
+            time.sleep(1)
+            self.set_motor_speeds(0, 0)
+            time.sleep(0.5)
+
+            # Test Right Turn
+            self.logger.info("🔄 Testing RIGHT TURN (left positive, right slower/negative)")
+            self.set_motor_speeds(300, -300)
+            time.sleep(1)
+            self.set_motor_speeds(0, 0)
+
+            self.logger.info("✅ Comprehensive motor movement test completed")
+
+            return True
+
+        except Exception as e:
+            self.logger.error(f"❌ I2C communication test failed: {e}")
+            return False
+
     def _send_packet(self) -> None:
-        """Send current state as 20-byte I2C packet per official e-puck2 format"""
+        """Send current state as 20-byte I2C packet using original working format"""
         if not self._initialized or not self._bus:
             raise RuntimeError("EPuck2 not initialized")
 
         # Create 20-byte payload
         payload = [0] * 20
 
-        # Request/Settings (byte 0)
-        payload[0] = self._request_settings
-
-        # Motors (bytes 1-4): signed 16-bit little-endian
+        # Motors (bytes 0-3): signed 16-bit little-endian - ORIGINAL WORKING POSITIONS
         left_bytes = self._left_motor_speed.to_bytes(2, byteorder='little', signed=True)
         right_bytes = self._right_motor_speed.to_bytes(2, byteorder='little', signed=True)
 
-        payload[1] = left_bytes[0]   # Left motor low byte
-        payload[2] = left_bytes[1]   # Left motor high byte
-        payload[3] = right_bytes[0]  # Right motor low byte
-        payload[4] = right_bytes[1]  # Right motor high byte
+        payload[0] = left_bytes[0]   # Left motor low byte
+        payload[1] = left_bytes[1]   # Left motor high byte
+        payload[2] = right_bytes[0]  # Right motor low byte
+        payload[3] = right_bytes[1]  # Right motor high byte
+
+        # Speaker (byte 4) - ORIGINAL WORKING POSITION
+        payload[4] = self._sound_id
 
         # LEDs (byte 5) - LED1,3,5,7,Body,Front bits
         payload[5] = self._leds_byte
 
-        # RGB LEDs (bytes 6-17) - values 0-100
+        # RGB LEDs (bytes 6-17) - using 0-255 range like original
         payload[6] = self._led2_rgb[0]   # LED2 R
         payload[7] = self._led2_rgb[1]   # LED2 G
         payload[8] = self._led2_rgb[2]   # LED2 B
@@ -148,22 +242,42 @@ class EPuck2:
         payload[16] = self._led8_rgb[1]  # LED8 G
         payload[17] = self._led8_rgb[2]  # LED8 B
 
-        # Reserved (byte 18)
-        payload[18] = 0
+        # Settings (byte 18) - ORIGINAL POSITION  
+        payload[18] = self._request_settings
 
-        # Sound ID (byte 19)
-        payload[19] = self._sound_id
+        # Checksum (byte 19) - ORIGINAL WORKING IMPLEMENTATION
+        checksum = 0
+        for i in range(19):
+            checksum ^= payload[i]
+        payload[19] = checksum
 
         # Send packet
         try:
-            self._bus.write_i2c_block_data(self._address, 0, payload)
-            self.logger.debug(f"📡 EPuck2 packet sent: motors=({self._left_motor_speed},{self._right_motor_speed}), sound_id=0x{self._sound_id:02x}")
+            # Try different I2C write methods to ensure compatibility
+            # Method 1: write_i2c_block_data (standard approach)
+            try:
+                self._bus.write_i2c_block_data(self._address, 0, payload)
+                self.logger.debug(f"📡 EPuck2 packet sent via write_i2c_block_data: motors=({self._left_motor_speed},{self._right_motor_speed}), sound_id=0x{self._sound_id:02x}")
+            except Exception as e1:
+                # Method 2: Try writing without register (direct block write)
+                try:
+                    # Some devices expect direct block write without register
+                    self._bus.write_block_data(self._address, 0, payload)
+                    self.logger.warning(f"⚠️ Fallback to write_block_data successful: {e1}")
+                except Exception as e2:
+                    # Method 3: Write individual bytes
+                    for i, byte_val in enumerate(payload):
+                        self._bus.write_byte_data(self._address, i, byte_val)
+                    self.logger.warning(f"⚠️ Fallback to individual byte writes: {e2}")
 
-            # Debug payload bytes
-            self.logger.debug(f"📝 Full packet: {payload}")
+            # Enhanced debug payload with hex format
+            hex_payload = ' '.join([f'{b:02x}' for b in payload])
+            self.logger.info(f"📝 Full packet (hex): {hex_payload}")
+            self.logger.info(f"📝 Packet details: motors=({self._left_motor_speed},{self._right_motor_speed}) @bytes0-3, sound=0x{payload[4]:02x} @byte4, leds=0x{payload[5]:02x} @byte5, checksum=0x{payload[19]:02x}")
 
         except Exception as e:
             self.logger.error(f"❌ EPuck2 I2C send failed: {e}")
+            self.logger.error(f"❌ I2C address: 0x{self._address:02x}, Bus: {self._bus}")
             raise
 
     # Motor Control Methods (compatible with EPuck1 interface)
@@ -174,8 +288,9 @@ class EPuck2:
         Args:
             speed: Motor speed (-1000 to 1000)
         """
-        self._left_motor_speed = max(-1000, min(1000, speed))
-        self._send_packet()
+        speed = max(-1000, min(1000, speed))
+        # Use set_motor_speeds to apply differential fix
+        self.set_motor_speeds(speed, self._right_motor_speed)
 
     def set_right_motor_speed(self, speed: int) -> None:
         """Set right motor speed
@@ -183,18 +298,33 @@ class EPuck2:
         Args:
             speed: Motor speed (-1000 to 1000)
         """
-        self._right_motor_speed = max(-1000, min(1000, speed))
-        self._send_packet()
+        speed = max(-1000, min(1000, speed))
+        # Use set_motor_speeds to apply differential fix
+        self.set_motor_speeds(self._left_motor_speed, speed)
 
     def set_motor_speeds(self, speed_left: int, speed_right: int) -> None:
-        """Set both motor speeds
+        """Set both motor speeds with e-puck2 firmware differential fix
 
         Args:
             speed_left: Left motor speed (-1000 to 1000)
             speed_right: Right motor speed (-1000 to 1000)
         """
-        self._left_motor_speed = max(-1000, min(1000, speed_left))
-        self._right_motor_speed = max(-1000, min(1000, speed_right))
+        # Clamp speeds to valid range
+        speed_left = max(-1000, min(1000, speed_left))
+        speed_right = max(-1000, min(1000, speed_right))
+
+        # Fix for e-puck2 firmware limitation: forward/backward need slight differential
+        # e-puck2 firmware only responds to differential motor commands!
+        if speed_left == speed_right and speed_left != 0:
+            if speed_left > 0:  # Forward movement
+                speed_right = int(speed_right * 0.98)  # Make right slightly slower
+                self.logger.info(f"🔧 Applied forward differential: left={speed_left}, right={speed_right}")
+            else:  # Backward movement
+                speed_right = int(speed_right * 0.98)  # Make right slightly less negative
+                self.logger.info(f"🔧 Applied backward differential: left={speed_left}, right={speed_right}")
+
+        self._left_motor_speed = speed_left
+        self._right_motor_speed = speed_right
         self._send_packet()
 
     # Motor Properties (compatible with EPuck1 interface)
@@ -365,6 +495,258 @@ class EPuck2:
         """Stop all sounds"""
         self.set_speaker(SOUND_STOP)
 
+    def test_audio(self) -> bool:
+        """Test audio functionality"""
+        try:
+            self.logger.info("🎵 Testing audio functionality...")
+
+            # Test 1: Play Mario theme
+            self.logger.info("🎵 Playing Mario theme...")
+            self.play_mario()
+
+            import time
+            time.sleep(2)
+
+            # Test 2: Stop sound
+            self.logger.info("🔇 Stopping sound...")
+            self.stop_sound()
+
+            time.sleep(0.5)
+
+            # Test 3: Play 4KHz tone
+            self.logger.info("🔊 Playing 4KHz tone...")
+            self.play_tone_4khz()
+
+            time.sleep(1)
+
+            # Test 4: Stop
+            self.stop_sound()
+
+            self.logger.info("✅ Audio test completed")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"❌ Audio test failed: {e}")
+            return False
+
+    def test_sound_patterns(self) -> bool:
+        """Test different sound command patterns to debug audio issues"""
+        try:
+            self.logger.info("🎵 Testing comprehensive sound patterns...")
+
+            import time
+
+            # Test all defined sound IDs
+            sound_tests = [
+                (SOUND_MARIO, "Mario theme", 3),
+                (SOUND_UNDERWORLD, "Underworld theme", 3),
+                (SOUND_STARWARS, "Star Wars theme", 3),
+                (SOUND_TONE_4KHZ, "4KHz tone", 2),
+                (SOUND_TONE_10KHZ, "10KHz tone", 2)
+            ]
+
+            for sound_id, name, duration in sound_tests:
+                self.logger.info(f"🎵 Testing {name} (ID: 0x{sound_id:02x})")
+                self.set_speaker(sound_id)
+                time.sleep(duration)
+                self.set_speaker(SOUND_STOP)
+                time.sleep(0.5)
+
+            # Test raw sound values directly
+            self.logger.info("🎵 Testing raw sound values...")
+            raw_sounds = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x00]
+            for raw_sound in raw_sounds:
+                self.logger.info(f"🎵 Raw sound test: 0x{raw_sound:02x}")
+                self._sound_id = raw_sound
+                self._send_packet()
+                time.sleep(1.5)
+
+            # Stop all sounds
+            self._sound_id = 0x00
+            self._send_packet()
+
+            self.logger.info("✅ Sound pattern test completed")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"❌ Sound pattern test failed: {e}")
+            return False
+
+    def test_alternate_sound_positions(self) -> bool:
+        """Test sound commands in different byte positions to debug protocol"""
+        try:
+            self.logger.info("🎵 Testing alternate sound byte positions...")
+
+            import time
+
+            # Test sound in different positions
+            positions_to_test = [
+                ("Byte 19 (current position)", 19),
+                ("Byte 4 (alternate position)", 4),
+                ("Byte 18 (reserved position)", 18),
+                ("Byte 0 (settings position)", 0)
+            ]
+
+            for desc, pos in positions_to_test:
+                self.logger.info(f"🎵 Testing {desc}...")
+
+                # Create manual packet with sound in different position
+                payload = [0] * 20
+                payload[pos] = 0x01  # Mario sound
+
+                # Send manual packet
+                try:
+                    self._bus.write_i2c_block_data(self._address, 0, payload)
+                    hex_payload = ' '.join([f'{b:02x}' for b in payload])
+                    self.logger.info(f"📝 Test packet: {hex_payload}")
+                    time.sleep(2)
+
+                    # Clear packet
+                    payload[pos] = 0x00
+                    self._bus.write_i2c_block_data(self._address, 0, payload)
+                    time.sleep(0.5)
+
+                except Exception as e:
+                    self.logger.error(f"❌ Failed to send test packet: {e}")
+
+            self.logger.info("✅ Alternate sound position test completed")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"❌ Alternate sound position test failed: {e}")
+            return False
+
+    def test_audio_hardware_check(self) -> bool:
+        """Check if audio hardware responds to any commands"""
+        try:
+            self.logger.info("🎵 Testing if audio hardware is responsive...")
+
+            import time
+
+            # Test 1: Try enabling audio in settings byte
+            self.logger.info("🎵 Testing with settings byte modifications...")
+
+            # Try different request/settings combinations with audio
+            settings_tests = [
+                (0x00, "Default settings"),
+                (0x01, "Image stream enabled"),
+                (0x02, "Sensor stream enabled"),
+                (0x04, "IR calibration"),
+                (0x08, "Audio enable attempt")
+            ]
+
+            for setting, desc in settings_tests:
+                self.logger.info(f"🎵 {desc} + Mario sound")
+
+                # Create packet with specific settings and sound
+                payload = [0] * 20
+                payload[0] = setting     # Settings byte
+                payload[19] = 0x01       # Mario sound
+
+                self._bus.write_i2c_block_data(self._address, 0, payload)
+                time.sleep(1.5)
+
+                # Clear
+                payload[19] = 0x00
+                self._bus.write_i2c_block_data(self._address, 0, payload)
+                time.sleep(0.5)
+
+            # Test 2: Try maximum volume/intensity
+            self.logger.info("🎵 Testing combined sound commands...")
+
+            # Try combining multiple sound bits
+            combined_sounds = [0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F]
+            for sound_combo in combined_sounds:
+                self.logger.info(f"🎵 Combined sound bits: 0x{sound_combo:02x}")
+                self._sound_id = sound_combo
+                self._send_packet()
+                time.sleep(1)
+
+            # Clear all sounds
+            self._sound_id = 0x00
+            self._send_packet()
+
+            self.logger.info("✅ Audio hardware check completed")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"❌ Audio hardware check failed: {e}")
+            return False
+
+    def test_pipuck_leds(self) -> bool:
+        """Test Pi-puck LED integration using PiPuck object"""
+        try:
+            self.logger.info("💡 Testing Pi-puck LED integration...")
+
+            # Try to import and create PiPuck object for LED testing
+            try:
+                from pipuck.pipuck import PiPuck
+                import time
+
+                self.logger.info("🔧 Creating temporary PiPuck object for LED testing...")
+                pipuck = PiPuck()
+
+                self.logger.info("✅ PiPuck object created for LED testing")
+
+                # Test Pi-puck RGB LEDs using PiPuck object methods
+                colors_to_test = [
+                    ('red', (True, False, False), "🔴"),
+                    ('green', (False, True, False), "🟢"),
+                    ('blue', (False, False, True), "🔵"),
+                    ('white', (True, True, True), "⚪")
+                ]
+
+                for color_name, rgb_values, emoji in colors_to_test:
+                    self.logger.info(f"{emoji} Testing Pi-puck {color_name.upper()} LEDs...")
+                    pipuck.set_leds_rgb(*rgb_values)
+                    time.sleep(1)
+
+                # Turn off all LEDs
+                self.logger.info("⚫ Turning off Pi-puck LEDs...")
+                pipuck.set_leds_rgb(False, False, False)
+                time.sleep(0.5)
+
+                self.logger.info("✅ Pi-puck LED test completed using PiPuck object")
+
+                # Clean up PiPuck object
+                pipuck.close()
+                return True
+
+            except ImportError:
+                self.logger.warning("⚠️ PiPuck library not available - install pipuck package")
+                return False
+            except Exception as pipuck_error:
+                self.logger.warning(f"⚠️ Pi-puck LED test failed: {pipuck_error}")
+                return False
+
+        except Exception as e:
+            self.logger.error(f"❌ Pi-puck LED test failed: {e}")
+            return False
+
+    def scan_i2c_addresses(self) -> None:
+        """Scan for I2C devices to help debug connectivity issues"""
+        if not self._bus:
+            self.logger.error("❌ No I2C bus available for scanning")
+            return
+
+        self.logger.info("🔍 Scanning I2C addresses...")
+        found_devices = []
+
+        for address in range(0x08, 0x78):  # Valid I2C address range
+            try:
+                self._bus.read_byte(address)
+                found_devices.append(address)
+                self.logger.info(f"✅ Found I2C device at address: 0x{address:02x}")
+            except:
+                pass  # No device at this address
+
+        if found_devices:
+            self.logger.info(f"🔍 Found {len(found_devices)} I2C devices: {[f'0x{addr:02x}' for addr in found_devices]}")
+            if self._address not in found_devices:
+                self.logger.warning(f"⚠️ Current address 0x{self._address:02x} not found in scan!")
+        else:
+            self.logger.warning("⚠️ No I2C devices found in scan")
+
     # Sensor Methods (actual I2C sensor reading)
 
     @property
@@ -413,20 +795,95 @@ class EPuck2:
             return
 
         try:
-            # TODO: Implement actual sensor reading protocol
-            # For now, this is a placeholder that would need the proper
-            # e-puck2 sensor reading protocol implementation
+            # Rate limiting to avoid overwhelming I2C bus
+            current_time = time.time()
+            if current_time - self._last_sensor_read < self._sensor_read_interval:
+                return
+            self._last_sensor_read = current_time
 
-            # The e-puck2 would need to send back sensor data when streaming is enabled
-            # This would typically involve:
-            # 1. Reading multiple bytes of sensor data from I2C
-            # 2. Parsing the data according to e-puck2 protocol
-            # 3. Updating the sensor value arrays
+            # Approach 1: Try reading a sensor data packet
+            # The e-puck2 would send back sensor data when streaming is enabled
+            sensor_packet_size = 64  # Estimated - actual size needs to be determined
 
-            self.logger.debug("📊 Sensor reading not yet implemented - using mock data")
+            try:
+                # Read sensor data packet from I2C
+                sensor_data = self._bus.read_i2c_block_data(self._address, 0, sensor_packet_size)
+                self._parse_sensor_packet(sensor_data)
+                self.logger.debug(f"📊 Sensor data read: {len(sensor_data)} bytes")
+
+            except OSError as io_error:
+                # No data available - normal when sensors aren't streaming
+                self.logger.debug("📊 No sensor data available (streaming may be disabled)")
 
         except Exception as e:
             self.logger.warning(f"⚠️ Sensor reading failed: {e}")
+
+    def _parse_sensor_packet(self, data: list) -> None:
+        """Parse sensor data packet from e-puck2
+
+        This implementation is based on expected e-puck2 sensor packet format.
+        The actual format would need to be confirmed from e-puck2 firmware docs.
+
+        Expected packet structure:
+        - Bytes 0-15: IR proximity sensors (8 x 16-bit little-endian, 0-4095)
+        - Bytes 16-31: IR ambient sensors (8 x 16-bit little-endian, 0-4095)
+        - Bytes 32-37: Accelerometer X,Y,Z (3 x 16-bit signed, +-2g range)
+        - Bytes 38-43: Gyroscope X,Y,Z (3 x 16-bit signed, +-250°/s range)
+        - Bytes 44-49: Magnetometer X,Y,Z (3 x 16-bit signed, +-4912µT range)
+        - Bytes 50+: Motor encoders, other sensors...
+
+        Args:
+            data: Raw bytes from I2C read
+        """
+        if len(data) < 32:  # Minimum for IR sensors
+            self.logger.warning(f"⚠️ Sensor packet too small: {len(data)} bytes")
+            return
+
+        try:
+            # Parse IR proximity sensors (bytes 0-15)
+            for i in range(8):
+                idx = i * 2
+                if idx + 1 < len(data):
+                    value = int.from_bytes(data[idx:idx+2], byteorder='little', signed=False)
+                    self._ir_reflected[i] = min(4095, max(0, value))
+
+            # Parse IR ambient/light sensors (bytes 16-31)
+            for i in range(8):
+                idx = 16 + i * 2
+                if idx + 1 < len(data):
+                    value = int.from_bytes(data[idx:idx+2], byteorder='little', signed=False)
+                    self._ir_ambient[i] = min(4095, max(0, value))
+
+            # Parse IMU data if packet is large enough
+            if len(data) >= 50:
+                # Accelerometer (bytes 32-37, +-2g range)
+                for i in range(3):
+                    idx = 32 + i * 2
+                    if idx + 1 < len(data):
+                        raw_value = int.from_bytes(data[idx:idx+2], byteorder='little', signed=True)
+                        # Convert to m/s² (+-2g = +-19.6 m/s²)
+                        self._accelerometer[i] = (raw_value / 32768.0) * 19.6
+
+                # Gyroscope (bytes 38-43, +-250°/s range)
+                for i in range(3):
+                    idx = 38 + i * 2
+                    if idx + 1 < len(data):
+                        raw_value = int.from_bytes(data[idx:idx+2], byteorder='little', signed=True)
+                        # Convert to °/s
+                        self._gyroscope[i] = (raw_value / 32768.0) * 250.0
+
+                # Magnetometer (bytes 44-49, +-4912µT range)
+                for i in range(3):
+                    idx = 44 + i * 2
+                    if idx + 1 < len(data):
+                        raw_value = int.from_bytes(data[idx:idx+2], byteorder='little', signed=True)
+                        # Convert to µT
+                        self._magnetometer[i] = (raw_value / 32768.0) * 4912.0
+
+            self.logger.debug(f"📊 Parsed - IR prox: {self._ir_reflected[:3]}..., IMU accel: {[f'{x:.2f}' for x in self._accelerometer]}")
+
+        except Exception as e:
+            self.logger.warning(f"⚠️ Sensor packet parsing failed: {e}")
 
     # IMU Methods (e-puck2 built-in IMU)
 
@@ -538,6 +995,7 @@ class EPuck2:
         if self._bus:
             try:
                 # Turn everything off before closing
+                self.logger.info("🧹 EPuck2 cleanup: turning off all hardware")
                 self._left_motor_speed = 0
                 self._right_motor_speed = 0
                 self._sound_id = 0
@@ -547,8 +1005,9 @@ class EPuck2:
                 self._led6_rgb = [0, 0, 0]
                 self._led8_rgb = [0, 0, 0]
                 self._send_packet()
-            except:
-                pass  # Ignore errors during cleanup
+                self.logger.info("✅ EPuck2 cleanup packet sent successfully")
+            except Exception as cleanup_error:
+                self.logger.warning(f"⚠️ EPuck2 cleanup failed: {cleanup_error}")
             finally:
                 self._bus.close()
                 self._bus = None
