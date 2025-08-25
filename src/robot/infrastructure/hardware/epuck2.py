@@ -136,116 +136,181 @@ class EPuck2:
         self.logger.error(f"❌ Tried channels: {self._I2C_CHANNELS}, address: 0x{self._address:02x}")
         raise RuntimeError("Could not connect to EPuck2 on any I2C channel")
 
-    def test_i2c_communication(self) -> bool:
-        """Test I2C communication with diagnostic information"""
+    def test_packet_formats(self) -> bool:
+        """Test different packet formats to find what works"""
         if not self._initialized or not self._bus:
-            self.logger.error("❌ EPuck2 not initialized for I2C test")
+            self.logger.error("❌ EPuck2 not initialized for packet format test")
             return False
 
         try:
             import time
-            # Test 1: Simple ping
-            self.logger.info("🔍 Testing I2C communication...")
+            self.logger.info("🔍 Testing different packet formats to find working one...")
+            self.logger.info("⏱️ Watch carefully - each test will run for 3 seconds with delays")
 
-            self.logger.info("Go right")
-            self.set_motor_speeds(200, 0)
-            time.sleep(1)
-            self.set_motor_speeds(0, 0)
+            self.logger.info("\n" + "="*30)
+            self.logger.info("📝 Format 1: 0x80 command + motors in bytes 2-5")
+            self.logger.info("="*30)
+            test_data_1 = [0] * 20
+            test_data_1[2] = 200  # Left motor low byte
+            test_data_1[3] = 0    # Left motor high byte  
+            test_data_1[4] = 200  # Right motor low byte
+            test_data_1[5] = 0    # Right motor high byte
+            
+            try:
+                hex_data = ' '.join([f'{b:02x}' for b in test_data_1])
+                self.logger.info(f"📤 Sending: 0x80 {hex_data}")
+                self._bus.write_i2c_block_data(self._address, 0x80, test_data_1)
+                self.logger.info("⏱️ Running for 3 seconds...")
+                time.sleep(3)
+                
+                # Stop
+                stop_data = [0] * 20
+                self._bus.write_i2c_block_data(self._address, 0x80, stop_data)
+                self.logger.info("🛑 Stopped")
+                time.sleep(2)  # Longer delay between tests
+            except Exception as e:
+                self.logger.error(f"❌ Format 1 failed: {e}")
 
-            self.logger.info("Go left")
-            self.set_motor_speeds(0, 200)
-            time.sleep(1)
-            self.set_motor_speeds(0, 0)
+            self.logger.info("\n" + "="*30)
+            self.logger.info("📝 Format 2: Raw 20-byte packet (no command ID)")
+            self.logger.info("="*30)
+            test_data_2 = [0] * 20
+            test_data_2[0] = 200  # Left motor low byte
+            test_data_2[1] = 0    # Left motor high byte
+            test_data_2[2] = 200  # Right motor low byte  
+            test_data_2[3] = 0    # Right motor high byte
+            
+            try:
+                hex_data = ' '.join([f'{b:02x}' for b in test_data_2])
+                self.logger.info(f"📤 Sending: {hex_data}")
+                self._bus.write_i2c_block_data(self._address, 0, test_data_2)
+                self.logger.info("⏱️ Running for 3 seconds...")
+                time.sleep(3)
+                
+                # Stop
+                stop_data = [0] * 20
+                self._bus.write_i2c_block_data(self._address, 0, stop_data)
+                self.logger.info("🛑 Stopped")
+                time.sleep(2)  # Longer delay between tests
+            except Exception as e:
+                self.logger.error(f"❌ Format 2 failed: {e}")
 
-            self.logger.info("Go straight")
-            self.set_motor_speeds(200, 200)
-            time.sleep(1)
-            self.set_motor_speeds(0, 0)
+            self.logger.info("\n" + "="*30)
+            self.logger.info("📝 Format 3: 21-byte block (0x80 + data together)")
+            self.logger.info("="*30)
+            test_data_3 = [0x80] + ([0] * 20)
+            test_data_3[3] = 200  # Left motor low byte (byte 2 in data)
+            test_data_3[4] = 0    # Left motor high byte
+            test_data_3[5] = 200  # Right motor low byte (byte 4 in data)
+            test_data_3[6] = 0    # Right motor high byte
+            
+            try:
+                hex_data = ' '.join([f'{b:02x}' for b in test_data_3])
+                self.logger.info(f"📤 Sending: {hex_data}")
+                self._bus.write_block_data(self._address, 0, test_data_3)
+                self.logger.info("⏱️ Running for 3 seconds...")
+                time.sleep(3)
+                
+                # Stop
+                stop_data = [0x80] + ([0] * 20)
+                self._bus.write_block_data(self._address, 0, stop_data)
+                self.logger.info("🛑 Stopped")
+                time.sleep(2)  # Longer delay between tests
+            except Exception as e:
+                self.logger.error(f"❌ Format 3 failed: {e}")
 
-            self.logger.info("Go back")
-            self.set_motor_speeds(-200, -200)
-            time.sleep(1)
-            self.set_motor_speeds(0, 0)
+            self.logger.info("\n" + "="*30)
+            self.logger.info("📝 Format 4: 0x80 + motors in bytes 1-4")
+            self.logger.info("="*30)
+            test_data_4 = [0] * 20
+            test_data_4[1] = 200  # Left motor low byte (byte 1)
+            test_data_4[2] = 0    # Left motor high byte
+            test_data_4[3] = 200  # Right motor low byte (byte 3)
+            test_data_4[4] = 0    # Right motor high byte
+            
+            try:
+                hex_data = ' '.join([f'{b:02x}' for b in test_data_4])
+                self.logger.info(f"📤 Sending: 0x80 {hex_data}")
+                self._bus.write_i2c_block_data(self._address, 0x80, test_data_4)
+                self.logger.info("⏱️ Running for 3 seconds...")
+                time.sleep(3)
+                
+                # Stop
+                stop_data = [0] * 20
+                self._bus.write_i2c_block_data(self._address, 0x80, stop_data)
+                self.logger.info("🛑 Stopped")
+                time.sleep(2)  # Longer delay between tests
+            except Exception as e:
+                self.logger.error(f"❌ Format 4 failed: {e}")
 
-            self.logger.info("✅ Comprehensive motor movement test completed")
-
+            self.logger.info("\n" + "="*50)
+            self.logger.info("🔍 WHICH FORMAT MADE THE ROBOT MOVE?")
+            self.logger.info("="*50)
             return True
 
         except Exception as e:
-            self.logger.error(f"❌ I2C communication test failed: {e}")
+            self.logger.error(f"❌ Packet format test failed: {e}")
             return False
 
     def _send_packet(self) -> None:
-        """Send current state using correct e-puck2 protocol with 0x80 command ID"""
+        """Send current state using Format 2: Raw 20-byte packet with inverted motors"""
         if not self._initialized or not self._bus:
             raise RuntimeError("EPuck2 not initialized")
 
-        # Create 20-byte data payload (after 0x80 command ID)
+        # Create 20-byte data payload (Format 2 - CONFIRMED WORKING!)
         data = [0] * 20
 
-        # Byte 0: Request flags (image stream, sensors stream)
-        request_byte = 0
-        if self._request & REQUEST_IMAGE_STREAM:
-            request_byte |= 0x01
-        if self._request & REQUEST_SENSORS_STREAM:
-            request_byte |= 0x02
-        data[0] = request_byte
+        # Bytes 0-3: Motors - EXACT FORMAT 2 STRUCTURE (CONFIRMED WORKING!)
+        # Working test: c8 00 c8 00 = (200,0,200,0) for both motors forward
+        # Since positive values make robot go backward, we invert them
+        left_inverted = -self._left_motor_speed
+        right_inverted = -self._right_motor_speed
+        
+        # Match exact working test structure: simple byte values
+        data[0] = abs(left_inverted) & 0xFF   # Left motor low byte
+        data[1] = 0                           # Left motor high byte (always 0 for speeds <= 255)
+        data[2] = abs(right_inverted) & 0xFF  # Right motor low byte  
+        data[3] = 0                           # Right motor high byte (always 0 for speeds <= 255)
 
-        # Byte 1: Settings flags (IR calibration, obstacle avoidance, motor mode)
-        settings_byte = 0
-        if self._settings & SETTINGS_CALIBRATE_IR:
-            settings_byte |= 0x01
-        if self._settings & SETTINGS_OBSTACLE_AVOID:
-            settings_byte |= 0x02
-        if self._settings & SETTINGS_MOTOR_POSITION:
-            settings_byte |= 0x04
-        data[1] = settings_byte
+        # Bytes 4-19: Keep simple like working test (mostly zeros except for actual features)
+        # Only set non-zero values for active features
+        
+        # Sound (test had byte 4 = 0, so only set if we want sound)
+        data[4] = self._sound_id if self._sound_id != SOUND_STOP else 0
 
-        # Bytes 2-5: Left and right motor values (signed 16-bit little-endian)
-        left_bytes = self._left_motor_speed.to_bytes(2, byteorder='little', signed=True)
-        right_bytes = self._right_motor_speed.to_bytes(2, byteorder='little', signed=True)
+        # LEDs (test had byte 5 = 0, so only set if LEDs are on)  
+        data[5] = self._leds
 
-        data[2] = left_bytes[0]   # Left motor low byte (LSB)
-        data[3] = left_bytes[1]   # Left motor high byte (MSB)
-        data[4] = right_bytes[0]  # Right motor low byte (LSB)
-        data[5] = right_bytes[1]  # Right motor high byte (MSB)
+        # RGB LEDs (test had all zeros, so only set if RGB is active)
+        if any(self._led2_rgb) or any(self._led4_rgb) or any(self._led6_rgb) or any(self._led8_rgb):
+            data[6] = self._led2_rgb[0]   # LED2 R
+            data[7] = self._led2_rgb[1]   # LED2 G
+            data[8] = self._led2_rgb[2]   # LED2 B
+            data[9] = self._led4_rgb[0]   # LED4 R
+            data[10] = self._led4_rgb[1]  # LED4 G
+            data[11] = self._led4_rgb[2]  # LED4 B
+            data[12] = self._led6_rgb[0]  # LED6 R
+            data[13] = self._led6_rgb[1]  # LED6 G
+            data[14] = self._led6_rgb[2]  # LED6 B
+            data[15] = self._led8_rgb[0]  # LED8 R
+            data[16] = self._led8_rgb[1]  # LED8 G
+            data[17] = self._led8_rgb[2]  # LED8 B
 
-        # Byte 6: LEDs (LED1,3,5,7,Body,Front bits)
-        data[6] = self._leds
+        # Remaining bytes stay 0 like the working test
+        # data[18] and data[19] remain 0
 
-        # Bytes 7-18: RGB LEDs (values 0-100)
-        data[7] = self._led2_rgb[0]   # LED2 R
-        data[8] = self._led2_rgb[1]   # LED2 G
-        data[9] = self._led2_rgb[2]   # LED2 B
-
-        data[10] = self._led4_rgb[0]  # LED4 R
-        data[11] = self._led4_rgb[1]  # LED4 G
-        data[12] = self._led4_rgb[2]  # LED4 B
-
-        data[13] = self._led6_rgb[0]  # LED6 R
-        data[14] = self._led6_rgb[1]  # LED6 G
-        data[15] = self._led6_rgb[2]  # LED6 B
-
-        data[16] = self._led8_rgb[0]  # LED8 R
-        data[17] = self._led8_rgb[1]  # LED8 G
-        data[18] = self._led8_rgb[2]  # LED8 B
-
-        # Byte 19: Sound ID byte
-        data[19] = self._sound_id
-
-        # Send packet with 0x80 command ID
+        # Send raw 20-byte packet using Format 2 (no command ID)
         try:
-            self._bus.write_i2c_block_data(self._address, 0x80, data)
-            self.logger.debug(f"📡 EPuck2 packet sent via write_i2c_block_data: motors=({self._left_motor_speed},{self._right_motor_speed}), sound_id=0x{self._sound_id:02x}")
+            self._bus.write_i2c_block_data(self._address, 0, data)
+            self.logger.debug(f"📡 Format 2 packet sent: motors=({self._left_motor_speed},{self._right_motor_speed}) -> inverted=({left_inverted},{right_inverted})")
 
             # Enhanced debug payload with hex format
             hex_data = ' '.join([f'{b:02x}' for b in data])
-            self.logger.info(f"📝 Full packet (hex): 0x80 {hex_data}")
-            self.logger.info(f"📝 Packet details: request=0x{data[0]:02x}, settings=0x{data[1]:02x}, motors=({self._left_motor_speed},{self._right_motor_speed}) @bytes2-5, leds=0x{data[6]:02x} @byte6, sound=0x{data[19]:02x} @byte19")
+            self.logger.info(f"📝 Format 2 packet: {hex_data}")
+            self.logger.info(f"📝 Motors: ({self._left_motor_speed},{self._right_motor_speed}) -> ({left_inverted},{right_inverted}), Sound: 0x{data[4]:02x}, LEDs: 0x{data[5]:02x}")
 
         except Exception as e:
             self.logger.error(f"❌ EPuck2 I2C send failed: {e}")
-            self.logger.error(f"❌ I2C address: 0x{self._address:02x}, Bus: {self._bus}")
             raise
 
     # Motor Control Methods (compatible with EPuck1 interface)

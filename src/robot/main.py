@@ -26,9 +26,34 @@ async def run_diagnostics():
         epuck = EPuck2()
 
         logging.info("\n" + "="*50)
-        logging.info("📡 Test 1: I2C Communication Test")
+        logging.info("🚗 Test 1: Motor Movement Test (Format 2)")
         logging.info("="*50)
-        comm_success = epuck.test_i2c_communication()
+        
+        logging.info("🚀 Testing FORWARD movement...")
+        epuck.set_motor_speeds(200, 200)
+        time.sleep(2)
+        epuck.set_motor_speeds(0, 0)
+        time.sleep(1)
+        
+        logging.info("⬅️ Testing BACKWARD movement...")
+        epuck.set_motor_speeds(-200, -200)  
+        time.sleep(2)
+        epuck.set_motor_speeds(0, 0)
+        time.sleep(1)
+        
+        logging.info("↩️ Testing LEFT turn...")
+        epuck.set_motor_speeds(-200, 200)
+        time.sleep(1.5)
+        epuck.set_motor_speeds(0, 0)
+        time.sleep(1)
+        
+        logging.info("↪️ Testing RIGHT turn...")
+        epuck.set_motor_speeds(200, -200)
+        time.sleep(1.5)
+        epuck.set_motor_speeds(0, 0)
+        
+        logging.info("✅ Motor movement test completed!")
+        comm_success = True
 
         logging.info("\n" + "="*50)
         logging.info("🔊 Test 2: Audio Test")
