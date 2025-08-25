@@ -113,7 +113,7 @@ class MotorUseCases:
             self.logger.info(f"🚗 Turning left: angle={angle}°, speed={speed}%")
 
             # Turn left: left motor forward, right motor backward (adjusted for motor negation)
-            await self.motor.set_speed(speed, -speed)
+            await self.motor.set_speed(0, speed)
             await asyncio.sleep(duration)
             await self.motor.stop()
 
@@ -151,7 +151,7 @@ class MotorUseCases:
             self.logger.info(f"🚗 Turning right: angle={angle}°, speed={speed}%")
 
             # Turn right: left motor backward, right motor forward (adjusted for motor negation)
-            await self.motor.set_speed(-speed, speed)
+            await self.motor.set_speed(speed, 0)
             await asyncio.sleep(duration)
             await self.motor.stop()
 
