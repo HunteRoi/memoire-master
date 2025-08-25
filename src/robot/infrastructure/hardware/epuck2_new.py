@@ -2,6 +2,7 @@
 
 import logging
 from smbus2 import SMBus, i2c_msg
+from VL53L0X import VL53L0X, Vl53l0xAccuracyMode
 import time
 from typing import List, Tuple, Optional, Any
 
@@ -112,6 +113,7 @@ class EPuck2(EPuckInterface):
         self._i2c_channels = [I2C_CHANNEL, LEGACY_I2C_CHANNEL] if i2c_bus is None else [i2c_bus]
         self._address = i2c_address if i2c_address is not None else ROBOT_REGISTRY_ADDRESS
         self._bus = None
+        self._tof = None
         self._initialized = False
         self._reset_actuators_and_sensors()
 
@@ -134,8 +136,20 @@ class EPuck2(EPuckInterface):
                 self.logger.info(f"Connected to e-puck2 at address {hex(self._address)} on I2C channel {channel}.")
                 break
             except Exception as e:
-                self.logger.warning(f"Failed to connect on I2C channel {channel}: {e}")
+                self.logger.error(f"Failed to connect on I2C channel {channel}: {e}")
                 self._bus = None
+
+        try:
+            self._tof = VL53L0X(i2c_bus=I2C_CHANNEL, i2c_address=TOF_ADDRESS)
+            self.logger.info(f"Connected to ToF at address {hex(TOF_ADDRESS)} on I2C channel {I2C_CHANNEL}")
+        except e:
+            self.logger.warning(f"Failed to connect to ToF sensor {I2C_CHANNEL}: {e}")
+            self.logger.info(f"Trying to connect on another channel...")
+            try:
+                self._tof = VL53L0X(i2c_bus=LEGACY_I2C_CHANNEL, i2c_address=TOF_ADDRESS)
+                self.logger.info(f"Connected to ToF at address {hex(TOF_ADDRESS)} on I2C channel {LEGACY_I2C_CHANNEL}")
+            except:
+                self.logger.warning(f"Failed to connect to ToF sensor ({LEGACY_I2C_CHANNEL})")
 
         if not self._initialized:
             raise ConnectionError("Could not connect to e-puck2 on any I2C channel.")
@@ -154,6 +168,10 @@ class EPuck2(EPuckInterface):
                 self._bus.close()
                 self._bus = None
                 self._initialized = False
+
+        if self._tof is not None:
+            self._tof.close()
+            self._tof = None
 
     def _calculate_checksum(self, data: List) -> int:
         size = len(data)
@@ -220,6 +238,19 @@ class EPuck2(EPuckInterface):
 
         return proximity, proximity_ambient, microphone, selector, button, motor_steps, tv_remote
 
+    def _read_tof(self):
+        if self._tof is not None:
+            distance_in_millimeters = [0 for x in range(1, 101)]
+            self._tof.start_ranging(Vl53l0xAccuracyMode.BETTER)
+            timing = self._tof.get_timing()
+            if timing < 20000:
+                timing = 20000
+
+            for i in range (1, 101):
+                caught_distance = self._tof.get_distance()
+                distance_in_millimeters[i] = caught_distance if caught_distance > 0 else 0
+                time.sleep(timing/1000000.00)
+            self._tof.stop_ranging()
 
 #################################################
 #           EPUCK2 SPECIFIC METHODS             #
