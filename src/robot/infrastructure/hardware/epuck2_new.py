@@ -3,85 +3,98 @@
 import logging
 from smbus2 import SMBus, i2c_msg
 import time
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Any
 
 from application.interfaces.hardware.epuck import EPuckInterface
 
 # Common e-puck2 I2C address
-I2C_CHANNEL                 = 12
-LEGACY_I2C_CHANNEL          = 4
+I2C_CHANNEL                     = 12
+LEGACY_I2C_CHANNEL              = 4
 
 # IMU Registers using I2C channel and legacy I2C channel
-IMU_ADDRESS_1               = 0x68 # MPU9250 AD1 0
-IMU_ADDRESS_2               = 0x69 # MPU9250 AD1 1
-ACCELEROMETER_REGISTRY      = 0x3B
-GYROSCOPE_REGISTRY          = 0x43
-GRAVITY_CORRECTOR           = 16384 # 1g = 16384 LSB for MPU9250
-ACCELEROMETER_DATA_SIZE     = 6
-GYROSCOPE_DATA_SIZE         = 6
+IMU_ADDRESS_1                   = 0x68 # MPU9250 AD1 0
+IMU_ADDRESS_2                   = 0x69 # MPU9250 AD1 1
+ACCELEROMETER_REGISTRY          = 0x3B
+GYROSCOPE_REGISTRY              = 0x43
+GRAVITY_CORRECTOR               = 16384 # 1g = 16384 LSB for MPU9250
+ACCELEROMETER_DATA_SIZE         = 6
+GYROSCOPE_DATA_SIZE             = 6
 
 # EPuck2 Registers using I2C channel and legacy I2C channel
-ROBOT_REGISTRY_ADDRESS      = 0x1f
+ROBOT_REGISTRY_ADDRESS          = 0x1f
 
 ## byte positions in the actuator command packet
-LEFT_MOTOR_LOW_BYTE         = 0
-LEFT_MOTOR_HIGH_BYTE        = 1
-RIGHT_MOTOR_LOW_BYTE        = 2
-RIGHT_MOTOR_HIGH_BYTE       = 3
-SPEAKER_BYTE                = 4
-FRONT_LED_BYTE              = 5
-LED2_RED_BYTE               = 6
-LED2_GREEN_BYTE             = 7
-LED2_BLUE_BYTE              = 8
-LED4_RED_BYTE               = 9
-LED4_GREEN_BYTE             = 10
-LED4_BLUE_BYTE              = 11
-LED6_RED_BYTE               = 12
-LED6_GREEN_BYTE             = 13
-LED6_BLUE_BYTE              = 14
-LED8_RED_BYTE               = 15
-LED8_GREEN_BYTE             = 16
-LED8_BLUE_BYTE              = 17
-SETTINGS_BYTE               = 18
-CHECKSUM_BYTE               = 19
-ACTUATORS_SIZE              = 19 + 1 # 19 data bytes + 1 checksum
+LEFT_MOTOR_LOW_BYTE             = 0
+LEFT_MOTOR_HIGH_BYTE            = 1
+RIGHT_MOTOR_LOW_BYTE            = 2
+RIGHT_MOTOR_HIGH_BYTE           = 3
+SPEAKER_BYTE                    = 4
+FRONT_LED_BYTE                  = 5
+LED2_RED_BYTE                   = 6
+LED2_GREEN_BYTE                 = 7
+LED2_BLUE_BYTE                  = 8
+LED4_RED_BYTE                   = 9
+LED4_GREEN_BYTE                 = 10
+LED4_BLUE_BYTE                  = 11
+LED6_RED_BYTE                   = 12
+LED6_GREEN_BYTE                 = 13
+LED6_BLUE_BYTE                  = 14
+LED8_RED_BYTE                   = 15
+LED8_GREEN_BYTE                 = 16
+LED8_BLUE_BYTE                  = 17
+SETTINGS_BYTE                   = 18
+CHECKSUM_BYTE                   = 19
 
-## byte positions in the sensor data packet
-PROXIMITY_DATA_SIZE         = 8
-AMBIENT_LIGHT_DATA_SIZE     = 8
-MICROPHONE_DATA_SIZE        = 4
-SELECTOR_DATA_SIZE          = 1
-BUTTON_DATA_SIZE            = 1
-LEFT_MOTOR_STEPS_DATA_SIZE  = 2
-RIGHT_MOTOR_STEPS_DATA_SIZE = 2
-REMOTE_TV_DATA_SIZE         = 1
-SENSORS_SIZE                = 46 + 1 # 46 data bytes + 1 checksum
+LEFT_SPEED_DATA_TOTAL_SIZE      = 2
+RIGHT_SPEED_DATA_TOTAL_SIZE     = 2
+SPEAKER_DATA_TOTAL_SIZE         = 1
+FRONT_LED_DATA_TOTAL_SIZE       = 1
+LED2_DATA_TOTAL_SIZE            = 3
+LED4_DATA_TOTAL_SIZE            = 3
+LED6_DATA_TOTAL_SIZE            = 3
+LED8_DATA_TOTAL_SIZE            = 3
+SETTINGS_DATA_TOTAL_SIZE        = 1
+ACTUATORS_SIZE                  = 19 + 1 # 19 data bytes + 1 checksum
+
+## sensors packet
+PROXIMITY_DATA_SIZE             = 8
+AMBIENT_LIGHT_DATA_SIZE         = 8
+MICROPHONE_DATA_SIZE            = 4
+MOTOR_STEPS_DATA_SIZE           = 2
+
+PROXIMITY_DATA_TOTAL_SIZE       = 16
+AMBIENT_LIGHT_DATA_TOTAL_SIZE   = 16
+MICROPHONE_DATA_TOTAL_SIZE      = 8
+SEL_AND_BUTTON_DATA_TOTAL_SIZE  = 1 # selector and button are on a single byte, 4 least significant bits for the selector, bit 4 for the button
+MOTOR_STEPS_DATA_TOTAL_SIZE     = 4
+REMOTE_TV_DATA_TOTAL_SIZE       = 1
+SENSORS_SIZE                    = PROXIMITY_DATA_TOTAL_SIZE + AMBIENT_LIGHT_DATA_TOTAL_SIZE + MICROPHONE_DATA_TOTAL_SIZE + SEL_AND_BUTTON_DATA_TOTAL_SIZE + MOTOR_STEPS_DATA_TOTAL_SIZE + REMOTE_TV_DATA_TOTAL_SIZE + 1 # 46 data bytes + 1 checksum
 
 ## official sound IDs
-SOUND_MARIO                 = 0x01
-SOUND_UNDERWORLD            = 0x02
-SOUND_STARWARS              = 0x04
-SOUND_TONE_4KHZ             = 0x08
-SOUND_TONE_10KHZ            = 0x10
-SOUND_STOP                  = 0x20
+SOUND_MARIO                     = 0x01
+SOUND_UNDERWORLD                = 0x02
+SOUND_STARWARS                  = 0x04
+SOUND_TONE_4KHZ                 = 0x08
+SOUND_TONE_10KHZ                = 0x10
+SOUND_STOP                      = 0x20
 
 # ToF Registers using I2C channel and legacy I2C channel
-TOF_ADDRESS                 = 0x29 # VL53L0X
+TOF_ADDRESS                     = 0x29 # VL53L0X
 
 # Ground Sensors Registers using I2C channel and legacy I2C channel
-GROUND_SENSORS_ADDRESS      = 0x60
-GROUND_SENSOR_REGISTRY      = 0
-GROUND_DATA_SIZE            = 6
-GROUND_VALUES_SIZE          = 3
+GROUND_SENSORS_ADDRESS          = 0x60
+GROUND_SENSOR_REGISTRY          = 0
+GROUND_DATA_SIZE                = 6
+GROUND_VALUES_SIZE              = 3
 
 # Magnetometer Registers using BOARD I2C channel and legacy I2C channel
-BOARD_I2C_CHANNEL           = 11
-LEGACY_BOARD_I2C_CHANNEL    = 3
-MAGNETOMETER_ADDRESS        = 0x10 # BMM150
-MAGNETOMETER_REGISTRY_0     = 0x10
-MAGNETOMETER_REGISTRY_1     = 0x11
-MAGNETOMETER_REGISTRY_2     = 0x12
-MAGNETOMETER_REGISTRY_3     = 0x13
+BOARD_I2C_CHANNEL               = 11
+LEGACY_BOARD_I2C_CHANNEL        = 3
+MAGNETOMETER_ADDRESS            = 0x10 # BMM150
+MAGNETOMETER_REGISTRY_0         = 0x10
+MAGNETOMETER_REGISTRY_1         = 0x11
+MAGNETOMETER_REGISTRY_2         = 0x12
+MAGNETOMETER_REGISTRY_3         = 0x13
 
 
 class EPuck2(EPuckInterface):
@@ -100,15 +113,13 @@ class EPuck2(EPuckInterface):
         self._address = i2c_address if i2c_address is not None else ROBOT_REGISTRY_ADDRESS
         self._bus = None
         self._initialized = False
-
-        self._actuators_data = bytearray([0] * ACTUATORS_SIZE)                  # Actuator command buffer
-        self._sensors_data = bytearray([0] * SENSORS_SIZE)                      # Sensor data buffer
+        self._reset_actuators_and_sensors()
 
     def __del__(self):
         """ Destructor to ensure the I2C bus is closed properly."""
         self.close()
 
-    def initialize(self):
+    def initialize(self) -> None:
         """ Initialize the I2C bus and verify communication with the robot."""
         if self._initialized:
             return
@@ -118,7 +129,7 @@ class EPuck2(EPuckInterface):
                 self._bus = channel if isinstance(channel, SMBus) else SMBus(channel)
                 self._actuators_data = bytearray([0] * ACTUATORS_SIZE)
                 self._sensors_data = bytearray([0] * SENSORS_SIZE)
-                self._update_sensor_and_actuators()
+                self._update_sensors_and_actuators()
                 self._initialized = True
                 self.logger.info(f"Connected to e-puck2 at address {hex(self._address)} on I2C channel {channel}.")
                 break
@@ -129,14 +140,13 @@ class EPuck2(EPuckInterface):
         if not self._initialized:
             raise ConnectionError("Could not connect to e-puck2 on any I2C channel.")
 
-    def close(self):
+    def close(self) -> None:
         """ Close the I2C bus if it was opened by this instance."""
         if self._bus is not None:
             try:
                 self.logger.info("🧹 EPuck2 cleanup: turning off all hardware")
-                self._actuators_data = bytearray([0] * ACTUATORS_SIZE)
-                self._sensors_data = bytearray([0] * SENSORS_SIZE)
-                self._update_sensor_and_actuators()
+                self._reset_actuators_and_sensors()
+                self._update_sensors_and_actuators()
                 self.logger.info("✅ EPuck2 cleanup packet sent successfully")
             except Exception as cleanup_error:
                 self.logger.warning(f"⚠️ EPuck2 cleanup failed: {cleanup_error}")
@@ -145,15 +155,19 @@ class EPuck2(EPuckInterface):
                 self._bus = None
                 self._initialized = False
 
-    def _update_sensor_and_actuators(self):
+    def _calculate_checksum(self, data: List) -> int:
+        size = len(data)
+        checksum = 0
+        for i in range(size-1):
+            checksum ^= data[i]
+        return checksum
+
+    def _update_sensors_and_actuators(self) -> None:
         """Send the actuator command packet to the robot and read back the sensor data."""
         if not self._initialized or self._bus is None:
             raise RuntimeError("EPuck2 is not initialized. Call initialize() before sending packets.")
 
-        checksum = 0
-        for i in range(ACTUATORS_SIZE-1):
-            checksum ^= self._actuators_data[i]
-        self._actuators_data[ACTUATORS_SIZE-1] = checksum
+        self._actuators_data[ACTUATORS_SIZE-1] = self._calculate_checksum(self._actuators_data)
 
         write = i2c_msg.write(self._address, self._actuators_data)
         hex_data = ' '.join([f'{b:02x}' for b in self._actuators_data])
@@ -168,6 +182,44 @@ class EPuck2(EPuckInterface):
             self.logger.debug(f"📡 e-puck2 I2C write/read: actuators sent, sensors received ({len(self._sensors_data)} bytes)")
         except Exception as e:
             raise ConnectionError(f"❌ Failed to communicate with e-puck2: {e}")
+
+    def _reset_actuators_and_sensors(self) -> None:
+        self._actuators_data = bytearray([0] * ACTUATORS_SIZE)                  # Actuator command buffer
+        self._sensors_data = bytearray([0] * SENSORS_SIZE)                      # Sensor data buffer
+
+    def _read_sensors(self) -> Tuple[list[int], list[int], list[int], int, int, list[int], int]:
+        offset = 0
+        proximity = [0 for x in range(PROXIMITY_DATA_SIZE)]
+        proximity_ambient = [0 for x in range(AMBIENT_LIGHT_DATA_SIZE)]
+        microphone = [0 for x in range(MICROPHONE_DATA_SIZE)]
+        selector = 0
+        button = 0
+        motor_steps = [0 for x in range(MOTOR_STEPS_DATA_SIZE)]
+        tv_remote = 0
+
+        checksum = self._calculate_checksum(self._sensors_data)
+        if (checksum != self._sensors_data[SENSORS_SIZE-1]):
+            return
+
+        for i in range(PROXIMITY_DATA_SIZE):
+            proximity[i] = self._sensors_data[i*2+1] * 256 + self._sensors_data[i*2]
+        offset += PROXIMITY_DATA_TOTAL_SIZE
+        for i in range(AMBIENT_LIGHT_DATA_SIZE):
+            proximity_ambient[i] = self._sensors_data[offset+i*2+1] * 256 + self._sensors_data[offset+i*2]
+        offset += AMBIENT_LIGHT_DATA_TOTAL_SIZE
+        for i in range(MICROPHONE_DATA_SIZE):
+            microphone[i] = self._sensors_data[offset+i*2+1] * 256 + self._sensors_data[offset+i*2]
+        offset += MICROPHONE_DATA_TOTAL_SIZE
+        selector = self._sensors_data[offset] & 0x0F # 4 least significant bits
+        button = self._sensors_data[offset] >> 4     # bit 4
+        offset += SEL_AND_BUTTON_DATA_TOTAL_SIZE
+        for i in range(MOTOR_STEPS_DATA_SIZE):
+            motor_steps[i] = self._sensors_data[offset+i*2+1] * 256 + self._sensors_data[offset+i*2]
+        offset += MOTOR_STEPS_DATA_TOTAL_SIZE
+        tv_remote = self._sensors_data[offset]
+
+        return proximity, proximity_ambient, microphone, selector, button, motor_steps, tv_remote
+
 
 #################################################
 #           EPUCK2 SPECIFIC METHODS             #
