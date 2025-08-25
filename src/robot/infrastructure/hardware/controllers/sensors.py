@@ -33,24 +33,24 @@ class SensorController(SensorInterface):
             # Calibrate IR sensors for better readings
             self.pipuck.epuck.calibrate_ir_sensors()
 
-            self.logger.info("✅ Sensor controller initialized using EPuck2 API (includes built-in IMU)")
+            self.logger.info("📡 Sensor controller initialized - proximity, light, and IMU sensors ready")
             self._initialized = True
             return True
 
         except ImportError as ie:
-            self.logger.error(f"❌ Required libraries not available for sensor control: {ie}")
+            self.logger.error(f"❌ Required sensor libraries missing - no sensor data available: {ie}")
             return False
         except Exception as e:
-            self.logger.error(f"❌ Sensor controller initialization failed: {e}")
+            self.logger.error(f"❌ Sensor controller initialization failed - no sensor readings available: {e}")
             return False
 
     async def cleanup(self):
         """Cleanup sensor resources (PiPuck cleanup handled by container)"""
         if self._initialized:
             try:
-                self.logger.info("🧹 Sensor controller cleaned up")
+                self.logger.info("🧹 Sensor controller cleaned up - all sensor readings stopped")
             except Exception as e:
-                self.logger.warning(f"⚠️ Error during sensor cleanup: {e}")
+                self.logger.warning(f"⚠️ Sensor cleanup error - readings may continue: {e}")
 
         self._initialized = False
 
@@ -63,7 +63,7 @@ class SensorController(SensorInterface):
             self.logger.debug(f"📡 Proximity sensors: {proximity}")
             return proximity
         except Exception as e:
-            self.logger.warning(f"⚠️ Proximity sensor read failed: {e}")
+            self.logger.warning(f"⚠️ Proximity sensors unavailable - using defaults: {e}")
             return [0] * 8
 
     async def get_light(self) -> List[int]:
@@ -75,7 +75,7 @@ class SensorController(SensorInterface):
             self.logger.debug(f"💡 Light sensors: {light}")
             return light
         except Exception as e:
-            self.logger.warning(f"⚠️ Light sensor read failed: {e}")
+            self.logger.warning(f"⚠️ Light sensors unavailable - using defaults: {e}")
             return [100] * 8
 
     async def get_magnetometer(self) -> List[float]:
@@ -87,7 +87,7 @@ class SensorController(SensorInterface):
             self.logger.debug(f"🧲 Magnetometer: {mag}")
             return list(mag)  # Convert tuple to list
         except Exception as e:
-            self.logger.warning(f"⚠️ Magnetometer read failed: {e}")
+            self.logger.warning(f"⚠️ Magnetometer unavailable - using defaults: {e}")
             return [0.0, 0.0, 0.0]
 
     async def get_accelerometer(self) -> List[float]:
@@ -99,7 +99,7 @@ class SensorController(SensorInterface):
             self.logger.debug(f"📐 Accelerometer: {accel}")
             return list(accel)  # Convert tuple to list
         except Exception as e:
-            self.logger.warning(f"⚠️ Accelerometer read failed: {e}")
+            self.logger.warning(f"⚠️ Accelerometer unavailable - using defaults: {e}")
             return [0.0, 0.0, 9.8]
 
     async def get_gyroscope(self) -> List[float]:
@@ -111,7 +111,7 @@ class SensorController(SensorInterface):
             self.logger.debug(f"🌀 Gyroscope: {gyro}")
             return list(gyro)  # Convert tuple to list
         except Exception as e:
-            self.logger.warning(f"⚠️ Gyroscope read failed: {e}")
+            self.logger.warning(f"⚠️ Gyroscope unavailable - using defaults: {e}")
             return [0.0, 0.0, 0.0]
 
     async def get_all_readings(self) -> SensorReading:
@@ -153,8 +153,8 @@ class SensorController(SensorInterface):
                 }
 
                 self.logger.info(
-                    f"🔋 E-puck battery (OOP): {epuck_voltage:.2f}V "
-                    f"({epuck_percentage:.2f}%) {'⚡ charging' if epuck_charging else ''} "
+                    f"🔋 E-puck battery: {epuck_voltage:.2f}V ({epuck_percentage*100:.1f}%) "
+                    f"{'🔌 charging' if epuck_charging else '🔋 on battery'}"
                 )
 
                 try:
@@ -165,8 +165,8 @@ class SensorController(SensorInterface):
                         "charging": aux_charging,
                     }
                     self.logger.info(
-                        f"🔋 External battery (OOP): {aux_voltage:.2f}V "
-                        f"({aux_percentage:.2%}) {'⚡ charging' if aux_charging else ''}"
+                        f"🔋 External battery: {aux_voltage:.2f}V ({aux_percentage*100:.1f}%) "
+                        f"{'🔌 charging' if aux_charging else '🔋 on battery'}"
                     )
                 except Exception as aux_e:
                     self.logger.debug(f"🔋 No external battery or read failed: {aux_e}")
@@ -180,21 +180,21 @@ class SensorController(SensorInterface):
                         "external": {"voltage": legacy_aux_voltage, "percentage": legacy_aux_percentage}
                     }
                     self.logger.info(
-                        f"📟 Legacy E-puck battery: {legacy_epuck_voltage:.2f}V ({legacy_epuck_percentage:.2f}%)"
+                        f"📊 Legacy E-puck battery reading: {legacy_epuck_voltage:.2f}V ({legacy_epuck_percentage:.1f}%)"
                     )
                     self.logger.info(
-                        f"📟 Legacy Aux battery: {legacy_aux_voltage:.2f}V ({legacy_aux_percentage:.2f}%)"
+                        f"📊 Legacy Aux battery reading: {legacy_aux_voltage:.2f}V ({legacy_aux_percentage:.1f}%)"
                     )
                 except Exception as legacy_e:
                     self.logger.debug(f"Legacy battery read failed: {legacy_e}")
 
             else:
-                self.logger.warning("⚠️ PiPuck not available for battery monitoring")
+                self.logger.warning("⚠️ Battery monitoring unavailable - PiPuck not connected")
 
             return battery_info
 
         except Exception as e:
-            self.logger.warning(f"⚠️ Battery read failed: {e}")
+            self.logger.warning(f"⚠️ Battery monitoring failed - using default values: {e}")
             return default_battery_info
 
     def _read_battery_legacy(self, battery_type: str):

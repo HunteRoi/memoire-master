@@ -22,11 +22,11 @@ class MotorController(MotorInterface):
             if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck:
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
 
-            self.logger.info("✅ Motor controller initialized using provided PiPuck")
+            self.logger.info("⚙️ Motor controller initialized - left and right motors ready")
             self._initialized = True
             return True
         except Exception as e:
-            self.logger.error(f"❌ Motor controller initialization failed: {e}")
+            self.logger.error(f"❌ Motor controller initialization failed - no movement available: {e}")
             return False
 
     async def cleanup(self):
@@ -35,9 +35,9 @@ class MotorController(MotorInterface):
             try:
                 # Stop motors before cleanup
                 await self.stop()
-                self.logger.info("🧹 Motor controller cleaned up")
+                self.logger.info("🧹 Motor controller cleaned up - all motors stopped")
             except Exception as e:
-                self.logger.warning(f"⚠️ Error during motor cleanup: {e}")
+                self.logger.warning(f"⚠️ Motor cleanup error - motors may continue running: {e}")
 
         self._initialized = False
 
@@ -47,47 +47,47 @@ class MotorController(MotorInterface):
             raise RuntimeError("Motor controller not initialized")
 
         try:
-            self.logger.info(f"🚗 Setting motor speeds: left={left_speed}, right={right_speed})")
+            self.logger.debug(f"🚗 Motor command: left={left_speed}%, right={right_speed}%")
 
             # Use EPuck2 API - detect common movement patterns for better semantic control
             if left_speed == right_speed:
                 if left_speed > 0:
                     # Both motors forward - use go_forward
                     self.pipuck.epuck.go_forward(abs(left_speed))
-                    self.logger.info(f"✅ Moving forward at speed {abs(left_speed)} via EPuck2")
+                    self.logger.debug(f"➡️ Forward motion at {abs(left_speed)}% speed")
                 elif left_speed < 0:
                     # Both motors backward - use go_backward
                     self.pipuck.epuck.go_backward(abs(left_speed))
-                    self.logger.info(f"✅ Moving backward at speed {abs(left_speed)} via EPuck2")
+                    self.logger.debug(f"⬅️ Backward motion at {abs(left_speed)}% speed")
                 else:
                     # Both motors stopped
                     self.pipuck.epuck.set_motor_speeds(0, 0)
-                    self.logger.info("✅ Motors stopped via EPuck2")
+                    self.logger.debug("🛑 Motors stopped")
             elif left_speed == -right_speed:
                 if left_speed < 0:
                     # Left negative, right positive - turn left
                     self.pipuck.epuck.turn_left(abs(right_speed))
-                    self.logger.info(f"✅ Turning left at speed {abs(right_speed)} via EPuck2")
+                    self.logger.debug(f"↪️ Left turn at {abs(right_speed)}% speed")
                 else:
                     # Left positive, right negative - turn right
                     self.pipuck.epuck.turn_right(abs(left_speed))
-                    self.logger.info(f"✅ Turning right at speed {abs(left_speed)} via EPuck2")
+                    self.logger.debug(f"↩️ Right turn at {abs(left_speed)}% speed")
             else:
                 # Complex movement - use direct motor speeds
                 self.pipuck.epuck.set_motor_speeds(left_speed, right_speed)
-                self.logger.info(f"✅ Custom motor speeds set via EPuck2: left={left_speed}%, right={right_speed}%")
+                self.logger.debug(f"🎯 Custom motion: L={left_speed}%, R={right_speed}%")
 
         except Exception as e:
-            self.logger.error(f"❌ Failed to set motor speeds: {e}")
+            self.logger.error(f"❌ Motor speed control failed - movement unavailable: {e}")
             raise
 
     async def stop(self) -> None:
         """Stop both motors"""
         try:
             await self.set_speed(0, 0)
-            self.logger.debug("🛑 Motors stopped")
+            self.logger.debug("🛑 All motors stopped")
         except Exception as e:
-            self.logger.error(f"❌ Failed to stop motors: {e}")
+            self.logger.error(f"❌ Motor stop command failed - robot may continue moving: {e}")
             raise
 
     @property

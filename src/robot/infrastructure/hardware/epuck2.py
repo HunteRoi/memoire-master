@@ -145,11 +145,11 @@ class EPuck2(EPuckInterface):
             for magnetometer_address in magnetometer_addresses:
                 try:
                     self._magnetometer = bmm150_I2C(channel, magnetometer_address)
-                    self.logger.info(f"Connected to magnetometer sensor {hex(magnetometer_address)} on board I2C channel {channel}")
+                    self.logger.info(f"🧡 Magnetometer connected at {hex(magnetometer_address)} on I2C channel {channel}")
                     break
                 except Exception as e:
                     self._magnetometer = None
-                    self.logger.warning(f"Failed to connect to magnetometer sensor {channel}: {e}")
+                    self.logger.warning(f"⚠️ Magnetometer connection failed on channel {channel}: {e}")
             if self._magnetometer is not None:
                 break
 
@@ -157,10 +157,10 @@ class EPuck2(EPuckInterface):
         for channel in self._i2c_channels:
             try:
                 self._tof = VL53L0X(i2c_bus=channel, i2c_address=TOF_ADDRESS)
-                self.logger.info(f"Connected to ToF at address {hex(TOF_ADDRESS)} on I2C channel {channel}")
+                self.logger.info(f"📶 ToF sensor connected at {hex(TOF_ADDRESS)} on I2C channel {channel}")
                 break
             except Exception as e:
-                self.logger.warning(f"Failed to connect to ToF sensor {channel}: {e}")
+                self.logger.warning(f"⚠️ ToF sensor connection failed on channel {channel}: {e}")
 
     def _initialize_bus(self):
         for channel in self._i2c_channels:
@@ -170,22 +170,22 @@ class EPuck2(EPuckInterface):
                 self._sensors_data = bytearray([0] * SENSORS_SIZE)
                 self._update_sensors_and_actuators()
                 self._initialized = True
-                self.logger.info(f"Connected to e-puck2 at address {hex(self._address)} on I2C channel {channel}.")
+                self.logger.info(f"🤖 e-puck2 connected at {hex(self._address)} on I2C channel {channel}")
                 break
             except Exception as e:
-                self.logger.error(f"Failed to connect on I2C channel {channel}: {e}")
+                self.logger.error(f"❌ e-puck2 I2C connection failed on channel {channel}: {e}")
                 self._bus = None
 
     def close(self) -> None:
         """ Close the I2C bus if it was opened by this instance."""
         if self._bus is not None:
             try:
-                self.logger.info("EPuck2 cleanup: turning off all hardware")
+                self.logger.info("🧹 EPuck2 cleanup initiated - shutting down all hardware")
                 self._reset_actuators_and_sensors()
                 self._update_sensors_and_actuators()
-                self.logger.info("EPuck2 cleanup packet sent successfully")
+                self.logger.info("✅ EPuck2 cleanup completed - all hardware shut down")
             except Exception as cleanup_error:
-                self.logger.warning(f"EPuck2 cleanup failed: {cleanup_error}")
+                self.logger.warning(f"⚠️ EPuck2 cleanup failed - hardware may remain active: {cleanup_error}")
             finally:
                 self._bus.close()
                 self._bus = None
@@ -218,15 +218,15 @@ class EPuck2(EPuckInterface):
 
         write = i2c_msg.write(self._address, self._actuators_data)
         hex_data = ' '.join([f'{b:02x}' for b in self._actuators_data])
-        self.logger.info(f"Sending actuator data ({len(self._actuators_data)}): {hex_data}")
+        self.logger.debug(f"📤 Actuator data sent ({len(self._actuators_data)} bytes): {hex_data}")
 
         read = i2c_msg.read(self._address, SENSORS_SIZE)
-        self.logger.debug("Waiting for sensor data...")
+        self.logger.debug("🔍 Awaiting sensor data response...")
 
         try:
             self._bus.i2c_rdwr(write, read)
             self._sensors_data = list(read)
-            self.logger.debug(f"e-puck2 I2C write/read: actuators sent, sensors received ({len(self._sensors_data)} bytes)")
+            self.logger.debug(f"🔄 I2C transaction complete: {len(self._sensors_data)} bytes sensor data received")
         except Exception as e:
             raise ConnectionError(f"Failed to communicate with e-puck2: {e}")
 
@@ -298,7 +298,7 @@ class EPuck2(EPuckInterface):
 
             self._tof.stop_ranging()
         except Exception as e:
-            self.logger.error(f"Failed to read ToF data: {e}")
+            self.logger.error(f"❌ ToF sensor read failed - distance unavailable: {e}")
 
         return distance_in_millimeters
 
@@ -316,13 +316,13 @@ class EPuck2(EPuckInterface):
         try:
             ground_data = self._bus.read_i2c_block_data(GROUND_SENSORS_ADDRESS, GROUND_SENSORS_REGISTRY, GROUND_DATA_SIZE)
         except Exception as e:
-            self.logger.error(f"Failed to read ground sensors data: {e}")
+            self.logger.error(f"❌ Ground sensor read failed - surface detection unavailable: {e}")
 
         # shift high byte by 8 to reconstruct the full sensor data in a 16bits integer
         ground_values[0] = ground_data[1] + (ground_data[0] << 8) # left ground sensor
         ground_values[1] = ground_data[3] + (ground_data[2] << 8) # center ground sensor
         ground_values[2] = ground_data[5] + (ground_data[4] << 8) # right ground sensor
-        self.logger.debug(f"Ground sensors values: left={ground_values[0]:>3d}, center={ground_values[1]:>3d}, right={ground_values[2]:>3d}")
+        self.logger.debug(f"🌱 Ground sensors: L={ground_values[0]:>3d}, C={ground_values[1]:>3d}, R={ground_values[2]:>3d}")
 
         return ground_values
 
@@ -336,7 +336,7 @@ class EPuck2(EPuckInterface):
             raise RuntimeError("Magnetometer sensor is not initialized")
         try:
             while self._magnetometer.sensor_init() == bmm150.ERROR:
-                self.logger.debug(f"Failed to initialize the magnetometer. Retrying in 1s...")
+                self.logger.debug("⚠️ Magnetometer init failed, retrying in 1s...")
                 time.sleep(1)
             self._magnetometer.set_operation_mode(bmm150.POWERMODE_NORMAL)
             self._magnetometer.set_preset_mode(bmm150.PRESETMODE_HIGHACCURACY)
@@ -344,7 +344,7 @@ class EPuck2(EPuckInterface):
             self._magnetometer.set_measurement_xyz()
 
             # calibrate magnetometer
-            self.logger.debug(f"Calibration of the magnetometer...")
+            self.logger.debug("🤖 Calibrating magnetometer - please move robot in figure-8 pattern")
             geo_offsets_max = [-1000, -1000, -1000]
             geo_offsets_min = [1000, 1000, 1000]
             geo_offsets = [0, 0, 0]
@@ -371,8 +371,8 @@ class EPuck2(EPuckInterface):
             geo_offsets[0] = (geo_offsets_max[0] + geo_offsets_min[0])/2
             geo_offsets[1] = (geo_offsets_max[1] + geo_offsets_min[1])/2
             geo_offsets[2] = (geo_offsets_max[2] + geo_offsets_min[2])/2
-            self.logger.debug(f"geo offsets: {geo_offsets}")
-            self.logger.debug(f"End of the calibration of the magnetometer")
+            self.logger.debug(f"🧡 Magnetometer geo offsets calculated: {geo_offsets}")
+            self.logger.debug("✅ Magnetometer calibration completed")
 
             def get_robot_degree():
                 geomagnetic = self._magnetometer.get_geomagnetic()
@@ -389,7 +389,7 @@ class EPuck2(EPuckInterface):
             degree = get_robot_degree()
             return geomagnetic[0], geomagnetic[1], geomagnetic[3], degree # (x,y,z,degree)
         except Exception as e:
-            self.logger.error(f"Failed to use the magnetometer sensor: {e}")
+            self.logger.error(f"❌ Magnetometer operation failed - compass unavailable: {e}")
             return tuple(0,0,0,0)
         finally:
             self._magnetometer.set_operation_mode(bmm150.POWERMODE_SLEEP)
@@ -412,7 +412,7 @@ class EPuck2(EPuckInterface):
 
             return image_path
         except Exception as e:
-            self.logger.error(f"Failed to capture a snapshot using device {device_id}: {e}")
+            self.logger.error(f"❌ Camera snapshot failed on device {device_id}: {e}")
 
     def _get_imu_sensors(self):
         """
@@ -444,7 +444,7 @@ class EPuck2(EPuckInterface):
                     data = self._bus.read_i2c_block_data(address, registry, count)
                 except Exception as e:
                     data = None
-                    self.logger.error(f"Failed to read IMU sensors data from {address}")
+                    self.logger.error(f"❌ IMU sensor read failed from address {address}")
             return data
 
         try:
@@ -462,7 +462,7 @@ class EPuck2(EPuckInterface):
             acceleration_offset[0] = int(acceleration_sum[0]/samples_count)
             acceleration_offset[1] = int(acceleration_sum[1]/samples_count)
             acceleration_offset[2] = int(acceleration_sum[2]/samples_count)
-            self.logger.debug(f"accelerometer offsets: x={acceleration_offset[0]:>+5d}, y={acceleration_offset[1]:>+5d}, z={acceleration_offset[2]:>+5d} (samples={samples_count:>3d})")
+            self.logger.debug(f"📀 Accelerometer offsets: X={acceleration_offset[0]:>+5d}, Y={acceleration_offset[1]:>+5d}, Z={acceleration_offset[2]:>+5d} ({samples_count} samples)")
 
             # calibration gyroscope
             samples_count = 0
@@ -477,7 +477,7 @@ class EPuck2(EPuckInterface):
             gyroscope_offset[0] = int(gyroscope_sum[0]/samples_count)
             gyroscope_offset[1] = int(gyroscope_sum[1]/samples_count)
             gyroscope_offset[2] = int(gyroscope_sum[2]/samples_count)
-            self.logger.debug(f"gyroscope offsets: x={gyroscope_offset[0]:>+5d}, y={gyroscope_offset[1]:>+5d}, z={gyroscope_offset[2]:>+5d} (samples={samples_count:>3d})")
+            self.logger.debug(f"🌀 Gyroscope offsets: X={gyroscope_offset[0]:>+5d}, Y={gyroscope_offset[1]:>+5d}, Z={gyroscope_offset[2]:>+5d} ({samples_count} samples)")
 
             acceleration_data = read_registry(ACCELEROMETER_REGISTRY, ACCELEROMETER_DATA_SIZE)
             acceleration_values[0] = struct.unpack("<h", struct.pack("<BB", acceleration_data[1], acceleration_data[0]))[0] - acceleration_offset[0]
@@ -491,7 +491,7 @@ class EPuck2(EPuckInterface):
 
             return (acceleration_values[0], acceleration_values[1], acceleration_values[2], acceleration_divider), (gyroscope_values[0], gyroscope_values[1], gyroscope_values[2], gyroscope_divider)
         except Exception as e:
-            self.logger.error(f"Failed to read IMU sensors data: {e}")
+            self.logger.error(f"❌ IMU sensor calibration failed - motion sensing unavailable: {e}")
 
 #################################################
 #           EPUCK2 SPECIFIC METHODS             #
@@ -659,7 +659,7 @@ class EPuck2(EPuckInterface):
                 return proximity
             return [0] * PROXIMITY_DATA_SIZE
         except Exception as e:
-            self.logger.error(f"Failed to read proximity sensors: {e}")
+            self.logger.error(f"❌ Proximity sensors read failed - obstacle detection unavailable: {e}")
             return [0] * PROXIMITY_DATA_SIZE
 
     def read_ambient_light_sensors(self) -> List[int]:
@@ -671,19 +671,19 @@ class EPuck2(EPuckInterface):
                 return proximity_ambient
             return [0] * AMBIENT_LIGHT_DATA_SIZE
         except Exception as e:
-            self.logger.error(f"Failed to read ambient light sensors: {e}")
+            self.logger.error(f"❌ Ambient light sensors read failed - light detection unavailable: {e}")
             return [0] * AMBIENT_LIGHT_DATA_SIZE
 
 ## Camera
     def take_picture_with_front_camera(self) -> None:
         """Capture a snapshot with the front camera"""
         img_path = self._get_camera_snapshot(FRONT_CAMERA_ID)
-        self.logger.info(f"Snapshot located at {img_path}")
+        self.logger.debug(f"📷 Camera snapshot saved: {img_path}")
 
     def take_picture_with_omnivision_camera(self) -> None:
         """Capture a snapshot with the 360° camera (OmniVision3 module)"""
         img_path = self._get_camera_snapshot(OMNIVISION_CAMERA_ID)
-        self.logger.info(f"Snapshot located at {img_path}")
+        self.logger.debug(f"📷 Camera snapshot saved: {img_path}")
 
 ## Microphone
     def read_microphone_sensors(self) -> List[int]:
@@ -695,7 +695,7 @@ class EPuck2(EPuckInterface):
                 return microphone
             return [0] * MICROPHONE_DATA_SIZE
         except Exception as e:
-            self.logger.error(f"Failed to read microphone sensors: {e}")
+            self.logger.error(f"❌ Microphone sensors read failed - sound detection unavailable: {e}")
             return [0] * MICROPHONE_DATA_SIZE
 
 ## IMU
@@ -709,7 +709,7 @@ class EPuck2(EPuckInterface):
                 return (x / divider, y / divider, z / divider)
             return (0.0, 0.0, 0.0)
         except Exception as e:
-            self.logger.error(f"Failed to read accelerometer: {e}")
+            self.logger.error(f"❌ Accelerometer read failed - motion detection unavailable: {e}")
             return (0.0, 0.0, 0.0)
 
     @property
@@ -727,7 +727,7 @@ class EPuck2(EPuckInterface):
                 return (x / divider, y / divider, z / divider)
             return (0.0, 0.0, 0.0)
         except Exception as e:
-            self.logger.error(f"Failed to read gyroscope: {e}")
+            self.logger.error(f"❌ Gyroscope read failed - rotation detection unavailable: {e}")
             return (0.0, 0.0, 0.0)
 
     @property
@@ -744,7 +744,7 @@ class EPuck2(EPuckInterface):
                 return (float(x), float(y), float(z))
             return (0.0, 0.0, 0.0)
         except Exception as e:
-            self.logger.error(f"Failed to read magnetometer: {e}")
+            self.logger.error(f"❌ Magnetometer read failed - compass unavailable: {e}")
             return (0.0, 0.0, 0.0)
 
     @property
@@ -812,7 +812,7 @@ class EPuck2(EPuckInterface):
                 return motor_steps[0]
             return 0
         except Exception as e:
-            self.logger.error(f"Failed to read left motor steps: {e}")
+            self.logger.error(f"❌ Left motor encoder read failed - position tracking unavailable: {e}")
             return 0
 
     @property
@@ -825,7 +825,7 @@ class EPuck2(EPuckInterface):
                 return motor_steps[1]
             return 0
         except Exception as e:
-            self.logger.error(f"Failed to read right motor steps: {e}")
+            self.logger.error(f"❌ Right motor encoder read failed - position tracking unavailable: {e}")
             return 0
 
     @property

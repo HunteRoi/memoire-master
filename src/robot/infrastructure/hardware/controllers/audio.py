@@ -26,11 +26,11 @@ class AudioController(AudioInterface):
             if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck:
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
 
-            self.logger.info("✅ Audio controller initialized using provided PiPuck")
+            self.logger.info("🎵 Audio controller initialized successfully with EPuck2 API")
             self._initialized = True
             return True
         except Exception as e:
-            self.logger.error(f"❌ Audio controller initialization failed: {e}")
+            self.logger.error(f"❌ Audio controller initialization failed - no sound available: {e}")
             return False
 
     async def cleanup(self):
@@ -38,9 +38,9 @@ class AudioController(AudioInterface):
         if self._initialized:
             try:
                 self.pipuck.epuck.stop_sound()
-                self.logger.info("🧹 Audio controller cleaned up")
+                self.logger.info("🧹 Audio controller cleaned up - all sounds stopped")
             except Exception as e:
-                self.logger.warning(f"⚠️ Error during audio cleanup: {e}")
+                self.logger.warning(f"⚠️ Audio cleanup error - sounds may continue playing: {e}")
 
         self._initialized = False
 
@@ -51,27 +51,27 @@ class AudioController(AudioInterface):
 
         try:
             self.pipuck.epuck.play_sound(sound_id)
-            self.logger.info(f"🔊 Playing sound via EPuck2 API: sound_id={sound_id}")
+            self.logger.debug(f"🔊 Sound command sent to EPuck2: sound_id={sound_id}")
 
         except Exception as e:
-            self.logger.error(f"❌ Audio command failed: {e}")
+            self.logger.error(f"❌ Audio command failed - hardware error: {e}")
             raise
 
     async def play_beep(self, duration: float = 0.1) -> None:
         """Play a 4KHz tone as beep using EPuck2 API"""
         try:
-            self.logger.info("🔊 Playing beep sound (4KHz tone) via EPuck2 API")
+            self.logger.debug(f"🎶 Playing beep sound (4KHz tone) for {duration:.1f}s")
             self.pipuck.epuck.play_tone_4khz()
             await asyncio.sleep(duration)
             self.pipuck.epuck.stop_sound()
 
         except Exception as e:
-            self.logger.error(f"❌ Failed to play beep: {e}")
+            self.logger.error(f"❌ Beep playback failed - audio hardware error: {e}")
 
     async def play_melody(self, melody_name: str = "mario") -> None:
         """Play a melody via EPuck2 API"""
         try:
-            self.logger.info(f"🎵 Playing melody '{melody_name}' via EPuck2 API")
+            self.logger.info(f"🎼 Playing '{melody_name}' melody (~3s duration)")
 
             # Use semantic method names from API
             melody_methods = {
@@ -82,19 +82,17 @@ class AudioController(AudioInterface):
 
             melody_method = melody_methods.get(melody_name.lower(), self.pipuck.epuck.play_mario)
             melody_method()
-            await asyncio.sleep(3.0)
-            self.pipuck.epuck.stop_sound()
 
         except Exception as e:
-            self.logger.error(f"❌ Failed to play melody '{melody_name}': {e}")
+            self.logger.error(f"❌ Melody '{melody_name}' playback failed - audio hardware error: {e}")
 
     async def stop_audio(self) -> None:
         """Stop currently playing audio using EPuck2 API"""
         try:
             self.pipuck.epuck.stop_sound()
-            self.logger.debug("🔇 Audio stopped via EPuck2 API")
+            self.logger.debug("🔇 All audio stopped")
         except Exception as e:
-            self.logger.error(f"❌ Failed to stop audio: {e}")
+            self.logger.error(f"❌ Audio stop command failed - sounds may continue: {e}")
 
     @property
     def is_initialized(self) -> bool:

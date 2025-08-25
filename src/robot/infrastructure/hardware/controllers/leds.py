@@ -22,7 +22,7 @@ class LEDController(LEDInterface):
             if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck:
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
 
-            self.logger.info("✅ LED controller initialized using provided PiPuck")
+            self.logger.info("💡 LED controller initialized - front and body LEDs ready")
             self._initialized = True
             return True
         except Exception as e:
@@ -46,8 +46,8 @@ class LEDController(LEDInterface):
     async def set_body_led(self, red: int, green: int, blue: int) -> None:
         """Set LEDs using both PiPuck native LEDs and EPuck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
-            self.logger.warning("⚠️ LED controller not initialized")
-            self.logger.info(f"💡 [Body LED] RGB({red}, {green}, {blue}) (not initialized)")
+            self.logger.warning("⚠️ Cannot control body LED - controller not initialized")
+            self.logger.debug(f"💡 Body LED command ignored: RGB({red}, {green}, {blue}) - not initialized")
             return
 
         # Clamp RGB values to EPuck2 range (0-100)
@@ -56,7 +56,7 @@ class LEDController(LEDInterface):
         blue = max(0, min(100, int(blue * 100 / 255)))
 
         try:
-            self.logger.info(f"💡 Setting both Pi-puck and e-puck2 LEDs to RGB({red}, {green}, {blue})")
+            self.logger.debug(f"🌈 Setting body LEDs: RGB({red}, {green}, {blue})")
 
             # Set Pi-puck LEDs (boolean on/off for each color)
             # Use a threshold to determine if color should be on (>50) or off (<=50)
@@ -65,27 +65,27 @@ class LEDController(LEDInterface):
             pipuck_blue = blue > 50
 
             self.pipuck.set_leds_rgb(pipuck_red, pipuck_green, pipuck_blue)
-            self.logger.debug(f"📡 Pi-puck LEDs: R={pipuck_red}, G={pipuck_green}, B={pipuck_blue}")
+            self.logger.debug(f"🔴 Pi-puck RGB: R={pipuck_red}, G={pipuck_green}, B={pipuck_blue}")
 
             # Set e-puck2 body LEDs using API (0-100 RGB values)
             self.pipuck.epuck.set_body_led_rgb(red, green, blue)
-            self.logger.debug(f"📡 e-puck2 body LEDs: R={red}, G={green}, B={blue}")
+            self.logger.debug(f"🤖 e-puck2 RGB: R={red}%, G={green}%, B={blue}%")
 
-            self.logger.info(f"✅ Both LED systems set to RGB({red}, {green}, {blue})")
+            self.logger.debug(f"✨ Both LED systems synchronized to RGB({red}, {green}, {blue})")
 
         except Exception as e:
-            self.logger.error(f"❌ LED control failed: {e}")
+            self.logger.error(f"❌ Body LED control failed - hardware error: {e}")
             raise e
 
     async def set_front_led(self, enabled: bool) -> None:
         """Set front LED on/off using EPuck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
-            self.logger.warning("⚠️ LED controller not initialized")
-            self.logger.info(f"💡 [Front LED] {'ON' if enabled else 'OFF'} (not initialized)")
+            self.logger.warning("⚠️ Cannot control front LED - controller not initialized")
+            self.logger.debug(f"🔦 Front LED command ignored: {'ON' if enabled else 'OFF'} - not initialized")
             return
 
         try:
-            self.logger.debug(f"💡 Front LED {'ON' if enabled else 'OFF'}")
+            self.logger.debug(f"🔦 Front LED {'activation' if enabled else 'deactivation'} requested")
 
             # Use EPuck2 API for front LED control
             if enabled:
@@ -93,11 +93,11 @@ class LEDController(LEDInterface):
             else:
                 self.pipuck.epuck.disable_front_leds()
 
-            self.logger.debug(f"✅ Front LED {'ON' if enabled else 'OFF'} via EPuck2 API")
+            self.logger.debug(f"✨ Front LED {'illuminated' if enabled else 'extinguished'}")
 
         except Exception as e:
-            self.logger.warning(f"⚠️ Front LED control failed: {e}")
-            self.logger.info(f"💡 [Front LED] {'ON' if enabled else 'OFF'} (error)")
+            self.logger.warning(f"⚠️ Front LED control failed - hardware error: {e}")
+            self.logger.debug(f"🔦 Front LED state uncertain: {'ON' if enabled else 'OFF'} (error occurred)")
 
     @property
     def is_initialized(self) -> bool:
