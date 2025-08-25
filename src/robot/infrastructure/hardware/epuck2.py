@@ -151,11 +151,19 @@ class EPuck2:
         left_inverted = -self._left_motor_speed
         right_inverted = -self._right_motor_speed
         
-        # Match exact working test structure: simple byte values
-        data[0] = abs(left_inverted) & 0xFF   # Left motor low byte
-        data[1] = 0                           # Left motor high byte (always 0 for speeds <= 255)
-        data[2] = abs(right_inverted) & 0xFF  # Right motor low byte  
-        data[3] = 0                           # Right motor high byte (always 0 for speeds <= 255)
+        # Handle signed values properly - clamp to motor range first
+        left_clamped = max(-1000, min(1000, left_inverted))
+        right_clamped = max(-1000, min(1000, right_inverted))
+        
+        # Keep as signed values - convert to signed 16-bit little-endian bytes
+        left_bytes = left_clamped.to_bytes(2, byteorder='little', signed=True)
+        right_bytes = right_clamped.to_bytes(2, byteorder='little', signed=True)
+        
+        # Assign signed bytes directly
+        data[0] = left_bytes[0]   # Left motor low byte (signed)
+        data[1] = left_bytes[1]   # Left motor high byte (signed)
+        data[2] = right_bytes[0]  # Right motor low byte (signed) 
+        data[3] = right_bytes[1]  # Right motor high byte (signed)
 
         # Bytes 4-19: Keep simple like working test (mostly zeros except for actual features)
         # Only set non-zero values for active features
@@ -163,22 +171,23 @@ class EPuck2:
         # Sound (test had byte 4 = 0, so only set if we want sound)
         data[4] = self._sound_id if self._sound_id != SOUND_STOP else 0
 
-        # LEDs (test had byte 5 = 0, so only set if LEDs are on)  
-        data[5] = self._leds
+        # RGB LEDs - SHIFT BYTES LEFT BY 1 (green shows as blue = bytes shifted)
+        # If Pi-puck green works but e-puck2 shows blue, bytes are shifted left
+        data[5] = self._led2_rgb[0]   # LED2 R (moved from byte 6 to 5)
+        data[6] = self._led2_rgb[1]   # LED2 G (moved from byte 7 to 6) 
+        data[7] = self._led2_rgb[2]   # LED2 B (moved from byte 8 to 7)
+        data[8] = self._led4_rgb[0]   # LED4 R (moved from byte 9 to 8)
+        data[9] = self._led4_rgb[1]   # LED4 G (moved from byte 10 to 9)
+        data[10] = self._led4_rgb[2]  # LED4 B (moved from byte 11 to 10)
+        data[11] = self._led6_rgb[0]  # LED6 R (moved from byte 12 to 11)
+        data[12] = self._led6_rgb[1]  # LED6 G (moved from byte 13 to 12)
+        data[13] = self._led6_rgb[2]  # LED6 B (moved from byte 14 to 13)
+        data[14] = self._led8_rgb[0]  # LED8 R (moved from byte 15 to 14)
+        data[15] = self._led8_rgb[1]  # LED8 G (moved from byte 16 to 15)
+        data[16] = self._led8_rgb[2]  # LED8 B (moved from byte 17 to 16)
 
-        # RGB LEDs (always send RGB data, even if zeros)
-        data[6] = self._led2_rgb[0]   # LED2 R
-        data[7] = self._led2_rgb[1]   # LED2 G
-        data[8] = self._led2_rgb[2]   # LED2 B
-        data[9] = self._led4_rgb[0]   # LED4 R
-        data[10] = self._led4_rgb[1]  # LED4 G
-        data[11] = self._led4_rgb[2]  # LED4 B
-        data[12] = self._led6_rgb[0]  # LED6 R
-        data[13] = self._led6_rgb[1]  # LED6 G
-        data[14] = self._led6_rgb[2]  # LED6 B
-        data[15] = self._led8_rgb[0]  # LED8 R
-        data[16] = self._led8_rgb[1]  # LED8 G
-        data[17] = self._led8_rgb[2]  # LED8 B
+        # Front LEDs (moved to byte 17 to avoid conflict)
+        data[17] = self._leds
 
         # Remaining bytes stay 0 like the working test
         # data[18] and data[19] remain 0
