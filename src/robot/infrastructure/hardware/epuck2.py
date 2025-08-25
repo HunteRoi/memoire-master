@@ -166,20 +166,19 @@ class EPuck2:
         # LEDs (test had byte 5 = 0, so only set if LEDs are on)  
         data[5] = self._leds
 
-        # RGB LEDs (test had all zeros, so only set if RGB is active)
-        if any(self._led2_rgb) or any(self._led4_rgb) or any(self._led6_rgb) or any(self._led8_rgb):
-            data[6] = self._led2_rgb[0]   # LED2 R
-            data[7] = self._led2_rgb[1]   # LED2 G
-            data[8] = self._led2_rgb[2]   # LED2 B
-            data[9] = self._led4_rgb[0]   # LED4 R
-            data[10] = self._led4_rgb[1]  # LED4 G
-            data[11] = self._led4_rgb[2]  # LED4 B
-            data[12] = self._led6_rgb[0]  # LED6 R
-            data[13] = self._led6_rgb[1]  # LED6 G
-            data[14] = self._led6_rgb[2]  # LED6 B
-            data[15] = self._led8_rgb[0]  # LED8 R
-            data[16] = self._led8_rgb[1]  # LED8 G
-            data[17] = self._led8_rgb[2]  # LED8 B
+        # RGB LEDs (always send RGB data, even if zeros)
+        data[6] = self._led2_rgb[0]   # LED2 R
+        data[7] = self._led2_rgb[1]   # LED2 G
+        data[8] = self._led2_rgb[2]   # LED2 B
+        data[9] = self._led4_rgb[0]   # LED4 R
+        data[10] = self._led4_rgb[1]  # LED4 G
+        data[11] = self._led4_rgb[2]  # LED4 B
+        data[12] = self._led6_rgb[0]  # LED6 R
+        data[13] = self._led6_rgb[1]  # LED6 G
+        data[14] = self._led6_rgb[2]  # LED6 B
+        data[15] = self._led8_rgb[0]  # LED8 R
+        data[16] = self._led8_rgb[1]  # LED8 G
+        data[17] = self._led8_rgb[2]  # LED8 B
 
         # Remaining bytes stay 0 like the working test
         # data[18] and data[19] remain 0
