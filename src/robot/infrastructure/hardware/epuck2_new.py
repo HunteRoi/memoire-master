@@ -1,11 +1,12 @@
 """EPuck2 robot interface via I2C communication. Based on documentation at: https://www.gctronic.com/doc/index.php?title=Pi-puck#Communicate_with_the_e-puck_version_2"""
 
+from cv2 import VideoCapture, imwrite, IMWRITE_JPEG_QUALITY
 import logging
 from smbus2 import SMBus, i2c_msg
-from VL53L0X import VL53L0X, Vl53l0xAccuracyMode
-from cv2 import VideoCapture, imwrite, IMWRITE_JPEG_QUALITY
+import struct
 import time
 from typing import List, Tuple, Optional, Any
+from VL53L0X import VL53L0X, Vl53l0xAccuracyMode
 
 from .bmm150 import *
 from application.interfaces.hardware.epuck import EPuckInterface
@@ -18,10 +19,12 @@ LEGACY_I2C_CHANNEL              = 4
 IMU_ADDRESS_1                   = 0x68 # MPU9250 AD1 0
 IMU_ADDRESS_2                   = 0x69 # MPU9250 AD1 1
 ACCELEROMETER_REGISTRY          = 0x3B
-GYROSCOPE_REGISTRY              = 0x43
 GRAVITY_CORRECTOR               = 16384 # 1g = 16384 LSB for MPU9250
 ACCELEROMETER_DATA_SIZE         = 6
+ACCELEROMETER_VALUES_SIZE       = 3
+GYROSCOPE_REGISTRY              = 0x43
 GYROSCOPE_DATA_SIZE             = 6
+GYROSCOPE_VALUES_SIZE           = 3
 
 # EPuck2 Registers using I2C channel and legacy I2C channel
 ROBOT_REGISTRY_ADDRESS          = 0x1f
@@ -341,6 +344,7 @@ class EPuck2(EPuckInterface):
             self._magnetometer.set_rate(bmm150.RATE_10HZ)
             self._magnetometer.set_measurement_xyz()
 
+            # calibrate magnetometer
             self.logger.debug(f"Calibration of the magnetometer...")
             geo_offsets_max = [-1000, -1000, -1000]
             geo_offsets_min = [1000, 1000, 1000]
@@ -411,6 +415,84 @@ class EPuck2(EPuckInterface):
         except Exception as e:
             self.logger.error(f"Failed to capture a snapshot using device {device_id}: {e}")
 
+    def _get_imu_sensors(self):
+        """
+        Read IMU sensors data and return them in a tuple ((accel_x, accel_y, accel_z, divider),(gyro_x, gyro_y, gyro_z, divider))
+        The divider can be used on acceleration/gyroscope values to make them more humanily readable.
+        Acceleration unit is g. Gyroscope unit is dps.
+
+        Source: https://github.com/gctronic/Pi-puck/blob/master/e-puck2/e-puck2_imu.py
+        """
+        if not self._initialized or self._bus is None:
+            raise RuntimeError("EPuck2 is not initialized. Call initialize() before sending packets.")
+
+        acceleration_data = bytearray([0] * ACCELEROMETER_DATA_SIZE)
+        gyroscope_data = bytearray([0] * GYROSCOPE_DATA_SIZE)
+        acceleration_values = [0 for x in range(ACCELEROMETER_VALUES_SIZE)]
+        acceleration_sum = [0 for x in range(ACCELEROMETER_VALUES_SIZE)]
+        acceleration_offset = [0 for x in range(ACCELEROMETER_VALUES_SIZE)]
+        acceleration_divider = 32768.0*2.0
+        gyroscope_values = [0 for x in range(GYROSCOPE_VALUES_SIZE)]
+        gyroscope_sum = [0 for x in range(GYROSCOPE_VALUES_SIZE)]
+        gyroscope_offset = [0 for x in range(GYROSCOPE_VALUES_SIZE)]
+        gyroscope_divider = 32768.0*250.0
+
+        def read_registry(registry, count):
+            imu_addresses = [IMU_ADDRESS_1, IMU_ADDRESS_2]
+            data = None
+            for address in imu_addresses:
+                try:
+                    data = self._bus.read_i2c_block_data(address, registry, count)
+                except Exception as e:
+                    data = None
+                    self.logger.error(f"Failed to read IMU sensors data from {address}")
+            return data
+
+        try:
+            calibration_total_samples = 20
+            # calibrate accelerometer
+            samples_count = 0
+            for _ in range(calibration_total_samples):
+                acceleration_data = read_registry(ACCELEROMETER_REGISTRY, ACCELEROMETER_DATA_SIZE)
+                if acceleration_data is not None:
+                    acceleration_sum[0] += struct.unpack("<h", struct.pack("<BB", acceleration_data[1], acceleration_data[0]))[0]
+                    acceleration_sum[1] += struct.unpack("<h", struct.pack("<BB", acceleration_data[3], acceleration_data[2]))[0]
+                    acceleration_sum[2] += struct.unpack("<h", struct.pack("<BB", acceleration_data[5], acceleration_data[4]))[0] - GRAVITY_CORRECTOR
+                    samples_count += 1
+                time.sleep(0.050)
+            acceleration_offset[0] = int(acceleration_sum[0]/samples_count)
+            acceleration_offset[1] = int(acceleration_sum[1]/samples_count)
+            acceleration_offset[2] = int(acceleration_sum[2]/samples_count)
+            self.logger.debug(f"accelerometer offsets: x={acceleration_offset[0]:>+5d}, y={acceleration_offset[1]:>+5d}, z={acceleration_offset[2]:>+5d} (samples={samples_count:>3d})")
+
+            # calibration gyroscope
+            samples_count = 0
+            for _ in range(calibration_total_samples):
+                gyroscope_data = read_registry(GYROSCOPE_REGISTRY, GYROSCOPE_DATA_SIZE)
+                if gyroscope_data is not None:
+                    gyroscope_sum[0] += struct.unpack("<h", struct.pack("<BB", gyroscope_data[1], gyroscope_data[0]))[0]
+                    gyroscope_sum[1] += struct.unpack("<h", struct.pack("<BB", gyroscope_data[3], gyroscope_data[2]))[0]
+                    gyroscope_sum[2] += struct.unpack("<h", struct.pack("<BB", gyroscope_data[5], gyroscope_data[4]))[0]
+                    samplesCount += 1
+                time.sleep(0.050)
+            gyroscope_offset[0] = int(gyroscope_sum[0]/samples_count)
+            gyroscope_offset[1] = int(gyroscope_sum[1]/samples_count)
+            gyroscope_offset[2] = int(gyroscope_sum[2]/samples_count)
+            self.logger.debug(f"gyroscope offsets: x={gyroscope_offset[0]:>+5d}, y={gyroscope_offset[1]:>+5d}, z={gyroscope_offset[2]:>+5d} (samples={samples_count:>3d})")
+
+            acceleration_data = read_registry(ACCELEROMETER_REGISTRY, ACCELEROMETER_DATA_SIZE)
+            acceleration_values[0] = struct.unpack("<h", struct.pack("<BB", acceleration_data[1], acceleration_data[0]))[0] - acceleration_offset[0]
+            acceleration_values[1] = struct.unpack("<h", struct.pack("<BB", acceleration_data[3], acceleration_data[2]))[0] - acceleration_offset[1]
+            acceleration_values[2] = struct.unpack("<h", struct.pack("<BB", acceleration_data[5], acceleration_data[4]))[0] - acceleration_offset[2]
+
+            gyroscope_data = read_registry(GYROSCOPE_REGISTRY, GYROSCOPE_DATA_SIZE)
+            gyroscope_values[0] = struct.unpack("<h", struct.pack("<BB", gyroscope_data[1], gyroscope_data[0]))[0] - gyroscope_offset[0]
+            gyroscope_values[1] = struct.unpack("<h", struct.pack("<BB", gyroscope_data[3], gyroscope_data[2]))[0] - gyroscope_offset[1]
+            gyroscope_values[2] = struct.unpack("<h", struct.pack("<BB", gyroscope_data[5], gyroscope_data[4]))[0] - gyroscope_offset[2]
+
+            return (acceleration_values[0], acceleration_values[1], acceleration_values[2], acceleration_divider), (gyroscope_values[0], gyroscope_values[1], gyroscope_values[2], gyroscope_divider)
+        except Exception as e:
+            self.logger.error(f"Failed to read IMU sensors data: {e}")
 
 #################################################
 #           EPUCK2 SPECIFIC METHODS             #
