@@ -6,6 +6,7 @@ from VL53L0X import VL53L0X, Vl53l0xAccuracyMode
 import time
 from typing import List, Tuple, Optional, Any
 
+from .bmm150 import *
 from application.interfaces.hardware.epuck import EPuckInterface
 
 # Common e-puck2 I2C address
@@ -84,18 +85,17 @@ TOF_ADDRESS                     = 0x29 # VL53L0X
 
 # Ground Sensors Registers using I2C channel and legacy I2C channel
 GROUND_SENSORS_ADDRESS          = 0x60
-GROUND_SENSOR_REGISTRY          = 0
+GROUND_SENSORS_REGISTRY          = 0
 GROUND_DATA_SIZE                = 6
 GROUND_VALUES_SIZE              = 3
 
 # Magnetometer Registers using BOARD I2C channel and legacy I2C channel
 BOARD_I2C_CHANNEL               = 11
 LEGACY_BOARD_I2C_CHANNEL        = 3
-MAGNETOMETER_ADDRESS            = 0x10 # BMM150
-MAGNETOMETER_REGISTRY_0         = 0x10
-MAGNETOMETER_REGISTRY_1         = 0x11
-MAGNETOMETER_REGISTRY_2         = 0x12
-MAGNETOMETER_REGISTRY_3         = 0x13
+MAGNETOMETER_ADDRESS_0          = 0x10 # BMM150
+MAGNETOMETER_ADDRESS_1          = 0x11
+MAGNETOMETER_ADDRESS_2          = 0x12
+MAGNETOMETER_ADDRESS_3          = 0x13
 
 
 class EPuck2(EPuckInterface):
@@ -110,10 +110,12 @@ class EPuck2(EPuckInterface):
             i2c_address: I2C address of e-puck2 (default 0x1f).
         """
         self.logger = logging.getLogger(__name__)
+        self._board_i2c_channels = [BOARD_I2C_CHANNEL, LEGACY_BOARD_I2C_CHANNEL]
         self._i2c_channels = [I2C_CHANNEL, LEGACY_I2C_CHANNEL] if i2c_bus is None else [i2c_bus]
         self._address = i2c_address if i2c_address is not None else ROBOT_REGISTRY_ADDRESS
         self._bus = None
         self._tof = None
+        self._magnetometer = None
         self._initialized = False
         self._reset_actuators_and_sensors()
 
@@ -142,14 +144,27 @@ class EPuck2(EPuckInterface):
         try:
             self._tof = VL53L0X(i2c_bus=I2C_CHANNEL, i2c_address=TOF_ADDRESS)
             self.logger.info(f"Connected to ToF at address {hex(TOF_ADDRESS)} on I2C channel {I2C_CHANNEL}")
-        except e:
-            self.logger.warning(f"Failed to connect to ToF sensor {I2C_CHANNEL}: {e}")
+        except Exception as e_standard:
+            self.logger.warning(f"Failed to connect to ToF sensor {I2C_CHANNEL}: {e_standard}")
             self.logger.info(f"Trying to connect on another channel...")
             try:
                 self._tof = VL53L0X(i2c_bus=LEGACY_I2C_CHANNEL, i2c_address=TOF_ADDRESS)
                 self.logger.info(f"Connected to ToF at address {hex(TOF_ADDRESS)} on I2C channel {LEGACY_I2C_CHANNEL}")
-            except:
-                self.logger.warning(f"Failed to connect to ToF sensor ({LEGACY_I2C_CHANNEL})")
+            except Exception as e_legacy:
+                self.logger.warning(f"Failed to connect to ToF sensor {LEGACY_I2C_CHANNEL}: {e_legacy}")
+
+        for channel in self._board_i2c_channels:
+            for magnetometer_address in [MAGNETOMETER_ADDRESS_0, MAGNETOMETER_ADDRESS_1, MAGNETOMETER_ADDRESS_2, MAGNETOMETER_ADDRESS_3]:
+                try:
+                    self._magnetometer = bmm150_I2C(channel, magnetometer_address)
+                    self.logger.info(f"Connected to magnetometer sensor {hex(magnetometer_address)} on board I2C channel {channel}")
+                    break
+                except Exception as e:
+                    self._magnetometer = None
+                    self.logger.warning(f"Failed to connect to magnetometer sensor {channel}: {e}")
+
+                if self._magnetometer is not None:
+                    break
 
         if not self._initialized:
             raise ConnectionError("Could not connect to e-puck2 on any I2C channel.")
@@ -158,12 +173,12 @@ class EPuck2(EPuckInterface):
         """ Close the I2C bus if it was opened by this instance."""
         if self._bus is not None:
             try:
-                self.logger.info("🧹 EPuck2 cleanup: turning off all hardware")
+                self.logger.info("EPuck2 cleanup: turning off all hardware")
                 self._reset_actuators_and_sensors()
                 self._update_sensors_and_actuators()
-                self.logger.info("✅ EPuck2 cleanup packet sent successfully")
+                self.logger.info("EPuck2 cleanup packet sent successfully")
             except Exception as cleanup_error:
-                self.logger.warning(f"⚠️ EPuck2 cleanup failed: {cleanup_error}")
+                self.logger.warning(f"EPuck2 cleanup failed: {cleanup_error}")
             finally:
                 self._bus.close()
                 self._bus = None
@@ -189,17 +204,17 @@ class EPuck2(EPuckInterface):
 
         write = i2c_msg.write(self._address, self._actuators_data)
         hex_data = ' '.join([f'{b:02x}' for b in self._actuators_data])
-        self.logger.info(f"📝 Sending actuator data ({len(self._actuators_data)}): {hex_data}")
+        self.logger.info(f"Sending actuator data ({len(self._actuators_data)}): {hex_data}")
 
         read = i2c_msg.read(self._address, SENSORS_SIZE)
-        self.logger.debug("⌛ Waiting for sensor data...")
+        self.logger.debug("Waiting for sensor data...")
 
         try:
             self._bus.i2c_rdwr(write, read)
             self._sensors_data = list(read)
-            self.logger.debug(f"📡 e-puck2 I2C write/read: actuators sent, sensors received ({len(self._sensors_data)} bytes)")
+            self.logger.debug(f"e-puck2 I2C write/read: actuators sent, sensors received ({len(self._sensors_data)} bytes)")
         except Exception as e:
-            raise ConnectionError(f"❌ Failed to communicate with e-puck2: {e}")
+            raise ConnectionError(f"Failed to communicate with e-puck2: {e}")
 
     def _reset_actuators_and_sensors(self) -> None:
         self._actuators_data = bytearray([0] * ACTUATORS_SIZE)                  # Actuator command buffer
@@ -238,9 +253,12 @@ class EPuck2(EPuckInterface):
 
         return proximity, proximity_ambient, microphone, selector, button, motor_steps, tv_remote
 
-    def _read_tof(self):
-        if self._tof is not None:
-            distance_in_millimeters = [0 for x in range(1, 101)]
+    def _read_tof_sensor(self) -> list[int]:
+        if self._tof is None:
+            raise RuntimeError("ToF sensor is not initialized")
+
+        distance_in_millimeters = [0 for x in range(1, 101)]
+        try:
             self._tof.start_ranging(Vl53l0xAccuracyMode.BETTER)
             timing = self._tof.get_timing()
             if timing < 20000:
@@ -250,7 +268,96 @@ class EPuck2(EPuckInterface):
                 caught_distance = self._tof.get_distance()
                 distance_in_millimeters[i] = caught_distance if caught_distance > 0 else 0
                 time.sleep(timing/1000000.00)
+
             self._tof.stop_ranging()
+        except Exception as e:
+            self.logger.error(f"Failed to read ToF data: {e}")
+
+        return distance_in_millimeters
+
+    def _read_ground_sensors(self) -> list[int]:
+        if not self._initialized or self._bus is None:
+            raise RuntimeError("EPuck2 is not initialized. Call initialize() before sending packets.")
+
+        ground_data = bytearray([0] * GROUND_DATA_SIZE)
+        ground_values = [0 for x in range(GROUND_VALUES_SIZE)]
+        try:
+            ground_data = self._bus.read_i2c_block_data(GROUND_SENSORS_ADDRESS, GROUND_SENSORS_REGISTRY, GROUND_DATA_SIZE)
+        except Exception as e:
+            self.logger.error(f"Failed to read ground sensors data: {e}")
+
+        # shift high byte by 8 to reconstruct the full sensor data in a 16bits integer
+        ground_values[0] = ground_data[1] + (ground_data[0] << 8) # left ground sensor
+        ground_values[1] = ground_data[3] + (ground_data[2] << 8) # center ground sensor
+        ground_values[2] = ground_data[5] + (ground_data[4] << 8) # right ground sensor
+        self.logger.debug(f"Ground sensors values: left={ground_values[0]:>3d}, center={ground_values[1]:>3d}, right={ground_values[2]:>3d}")
+
+        return ground_values
+
+    def _read_magnetometer(self) -> Tuple[int, int, int, float]:
+        if self.magnetometer is None:
+            raise RuntimeError("Magnetometer sensor is not initialized")
+        try:
+            while self._magnetometer.sensor_init() == bmm150.ERROR:
+                self.logger.debug(f"Failed to initialize the magnetometer. Retrying in 1s...")
+                time.sleep(1)
+            self._magnetometer.set_operation_mode(bmm150.POWERMODE_NORMAL)
+            self._magnetometer.set_preset_mode(bmm150.PRESETMODE_HIGHACCURACY)
+            self._magnetometer.set_rate(bmm150.RATE_10HZ)
+            self._magnetometer.set_measurement_xyz()
+
+            self.logger.debug(f"Calibration of the magnetometer...")
+            geo_offsets_max = [-1000, -1000, -1000]
+            geo_offsets_min = [1000, 1000, 1000]
+            geo_offsets = [0, 0, 0]
+            loop_count = 0
+            out = open("calibration.csv", "w")
+            while loop_count < 100:
+                geomagnetic = self._magnetometer.get_geomagnetic()
+                out.write(str(geomagnetic[0]) + "," + str(geomagnetic[1]) + "," + str(geomagnetic[2]) + "\n")
+                if(geo_offsets_max[0] < geomagnetic[0]):
+                    geo_offsets_max[0] = geomagnetic[0]
+                if(geo_offsets_max[1] < geomagnetic[1]):
+                    geo_offsets_max[1] = geomagnetic[1]
+                if(geo_offsets_max[2] < geomagnetic[2]):
+                    geo_offsets_max[2] = geomagnetic[2]
+                if(geo_offsets_min[0] > geomagnetic[0]):
+                    geo_offsets_min[0] = geomagnetic[0]
+                if(geo_offsets_min[1] > geomagnetic[1]):
+                    geo_offsets_min[1] = geomagnetic[1]
+                if(geo_offsets_min[2] > geomagnetic[2]):
+                    geo_offsets_min[2] = geomagnetic[2]
+                loop_count = loop_count + 1
+                time.sleep(0.1)
+            out.close()
+            geo_offsets[0] = (geo_offsets_max[0] + geo_offsets_min[0])/2
+            geo_offsets[1] = (geo_offsets_max[1] + geo_offsets_min[1])/2
+            geo_offsets[2] = (geo_offsets_max[2] + geo_offsets_min[2])/2
+            self.logger.debug(f"geo offsets: {geo_offsets}")
+            self.logger.debug(f"End of the calibration of the magnetometer")
+
+            def get_robot_degree():
+                geomagnetic = self._magnetometer.get_geomagnetic()
+                compass = math.atan2(geomagnetic[0]-geo_offsets[0], geomagnetic[1]-geo_offsets[1])
+                #correct the sensor orientation respect to the robot (90 degrees)
+                compass = compass - (math.pi/2)
+                if compass < 0:
+                    compass += 2 * math.pi
+                if compass > 2 * math.pi:
+                    compass -= 2 * math.pi
+                return compass * 180 / math.pi
+
+            geomagnetic = self._magnetometer.get_geomagnetic()
+            degree = get_robot_degree()
+            return geomagnetic[0], geomagnetic[1], geomagnetic[3], degree # (x,y,z,degree)
+        except Exception as e:
+            self.logger.error(f"Failed to use the magnetometer sensor: {e}")
+            return tuple(0,0,0,0)
+        finally:
+            self._magnetometer.set_operation_mode(bmm150.POWERMODE_SLEEP)
+
+
+
 
 #################################################
 #           EPUCK2 SPECIFIC METHODS             #
