@@ -3,6 +3,7 @@
 import logging
 from smbus2 import SMBus, i2c_msg
 from VL53L0X import VL53L0X, Vl53l0xAccuracyMode
+from cv2 import VideoCapture, imwrite, IMWRITE_JPEG_QUALITY
 import time
 from typing import List, Tuple, Optional, Any
 
@@ -97,6 +98,9 @@ MAGNETOMETER_ADDRESS_1          = 0x11
 MAGNETOMETER_ADDRESS_2          = 0x12
 MAGNETOMETER_ADDRESS_3          = 0x13
 
+# Camera
+OMNIVISION_CAMERA_ID            = 0
+FRONT_CAMERA_ID                 = 1
 
 class EPuck2(EPuckInterface):
     """Interface for the e-puck2 robot via I2C communication."""
@@ -311,7 +315,7 @@ class EPuck2(EPuckInterface):
             geo_offsets_min = [1000, 1000, 1000]
             geo_offsets = [0, 0, 0]
             loop_count = 0
-            out = open("calibration.csv", "w")
+            out = open("./bmm150/calibration.csv", "w")
             while loop_count < 100:
                 geomagnetic = self._magnetometer.get_geomagnetic()
                 out.write(str(geomagnetic[0]) + "," + str(geomagnetic[1]) + "," + str(geomagnetic[2]) + "\n")
@@ -356,7 +360,20 @@ class EPuck2(EPuckInterface):
         finally:
             self._magnetometer.set_operation_mode(bmm150.POWERMODE_SLEEP)
 
+    def _get_camera_snapshot(self, device_id: int = 1) -> str:
+        if device_id not in [FRONT_CAMERA_ID, OMNIVISION_CAMERA_ID]:
+            raise RuntimeError("Provided camera ID is not supported. Use FRONT_CAMERA_ID or OMNIVISION_CAMERA_ID instead.")
 
+        try:
+            image_path = f"./snapshots/image{time.time_ns()}.jpg"
+
+            camera = VideoCapture(device_id)
+            _, frame = camera.read()
+            imwrite(image_path, frame, [int(IMWRITE_JPEG_QUALITY), 70])
+
+            return image_path
+        except Exception as e:
+            self.logger.error(f"Failed to capture a snapshot using device {device_id}: {e}")
 
 
 #################################################
@@ -440,14 +457,6 @@ class EPuck2(EPuckInterface):
         self.play_sound(SOUND_TONE_10KHZ)
 
 # Sensors
-    def enable_sensors_stream(self) -> None:
-        """Enable continuous sensor data streaming."""
-        pass
-
-    def disable_sensors_stream(self) -> None:
-        """Disable continuous sensor data streaming."""
-        pass
-
 ## Proximity and Ambient Light
     def calibrate_ir_sensors(self) -> None:
         """Calibrate the IR sensors."""
@@ -462,13 +471,14 @@ class EPuck2(EPuckInterface):
         pass
 
 ## Camera
-    def enable_image_stream(self) -> None:
-        """Enable continuous image streaming."""
-        pass
+    def take_picture_with_front_camera(self) -> None:
+        """Capture a snapshot with the front camera"""
+        img_path = self._get_camera_snapshot(FRONT_CAMERA_ID)
+        self.logger.info(f"Snapshot located at {img_path}")
 
-    def disable_image_stream(self) -> None:
-        """Disable continuous image streaming."""
-        pass
+    def take_picture_with_omnivision_camera(self) -> None:
+        img_path = self._get_camera_snapshot(OMNIVISION_CAMERA_ID)
+        self.logger.info(f"Snapshot located at {img_path}")
 
 ## Microphone
 ### not implemented yet

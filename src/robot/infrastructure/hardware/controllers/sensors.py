@@ -4,7 +4,6 @@ import logging
 import os
 from typing import List
 
-from .epuck2 import EPuck2
 from application.interfaces.hardware.sensor_interface import SensorInterface
 from domain.entities import SensorReading
 
@@ -28,12 +27,12 @@ class SensorController(SensorInterface):
             return True
 
         try:
-            if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck or not isinstance(self.pipuck.epuck, EPuck2):
+            if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck:
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
 
             # Enable sensor streaming from e-puck2 (includes IMU)
             self.pipuck.epuck.enable_sensors_stream(True)
-            
+
             self.logger.info("✅ Sensor controller initialized using EPuck2 (includes built-in IMU)")
             self._initialized = True
             return True

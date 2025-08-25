@@ -71,7 +71,7 @@ class bmm150(object):
   INTERRUPT_X_DISABLE            = 1
   INTERRUPT_Y_DISABLE            = 1
   INTERRUPT_Z_DISABLE            = 1
-  
+
   CHANNEL_X                      = 1
   CHANNEL_Y                      = 2
   CHANNEL_Z                      = 3
@@ -156,7 +156,7 @@ class bmm150(object):
     else:
       return -1
 
-  
+
   def get_chip_id(self):
     '''!
       @brief get bmm150 chip id
@@ -338,7 +338,7 @@ class bmm150(object):
   def set_preset_mode(self, modes):
     '''!
       @brief Set preset mode, make it easier for users to configure sensor to get geomagnetic data
-      @param modes 
+      @param modes
       @n PRESETMODE_LOWPOWER       Low power mode, get a small number of data and take the mean value.
       @n PRESETMODE_REGULAR        Regular mode, get a number of data and take the mean value.
       @n PRESETMODE_ENHANCED       Enhanced mode, get a large number of and take the mean value.
@@ -382,7 +382,7 @@ class bmm150(object):
       self.__txbuf[0] = self.REPXY_LOWPOWER
       self.write_reg(self.REG_REP_XY, self.__txbuf)
 
-  
+
   def set_z_rep(self, modes):
     '''!
       @brief the number of repetitions for z-axis
@@ -393,7 +393,7 @@ class bmm150(object):
       @n PRESETMODE_ENHANCED      Enhanced mode, get the data with higher accuracy than under high accuracy mode
     '''
     self.__txbuf[0] = modes
-    if modes == self.REPZ_LOWPOWER:  
+    if modes == self.REPZ_LOWPOWER:
       self.write_reg(self.REG_REP_Z, self.__txbuf)
     elif modes == self.REPZ_REGULAR:
       self.write_reg(self.REG_REP_Z, self.__txbuf)
@@ -679,7 +679,7 @@ class bmm150(object):
       self.__txbuf[0] = self.__txbuf[0] | 0x01
     self.write_reg(self.REG_AXES_ENABLE, self.__txbuf)
 
-  
+
   def set_interruput_latch(self, modes):
     '''!
       @brief Set interrupt latch mode, after enabling interrupt latch, the data can be refreshed only when the BMM150_REG_INTERRUPT_STATUS interrupt status register is read.
@@ -695,7 +695,7 @@ class bmm150(object):
       self.__txbuf[0] = rslt[0] | 0x02
     self.write_reg(self.REG_AXES_ENABLE, self.__txbuf)
 
-  
+
   def set_threshold_interrupt(self, mode, threshold, polarity, channel_x = INTERRUPT_X_ENABLE, channel_y = INTERRUPT_Y_ENABLE, channel_z = INTERRUPT_Z_ENABLE):
     '''!
       @brief Set threshold interrupt, an interrupt is triggered when the geomagnetic value of a channel is beyond/below the threshold
@@ -770,9 +770,9 @@ class bmm150(object):
       str1 += " threshold interrupt"
     data[3] = str1
     data[4] = state&0x07
-    
+
     return data
-  
+
   def set_low_threshold_interrupt(self, channel_x, channel_y, channel_z, low_threshold, polarity):
     '''!
       @brief Set low threshold interrupt, an interrupt is triggered when the geomagnetic value of a channel is below the low threshold
@@ -813,7 +813,7 @@ class bmm150(object):
     self.write_reg(self.REG_INT_CONFIG ,self.__txbuf)
     self.set_interrupt_pin(self.ENABLE_INTERRUPT_PIN, polarity)
 
-  
+
   def get_low_threshold_interrupt_state(self):
     '''!
       @brief Get the status of low threshold interrupt, which axis triggered the low threshold interrupt
@@ -867,8 +867,8 @@ class bmm150(object):
     if channel_x == self.HIGH_INTERRUPT_X_DISABLE:
       self.__txbuf[0] = self.__txbuf[0] | 0x20
     else:
-      self.__txbuf[0] = self.__txbuf[0] & 0xDf    
-    
+      self.__txbuf[0] = self.__txbuf[0] & 0xDf
+
     self.write_reg(self.REG_INT_CONFIG ,self.__txbuf)
     self.set_interrupt_pin(self.ENABLE_INTERRUPT_PIN, polarity)
 
@@ -912,7 +912,7 @@ class bmm150_I2C(bmm150):
         #os.system('i2cdetect -y 1')
         time.sleep(1)
         return
-  
+
   def read_reg(self, reg ,len):
     '''!
       @brief read the data from the register
@@ -927,8 +927,8 @@ class bmm150_I2C(bmm150):
       except:
         time.sleep(1)
         print("please check connect!")
-        
-        
+
+
 
 class bmm150_SPI(bmm150):
   def __init__(self, cs, bus = 0, dev = 0, speed = 1000000):

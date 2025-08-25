@@ -4,7 +4,7 @@ import asyncio
 import logging
 
 from application.interfaces.hardware.audio_interface import AudioInterface
-from .epuck2 import (SOUND_MARIO, SOUND_UNDERWORLD, SOUND_STARWARS,
+from ..epuck2 import (SOUND_MARIO, SOUND_UNDERWORLD, SOUND_STARWARS,
                      SOUND_TONE_4KHZ, SOUND_TONE_10KHZ, SOUND_STOP)
 
 
