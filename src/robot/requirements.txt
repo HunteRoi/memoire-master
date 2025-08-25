@@ -2,10 +2,11 @@
 # Compatible with Python 3.7+ (Raspbian Buster compatible)
 
 # Core Dependencies
-python-dotenv>=0.15.0,<1.0.0     # Configuration management
+python-dotenv>=0.15.0,<1.0.0      # Configuration management
 websockets>=8.0,<10.0             # WebSocket server
 
 # Hardware Dependencies (for e-puck2 robot with Pi-puck)
+VL53L0X
 VL53L1X
 VL53L1X2
 pigpio
@@ -13,3 +14,5 @@ RPi.GPIO
 smbus
 smbus2
 pipuck
+spidev
+cv2
