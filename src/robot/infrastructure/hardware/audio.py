@@ -4,7 +4,7 @@ import asyncio
 import logging
 
 from application.interfaces.hardware.audio_interface import AudioInterface
-from .epuck2 import (SOUND_OFF, SOUND_MARIO, SOUND_UNDERWORLD, SOUND_STARWARS, 
+from .epuck2 import (SOUND_MARIO, SOUND_UNDERWORLD, SOUND_STARWARS,
                      SOUND_TONE_4KHZ, SOUND_TONE_10KHZ, SOUND_STOP)
 
 
@@ -37,7 +37,7 @@ class AudioController(AudioInterface):
         """Cleanup audio resources (PiPuck cleanup handled by container)"""
         if self._initialized:
             try:
-                await self._send_sound(SOUND_OFF)
+                await self._send_sound(SOUND_STOP)
                 self.logger.info("🧹 Audio controller cleaned up")
             except Exception as e:
                 self.logger.warning(f"⚠️ Error during audio cleanup: {e}")
@@ -72,14 +72,14 @@ class AudioController(AudioInterface):
         """Play a melody via I2C"""
         try:
             self.logger.info(f"🎵 Playing melody '{melody_name}' via I2C")
-            
+
             # Select sound based on melody name
             sound_map = {
                 "mario": SOUND_MARIO,
-                "underworld": SOUND_UNDERWORLD, 
+                "underworld": SOUND_UNDERWORLD,
                 "starwars": SOUND_STARWARS
             }
-            
+
             sound_id = sound_map.get(melody_name.lower(), SOUND_MARIO)
             await self._send_sound(sound_id)
             await asyncio.sleep(3.0)

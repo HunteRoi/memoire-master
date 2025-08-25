@@ -54,12 +54,22 @@ class LEDController(LEDInterface):
         blue = max(0, min(255, blue))
 
         try:
-            self.logger.info(f"💡 Setting LEDs to RGB({red}, {green}, {blue})")
+            self.logger.info(f"💡 Setting both Pi-puck and e-puck2 LEDs to RGB({red}, {green}, {blue})")
 
-            self.pipuck.set_leds_rgb(red > 0, green > 0, blue > 0)
+            # Set Pi-puck LEDs (boolean on/off for each color)
+            # Use a threshold to determine if color should be on (>127) or off (<=127)
+            pipuck_red = red > 127
+            pipuck_green = green > 127
+            pipuck_blue = blue > 127
+
+            self.pipuck.set_leds_rgb(pipuck_red, pipuck_green, pipuck_blue)
+            self.logger.debug(f"📡 Pi-puck LEDs: R={pipuck_red}, G={pipuck_green}, B={pipuck_blue}")
+
+            # Set e-puck2 body LEDs (0-255 RGB values)
             self.pipuck.epuck.set_body_led_rgb(red, green, blue)
+            self.logger.debug(f"📡 e-puck2 body LEDs: R={red}, G={green}, B={blue}")
 
-            self.logger.info(f"✅ LEDs set to RGB({red}, {green}, {blue}) via dual approach")
+            self.logger.info(f"✅ Both LED systems set to RGB({red}, {green}, {blue})")
 
         except Exception as e:
             self.logger.error(f"❌ LED control failed: {e}")
