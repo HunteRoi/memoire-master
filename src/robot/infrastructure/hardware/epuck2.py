@@ -163,8 +163,8 @@ class EPuck2:
         data[2] = right_bytes[0]  # Right motor low byte (signed) - byte 3
         data[3] = right_bytes[1]  # Right motor high byte (signed) - byte 4
 
-        # Byte 5: Speaker control
-        data[4] = 0 #self._sound_id
+        # Byte 5: Front LEDs
+        data[4] = self._leds
 
         # Bytes 6-17: LEDs
         data[5] = self._led2_rgb[0]   # LED2 R
@@ -180,13 +180,12 @@ class EPuck2:
         data[15] = self._led8_rgb[1]  # LED8 G
         data[16] = self._led8_rgb[2]  # LED8 B
 
-        # Front LEDs
-        data[17] = self._leds
+        # Byte 18: Sound ID
+        data[17] = 0 # self._sound_id if self._sound_id != SOUND_STOP else 0
 
         # Remaining bytes stay 0
         # data[18] and data[19] remain 0
 
-        # Send raw 20-byte packet using Format 2 (no command ID)
         try:
             self._bus.write_i2c_block_data(self._address, 0, data)
             self.logger.debug(f"📡 Format 2 packet sent: motors=({self._left_motor_speed},{self._right_motor_speed}) -> inverted=({left_inverted},{right_inverted})")
