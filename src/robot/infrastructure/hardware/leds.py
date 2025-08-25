@@ -35,6 +35,7 @@ class LEDController(LEDInterface):
             try:
                 # Turn off all LEDs using EPuck2's method
                 self.pipuck.epuck.set_all_leds_off()
+                self.pipuck.set_leds_rgb(False, False, False)
                 self.logger.info("🧹 LED controller cleaned up - all LEDs turned off")
             except Exception as e:
                 self.logger.warning(f"⚠️ Error during LED cleanup: {e}")
