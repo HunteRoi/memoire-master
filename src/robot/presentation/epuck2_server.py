@@ -6,10 +6,10 @@ from application.use_cases.motor_use_cases import MotorUseCases
 from application.use_cases.led_use_cases import LEDUseCases
 from application.use_cases.audio_use_cases import AudioUseCases
 from application.use_cases.sensor_use_cases import SensorUseCases
-from infrastructure.hardware.motors import MotorController
-from infrastructure.hardware.leds import LEDController
-from infrastructure.hardware.audio import AudioController
-from infrastructure.hardware.sensors import SensorController
+from infrastructure.hardware.controllers.motors import MotorController
+from infrastructure.hardware.controllers.leds import LEDController
+from infrastructure.hardware.controllers.audio import AudioController
+from infrastructure.hardware.controllers.sensors import SensorController
 from infrastructure.hardware.epuck2 import EPuck2
 from .websocket_manager import WebsocketManager
 
@@ -57,6 +57,7 @@ class EPuck2Server:
 
             # Replace PiPuck's epuck with our custom EPuck2 class
             self.pipuck.epuck = EPuck2()
+            self.pipuck.epuck.initialize()
 
             self.logger.info("✅ Shared PiPuck initialized with custom EPuck2")
 

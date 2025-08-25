@@ -30,10 +30,10 @@ class SensorController(SensorInterface):
             if not self.pipuck or not hasattr(self.pipuck, 'epuck') or not self.pipuck.epuck:
                 raise RuntimeError("PiPuck or EPuck2 not provided or not initialized")
 
-            # Enable sensor streaming from e-puck2 (includes IMU)
-            self.pipuck.epuck.enable_sensors_stream(True)
+            # Calibrate IR sensors for better readings
+            self.pipuck.epuck.calibrate_ir_sensors()
 
-            self.logger.info("✅ Sensor controller initialized using EPuck2 (includes built-in IMU)")
+            self.logger.info("✅ Sensor controller initialized using EPuck2 API (includes built-in IMU)")
             self._initialized = True
             return True
 
@@ -55,11 +55,11 @@ class SensorController(SensorInterface):
         self._initialized = False
 
     async def get_proximity(self) -> List[int]:
-        """Get proximity sensor readings (8 sensors) via EPuck2"""
+        """Get proximity sensor readings (8 sensors) via EPuck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [0] * 8
         try:
-            proximity = self.pipuck.epuck.ir_reflected
+            proximity = self.pipuck.epuck.read_proximity_sensors()
             self.logger.debug(f"📡 Proximity sensors: {proximity}")
             return proximity
         except Exception as e:
@@ -67,11 +67,11 @@ class SensorController(SensorInterface):
             return [0] * 8
 
     async def get_light(self) -> List[int]:
-        """Get light sensor readings (8 sensors) via EPuck2"""
+        """Get light sensor readings (8 sensors) via EPuck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [100] * 8
         try:
-            light = self.pipuck.epuck.ir_ambient
+            light = self.pipuck.epuck.read_ambient_light_sensors()
             self.logger.debug(f"💡 Light sensors: {light}")
             return light
         except Exception as e:
@@ -79,37 +79,37 @@ class SensorController(SensorInterface):
             return [100] * 8
 
     async def get_magnetometer(self) -> List[float]:
-        """Get magnetometer readings [x, y, z] from e-puck2 built-in IMU"""
+        """Get magnetometer readings [x, y, z] from e-puck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [0.0, 0.0, 0.0]
         try:
             mag = self.pipuck.epuck.get_magnetometer()
             self.logger.debug(f"🧲 Magnetometer: {mag}")
-            return mag
+            return list(mag)  # Convert tuple to list
         except Exception as e:
             self.logger.warning(f"⚠️ Magnetometer read failed: {e}")
             return [0.0, 0.0, 0.0]
 
     async def get_accelerometer(self) -> List[float]:
-        """Get accelerometer readings [x, y, z] from e-puck2 built-in IMU"""
+        """Get accelerometer readings [x, y, z] from e-puck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [0.0, 0.0, 9.8]
         try:
             accel = self.pipuck.epuck.get_accelerometer()
             self.logger.debug(f"📐 Accelerometer: {accel}")
-            return accel
+            return list(accel)  # Convert tuple to list
         except Exception as e:
             self.logger.warning(f"⚠️ Accelerometer read failed: {e}")
             return [0.0, 0.0, 9.8]
 
     async def get_gyroscope(self) -> List[float]:
-        """Get gyroscope readings [x, y, z] from e-puck2 built-in IMU"""
+        """Get gyroscope readings [x, y, z] from e-puck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             return [0.0, 0.0, 0.0]
         try:
             gyro = self.pipuck.epuck.get_gyroscope()
             self.logger.debug(f"🌀 Gyroscope: {gyro}")
-            return gyro
+            return list(gyro)  # Convert tuple to list
         except Exception as e:
             self.logger.warning(f"⚠️ Gyroscope read failed: {e}")
             return [0.0, 0.0, 0.0]

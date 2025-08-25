@@ -33,8 +33,9 @@ class LEDController(LEDInterface):
         """Cleanup LED resources (PiPuck cleanup handled by container)"""
         if self._initialized:
             try:
-                # Turn off all LEDs using EPuck2's method
-                self.pipuck.epuck.set_all_leds_off()
+                # Turn off all LEDs using EPuck2 API
+                self.pipuck.epuck.disable_front_leds()
+                self.pipuck.epuck.disable_body_leds()
                 self.pipuck.set_leds_rgb(False, False, False)
                 self.logger.info("🧹 LED controller cleaned up - all LEDs turned off")
             except Exception as e:
@@ -43,30 +44,30 @@ class LEDController(LEDInterface):
         self._initialized = False
 
     async def set_body_led(self, red: int, green: int, blue: int) -> None:
-        """Set LEDs using both PiPuck native LEDs and EPuck2 packet"""
+        """Set LEDs using both PiPuck native LEDs and EPuck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             self.logger.warning("⚠️ LED controller not initialized")
             self.logger.info(f"💡 [Body LED] RGB({red}, {green}, {blue}) (not initialized)")
             return
 
-        # Clamp RGB values
-        red = max(0, min(255, red))
-        green = max(0, min(255, green))
-        blue = max(0, min(255, blue))
+        # Clamp RGB values to EPuck2 range (0-100)
+        red = max(0, min(100, int(red * 100 / 255)))  # Convert from 0-255 to 0-100
+        green = max(0, min(100, int(green * 100 / 255)))
+        blue = max(0, min(100, int(blue * 100 / 255)))
 
         try:
             self.logger.info(f"💡 Setting both Pi-puck and e-puck2 LEDs to RGB({red}, {green}, {blue})")
 
             # Set Pi-puck LEDs (boolean on/off for each color)
-            # Use a threshold to determine if color should be on (>127) or off (<=127)
-            pipuck_red = red > 127
-            pipuck_green = green > 127
-            pipuck_blue = blue > 127
+            # Use a threshold to determine if color should be on (>50) or off (<=50)
+            pipuck_red = red > 50
+            pipuck_green = green > 50
+            pipuck_blue = blue > 50
 
             self.pipuck.set_leds_rgb(pipuck_red, pipuck_green, pipuck_blue)
             self.logger.debug(f"📡 Pi-puck LEDs: R={pipuck_red}, G={pipuck_green}, B={pipuck_blue}")
 
-            # Set e-puck2 body LEDs (0-255 RGB values)
+            # Set e-puck2 body LEDs using API (0-100 RGB values)
             self.pipuck.epuck.set_body_led_rgb(red, green, blue)
             self.logger.debug(f"📡 e-puck2 body LEDs: R={red}, G={green}, B={blue}")
 
@@ -77,7 +78,7 @@ class LEDController(LEDInterface):
             raise e
 
     async def set_front_led(self, enabled: bool) -> None:
-        """Set front LED on/off using EPuck2 class"""
+        """Set front LED on/off using EPuck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             self.logger.warning("⚠️ LED controller not initialized")
             self.logger.info(f"💡 [Front LED] {'ON' if enabled else 'OFF'} (not initialized)")
@@ -86,10 +87,13 @@ class LEDController(LEDInterface):
         try:
             self.logger.debug(f"💡 Front LED {'ON' if enabled else 'OFF'}")
 
-            # Use PiPuck EPuck2 class to set front LED (dedicated bit)
-            self.pipuck.epuck.set_front_led(enabled)
+            # Use EPuck2 API for front LED control
+            if enabled:
+                self.pipuck.epuck.enable_front_leds()
+            else:
+                self.pipuck.epuck.disable_front_leds()
 
-            self.logger.debug(f"✅ Front LED {'ON' if enabled else 'OFF'} via EPuck2")
+            self.logger.debug(f"✅ Front LED {'ON' if enabled else 'OFF'} via EPuck2 API")
 
         except Exception as e:
             self.logger.warning(f"⚠️ Front LED control failed: {e}")

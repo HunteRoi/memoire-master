@@ -42,26 +42,40 @@ class MotorController(MotorInterface):
         self._initialized = False
 
     async def set_speed(self, left_speed: float, right_speed: float) -> None:
-        """Set motor speeds (-100 to 100) using EPuck2 class"""
+        """Set motor speeds (-100 to 100) using EPuck2 API"""
         if not self._initialized or not self.pipuck or not self.pipuck.epuck:
             raise RuntimeError("Motor controller not initialized")
 
         try:
-            # Clamp speeds to valid range
-            left_speed = max(-100, min(100, left_speed))
-            right_speed = max(-100, min(100, right_speed))
+            self.logger.info(f"🚗 Setting motor speeds: left={left_speed}, right={right_speed})")
 
-            # Convert from percentage to e-puck2 speed values (signed 16-bit)
-            # e-puck2 expects values like -1000 to 1000
-            left_value = int(left_speed * 10)
-            right_value = int(right_speed * 10)
-
-            self.logger.info(f"🚗 Setting motor speeds: left={left_speed}% ({left_value}), right={right_speed}% ({right_value})")
-
-            # Use PiPuck EPuck2 class to set motor speeds (differential fix applied in EPuck2 class)
-            self.pipuck.epuck.set_motor_speeds(left_value, right_value)
-
-            self.logger.info(f"✅ Motor speeds set via PiPuck EPuck2: left={left_speed}%, right={right_speed}%")
+            # Use EPuck2 API - detect common movement patterns for better semantic control
+            if left_speed == right_speed:
+                if left_speed > 0:
+                    # Both motors forward - use go_forward
+                    self.pipuck.epuck.go_forward(abs(left_speed))
+                    self.logger.info(f"✅ Moving forward at speed {abs(left_speed)} via EPuck2")
+                elif left_speed < 0:
+                    # Both motors backward - use go_backward
+                    self.pipuck.epuck.go_backward(abs(left_speed))
+                    self.logger.info(f"✅ Moving backward at speed {abs(left_speed)} via EPuck2")
+                else:
+                    # Both motors stopped
+                    self.pipuck.epuck.set_motor_speeds(0, 0)
+                    self.logger.info("✅ Motors stopped via EPuck2")
+            elif left_speed == -right_speed:
+                if left_speed < 0:
+                    # Left negative, right positive - turn left
+                    self.pipuck.epuck.turn_left(abs(right_speed))
+                    self.logger.info(f"✅ Turning left at speed {abs(right_speed)} via EPuck2")
+                else:
+                    # Left positive, right negative - turn right
+                    self.pipuck.epuck.turn_right(abs(left_speed))
+                    self.logger.info(f"✅ Turning right at speed {abs(left_speed)} via EPuck2")
+            else:
+                # Complex movement - use direct motor speeds
+                self.pipuck.epuck.set_motor_speeds(left_speed, right_speed)
+                self.logger.info(f"✅ Custom motor speeds set via EPuck2: left={left_speed}%, right={right_speed}%")
 
         except Exception as e:
             self.logger.error(f"❌ Failed to set motor speeds: {e}")
