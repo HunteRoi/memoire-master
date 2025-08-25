@@ -131,7 +131,36 @@ class EPuck2(EPuckInterface):
         """ Initialize the I2C bus and verify communication with the robot."""
         if self._initialized:
             return
+        self._initialize_bus()
+        self._initialize_tof_sensor()
+        self._initialize_magnetometer()
+        if not self._initialized:
+            raise ConnectionError("Could not connect to e-puck2 on any I2C channel.")
 
+    def _initialize_magnetometer(self):
+        magnetometer_addresses = [MAGNETOMETER_ADDRESS_0, MAGNETOMETER_ADDRESS_1, MAGNETOMETER_ADDRESS_2, MAGNETOMETER_ADDRESS_3]
+        for channel in self._board_i2c_channels:
+            for magnetometer_address in magnetometer_addresses:
+                try:
+                    self._magnetometer = bmm150_I2C(channel, magnetometer_address)
+                    self.logger.info(f"Connected to magnetometer sensor {hex(magnetometer_address)} on board I2C channel {channel}")
+                    break
+                except Exception as e:
+                    self._magnetometer = None
+                    self.logger.warning(f"Failed to connect to magnetometer sensor {channel}: {e}")
+            if self._magnetometer is not None:
+                break
+
+    def _initialize_tof_sensor(self):
+        for channel in self._i2c_channels:
+            try:
+                self._tof = VL53L0X(i2c_bus=channel, i2c_address=TOF_ADDRESS)
+                self.logger.info(f"Connected to ToF at address {hex(TOF_ADDRESS)} on I2C channel {channel}")
+                break
+            except Exception as e:
+                self.logger.warning(f"Failed to connect to ToF sensor {channel}: {e}")
+
+    def _initialize_bus(self):
         for channel in self._i2c_channels:
             try:
                 self._bus = channel if isinstance(channel, SMBus) else SMBus(channel)
@@ -144,34 +173,6 @@ class EPuck2(EPuckInterface):
             except Exception as e:
                 self.logger.error(f"Failed to connect on I2C channel {channel}: {e}")
                 self._bus = None
-
-        try:
-            self._tof = VL53L0X(i2c_bus=I2C_CHANNEL, i2c_address=TOF_ADDRESS)
-            self.logger.info(f"Connected to ToF at address {hex(TOF_ADDRESS)} on I2C channel {I2C_CHANNEL}")
-        except Exception as e_standard:
-            self.logger.warning(f"Failed to connect to ToF sensor {I2C_CHANNEL}: {e_standard}")
-            self.logger.info(f"Trying to connect on another channel...")
-            try:
-                self._tof = VL53L0X(i2c_bus=LEGACY_I2C_CHANNEL, i2c_address=TOF_ADDRESS)
-                self.logger.info(f"Connected to ToF at address {hex(TOF_ADDRESS)} on I2C channel {LEGACY_I2C_CHANNEL}")
-            except Exception as e_legacy:
-                self.logger.warning(f"Failed to connect to ToF sensor {LEGACY_I2C_CHANNEL}: {e_legacy}")
-
-        for channel in self._board_i2c_channels:
-            for magnetometer_address in [MAGNETOMETER_ADDRESS_0, MAGNETOMETER_ADDRESS_1, MAGNETOMETER_ADDRESS_2, MAGNETOMETER_ADDRESS_3]:
-                try:
-                    self._magnetometer = bmm150_I2C(channel, magnetometer_address)
-                    self.logger.info(f"Connected to magnetometer sensor {hex(magnetometer_address)} on board I2C channel {channel}")
-                    break
-                except Exception as e:
-                    self._magnetometer = None
-                    self.logger.warning(f"Failed to connect to magnetometer sensor {channel}: {e}")
-
-                if self._magnetometer is not None:
-                    break
-
-        if not self._initialized:
-            raise ConnectionError("Could not connect to e-puck2 on any I2C channel.")
 
     def close(self) -> None:
         """ Close the I2C bus if it was opened by this instance."""
@@ -200,7 +201,14 @@ class EPuck2(EPuckInterface):
         return checksum
 
     def _update_sensors_and_actuators(self) -> None:
-        """Send the actuator command packet to the robot and read back the sensor data."""
+        """
+        Send the actuator command packet to the robot (and read back the sensor data) from specific fields:
+        Left speed (2)	Right speed (2)	Speaker (1)	LED1, LED3, LED5, LED7 (1)	LED2 RGB (3)	LED4 RGB (3)	LED6 RGB (3)	LED8 RGB (3)	Settings (1)	Checksum (1)
+
+        Source: https://github.com/gctronic/Pi-puck/blob/master/e-puck2/e-puck2_test.py
+
+        Docs: https://www.gctronic.com/doc/index.php?title=Pi-puck#Packet_format
+        """
         if not self._initialized or self._bus is None:
             raise RuntimeError("EPuck2 is not initialized. Call initialize() before sending packets.")
 
@@ -224,7 +232,15 @@ class EPuck2(EPuckInterface):
         self._actuators_data = bytearray([0] * ACTUATORS_SIZE)                  # Actuator command buffer
         self._sensors_data = bytearray([0] * SENSORS_SIZE)                      # Sensor data buffer
 
-    def _read_sensors(self) -> Tuple[list[int], list[int], list[int], int, int, list[int], int]:
+    def _parse_sensors_data(self) -> Tuple[list[int], list[int], list[int], int, int, list[int], int]:
+        """
+        Parse the sensor data into divided specific fields:
+        8 x Prox (16)   8 x Ambient (16)	4 x Mic (8)	Selector + button (1)	Left steps (2)	Right steps (2)	TV remote (1)	Checksum
+
+        Source: https://github.com/gctronic/Pi-puck/blob/master/e-puck2/e-puck2_test.py
+
+        Docs: https://www.gctronic.com/doc/index.php?title=Pi-puck#Packet_format
+        """
         offset = 0
         proximity = [0 for x in range(PROXIMITY_DATA_SIZE)]
         proximity_ambient = [0 for x in range(AMBIENT_LIGHT_DATA_SIZE)]
@@ -258,6 +274,11 @@ class EPuck2(EPuckInterface):
         return proximity, proximity_ambient, microphone, selector, button, motor_steps, tv_remote
 
     def _read_tof_sensor(self) -> list[int]:
+        """
+        Read the Time-of-Flight sensor data and return the distances (in millimeters) as a list.
+
+        Source:https://github.com/gctronic/Pi-puck/blob/master/e-puck2/VL53L0X_example.py
+        """
         if self._tof is None:
             raise RuntimeError("ToF sensor is not initialized")
 
@@ -280,6 +301,11 @@ class EPuck2(EPuckInterface):
         return distance_in_millimeters
 
     def _read_ground_sensors(self) -> list[int]:
+        """
+        Read ground sensors data and return them in a list: [left_sensor, center_sensor, right_sensor].
+
+        Source: https://github.com/gctronic/Pi-puck/blob/master/ground-sensor/groundsensor.py
+        """
         if not self._initialized or self._bus is None:
             raise RuntimeError("EPuck2 is not initialized. Call initialize() before sending packets.")
 
@@ -299,6 +325,11 @@ class EPuck2(EPuckInterface):
         return ground_values
 
     def _read_magnetometer(self) -> Tuple[int, int, int, float]:
+        """
+        Read the magnetometer values and return them in a tuple (x,y,z,degree).
+
+        Source: https://github.com/gctronic/Pi-puck/blob/master/magnetometer/python/get_geomagnetic_data.py
+        """
         if self.magnetometer is None:
             raise RuntimeError("Magnetometer sensor is not initialized")
         try:
@@ -361,6 +392,11 @@ class EPuck2(EPuckInterface):
             self._magnetometer.set_operation_mode(bmm150.POWERMODE_SLEEP)
 
     def _get_camera_snapshot(self, device_id: int = 1) -> str:
+        """
+        Get an image snapshot from one of the camera (front or omnivision).
+
+        Source: https://github.com/gctronic/Pi-puck/blob/master/snapshot/snapshot.py
+        """
         if device_id not in [FRONT_CAMERA_ID, OMNIVISION_CAMERA_ID]:
             raise RuntimeError("Provided camera ID is not supported. Use FRONT_CAMERA_ID or OMNIVISION_CAMERA_ID instead.")
 
