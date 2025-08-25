@@ -89,7 +89,7 @@ TOF_ADDRESS                     = 0x29 # VL53L0X
 
 # Ground Sensors Registers using I2C channel and legacy I2C channel
 GROUND_SENSORS_ADDRESS          = 0x60
-GROUND_SENSORS_REGISTRY          = 0
+GROUND_SENSORS_REGISTRY         = 0
 GROUND_DATA_SIZE                = 6
 GROUND_VALUES_SIZE              = 3
 
@@ -580,11 +580,11 @@ class EPuck2(EPuckInterface):
         """Calibrate the IR sensors."""
         pass
 
-    def read_proximity_sensors(self) -> List[float]:
+    def read_proximity_sensors(self) -> List[int]:
         """Read and return the proximity sensor values."""
         pass
 
-    def read_ambient_light_sensors(self) -> List[float]:
+    def read_ambient_light_sensors(self) -> List[int]:
         """Read and return the ambient light sensor values."""
         pass
 
@@ -595,11 +595,14 @@ class EPuck2(EPuckInterface):
         self.logger.info(f"Snapshot located at {img_path}")
 
     def take_picture_with_omnivision_camera(self) -> None:
+        """Capture a snapshot with the 360° camera (OmniVision3 module)"""
         img_path = self._get_camera_snapshot(OMNIVISION_CAMERA_ID)
         self.logger.info(f"Snapshot located at {img_path}")
 
 ## Microphone
-### not implemented yet
+    def read_microphone_sensors(self) -> List[int]:
+        """Read and return the microphone sensor values"""
+        pass
 
 ## IMU
     def get_accelerometer(self) -> Tuple[float, float, float]:
