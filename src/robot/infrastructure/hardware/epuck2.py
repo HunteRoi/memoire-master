@@ -579,9 +579,9 @@ class EPuck2:
     def enable_ir_sensors(self, enabled: bool) -> None:
         """Enable/disable IR sensors"""
         if enabled:
-            self._request_settings |= REQUEST_SENSORS_STREAM
+            self._request |= REQUEST_SENSORS_STREAM
         else:
-            self._request_settings &= ~REQUEST_SENSORS_STREAM
+            self._request &= ~REQUEST_SENSORS_STREAM
         self._send_packet()
 
     # Compatibility methods with EPuck1 interface
@@ -607,32 +607,32 @@ class EPuck2:
     def enable_image_stream(self, enabled: bool = True) -> None:
         """Enable/disable image stream"""
         if enabled:
-            self._request_settings |= REQUEST_IMAGE_STREAM
+            self._request |= REQUEST_IMAGE_STREAM
         else:
-            self._request_settings &= ~REQUEST_IMAGE_STREAM
+            self._request &= ~REQUEST_IMAGE_STREAM
         self._send_packet()
 
     def enable_sensors_stream(self, enabled: bool = True) -> None:
         """Enable/disable sensors stream"""
         if enabled:
-            self._request_settings |= REQUEST_SENSORS_STREAM
+            self._request |= REQUEST_SENSORS_STREAM
         else:
-            self._request_settings &= ~REQUEST_SENSORS_STREAM
+            self._request &= ~REQUEST_SENSORS_STREAM
         self._send_packet()
 
     def calibrate_ir_sensors(self) -> None:
         """Calibrate IR proximity sensors"""
-        self._request_settings |= SETTINGS_CALIBRATE_IR
+        self._settings |= SETTINGS_CALIBRATE_IR
         self._send_packet()
         # Clear flag after sending
-        self._request_settings &= ~SETTINGS_CALIBRATE_IR
+        self._settings &= ~SETTINGS_CALIBRATE_IR
 
     def enable_obstacle_avoidance(self, enabled: bool = True) -> None:
         """Enable/disable obstacle avoidance (not yet implemented in firmware)"""
         if enabled:
-            self._request_settings |= SETTINGS_OBSTACLE_AVOID
+            self._settings |= SETTINGS_OBSTACLE_AVOID
         else:
-            self._request_settings &= ~SETTINGS_OBSTACLE_AVOID
+            self._settings &= ~SETTINGS_OBSTACLE_AVOID
         self._send_packet()
 
     def set_motor_control_mode(self, position_mode: bool = False) -> None:
@@ -642,9 +642,9 @@ class EPuck2:
             position_mode: True for position control, False for speed control
         """
         if position_mode:
-            self._request_settings |= SETTINGS_MOTOR_POSITION
+            self._settings |= SETTINGS_MOTOR_POSITION
         else:
-            self._request_settings &= ~SETTINGS_MOTOR_POSITION
+            self._settings &= ~SETTINGS_MOTOR_POSITION
         self._send_packet()
 
     # Cleanup
