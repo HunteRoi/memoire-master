@@ -13,8 +13,6 @@ PYTHON_VENV = $(VENV_DIR)/bin/python
 install:
 	@echo "📦 Installing system dependencies..."
 	sudo apt update
-	@echo "Installing opencv-python dependencies..."
-	sudo apt install libwavpack1 libxinerama1 libavformat58 ocl-icd-libopencl1 libsrt1.4-gnutls libharfbuzz0b libxvidcore4 libcairo-gobject2 libthai0 libgsm1 libmp3lame0 libxrandr2 libsnappy1v5 libudfread0 libpangoft2-1.0-0 libwayland-client0 libpango-1.0-0 libwebpmux3 libbluray2 libavutil56 libva-x11-2 libatk1.0-0 libxcomposite1 libxcursor1 libx264-160 libgfortran5 libatspi2.0-0 libvorbisfile3 libxfixes3 libxcb-render0 librsvg2-2 libva2 libxrender1 libaom0 libvpx6 libvdpau1 libopenjp2-7 libpangocairo-1.0-0 libdav1d4 libcairo2 libxdamage1 libopus0 libatlas3-base libvorbis0a libgdk-pixbuf-2.0-0 libxkbcommon0 libtwolame0 libswscale5 libssh-gcrypt-4 libxcb-shm0 libchromaprint1 libdrm2 libgme0 libopenmpt0 libvorbisenc2 libgtk-3-0 libopenblas0-pthread libva-drm2 libpixman-1-0 libnorm1 libx265-192 libsodium23 libxi6 libsoxr0 libshine3 libavcodec58 libwayland-egl1 libpgm-5.3-0 libtheora0 libspeex1 librabbitmq4 libgraphite2-3 libzvbi0 libogg0 libmpg123-0 libzmq5 libwebpdemux2 libatk-bridge2.0-0 libdatrie1 libepoxy0 libwayland-cursor0 libcodec2-0.9 libswresample3
 	@echo "Installing pyenv dependencies..."
 	sudo apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev
 	@echo "Installing GPIO and I2C tools..."
