@@ -83,7 +83,7 @@ class AudioUseCases:
                 }
 
             self.logger.info("🔊 Playing error sound")
-            await self.audio.play_beep(1)
+            await self.audio.play_beep(duration=1, beep_strength=10)
 
             return {
                 "success": True,
