@@ -34,7 +34,7 @@ Before troubleshooting specific issues, verify your system setup:
    ```bash
    # From your computer, test basic connectivity
    ping [robot-ip-address]
-   
+
    # Test WebSocket port specifically
    telnet [robot-ip-address] 8765
    ```
@@ -43,7 +43,7 @@ Before troubleshooting specific issues, verify your system setup:
    ```bash
    # On the robot, check if server is running
    ps aux | grep python
-   
+
    # Check server logs
    journalctl -u pucklab-robot.service -n 50
    ```
@@ -73,7 +73,7 @@ Before troubleshooting specific issues, verify your system setup:
 **Solutions**:
 - Move router closer to operating area
 - Use 5GHz WiFi if available
-- Reduce network traffic during robot operations  
+- Reduce network traffic during robot operations
 - Charge robot battery fully before use
 - Check for interference from microwaves, Bluetooth devices
 
@@ -171,7 +171,7 @@ Before troubleshooting specific issues, verify your system setup:
 1. **Test Hardware Directly**:
    ```python
    # On robot server, test motor hardware
-   motors.set_speed(50, 50)
+   motors.set_speed(200, 200)
    motors.stop()
    ```
 
@@ -186,7 +186,7 @@ Before troubleshooting specific issues, verify your system setup:
 
 **Solutions**:
 - **Restart Robot**: Power cycle the E-Puck2 robot
-- **Check Connections**: Ensure all physical connections are secure  
+- **Check Connections**: Ensure all physical connections are secure
 - **Test Individual Components**: Test motors, sensors individually
 - **Update Firmware**: Ensure E-Puck2 firmware is current
 

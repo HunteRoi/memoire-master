@@ -221,7 +221,7 @@ class RobotController:
 
     # Private methods for command handling
     def _parse_gui_command(self, command: str) -> Optional[Dict[str, Any]]:
-        """Parse GUI command format like 'move_forward(speed=50, duration=1)' to structured data"""
+        """Parse GUI command format like 'move_forward(speed=200, duration=1)' to structured data"""
         try:
             # Match function call pattern: function_name(param=value, param=value)
             match = re.match(r'^(\w+)\(([^)]*)\)$', command.strip())
@@ -260,7 +260,7 @@ class RobotController:
 
     async def _handle_motor_command(self, command: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle motor-related commands"""
-        speed = data.get("speed", 50)
+        speed = data.get("speed", 200)
         duration = data.get("duration", 1.0)
         angle = data.get("angle", 90)
 

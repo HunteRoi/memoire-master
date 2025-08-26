@@ -204,23 +204,23 @@ export const ScriptExecutionContainer: React.FC<
   const generateRobotCommand = useCallback((blockType: string, parameters: any = {}) => {
     switch (blockType) {
       case 'move_forward':
-        const speed = parameters?.speed || 50;
+        const speed = parameters?.speed || 200;
         const duration = parameters?.duration || 1;
         return `move_forward(speed=${speed}, duration=${duration})`;
 
       case 'move_backward':
-        const backSpeed = parameters?.speed || 50;
+        const backSpeed = parameters?.speed || 200;
         const backDuration = parameters?.duration || 1;
         return `move_backward(speed=${backSpeed}, duration=${backDuration})`;
 
       case 'turn_left':
         const leftAngle = parameters?.angle || 90;
-        const leftSpeed = parameters?.speed || 50;
+        const leftSpeed = parameters?.speed || 200;
         return `turn_left(angle=${leftAngle}, speed=${leftSpeed})`;
 
       case 'turn_right':
         const rightAngle = parameters?.angle || 90;
-        const rightSpeed = parameters?.speed || 50;
+        const rightSpeed = parameters?.speed || 200;
         return `turn_right(angle=${rightAngle}, speed=${rightSpeed})`;
 
       case 'stop':

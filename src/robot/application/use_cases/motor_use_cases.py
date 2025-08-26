@@ -36,10 +36,10 @@ class MotorUseCases:
                 }
 
             # Validate parameters
-            speed = max(0, min(100, speed))
+            speed = max(0, min(1000, speed))
             duration = max(0.1, min(10.0, duration))
 
-            self.logger.info(f"🚗 Moving forward: speed={speed}%, duration={duration}s")
+            self.logger.info(f"🚗 Moving forward: speed={speed}, duration={duration}s")
 
             # Set both motors to same speed for forward movement
             await self.motor.set_speed(speed, speed)
@@ -70,7 +70,7 @@ class MotorUseCases:
                 }
 
             # Validate parameters
-            speed = max(0, min(100, speed))
+            speed = max(0, min(1000, speed))
             duration = max(0.1, min(10.0, duration))
 
             self.logger.info(f"🚗 Moving backward: speed={speed}%, duration={duration}s")
@@ -94,7 +94,7 @@ class MotorUseCases:
                 "error": str(e)
             }
 
-    async def turn_left(self, angle: float, speed: float = 50) -> Dict[str, Any]:
+    async def turn_left(self, angle: float, speed: float = 200) -> Dict[str, Any]:
         """Turn robot left by specified angle"""
         try:
             if not await self._ensure_initialized():
@@ -105,7 +105,7 @@ class MotorUseCases:
 
             # Validate parameters
             angle = max(0, min(360, angle))
-            speed = max(10, min(100, speed))
+            speed = max(0, min(1000, speed))
 
             # Calculate duration based on angle (approximate)
             duration = angle / 90.0 * 1.5  # Rough estimate: 90 degrees = 1.5 seconds at medium speed
@@ -132,7 +132,7 @@ class MotorUseCases:
                 "error": str(e)
             }
 
-    async def turn_right(self, angle: float, speed: float = 50) -> Dict[str, Any]:
+    async def turn_right(self, angle: float, speed: float = 200) -> Dict[str, Any]:
         """Turn robot right by specified angle"""
         try:
             if not await self._ensure_initialized():
@@ -143,7 +143,7 @@ class MotorUseCases:
 
             # Validate parameters
             angle = max(0, min(360, angle))
-            speed = max(10, min(100, speed))
+            speed = max(0, min(1000, speed))
 
             # Calculate duration based on angle (approximate)
             duration = angle / 90.0 * 1.5  # Rough estimate: 90 degrees = 1.5 seconds at medium speed
@@ -205,8 +205,8 @@ class MotorUseCases:
                 }
 
             # Validate parameters
-            left_speed = max(-100, min(100, left_speed))
-            right_speed = max(-100, min(100, right_speed))
+            left_speed = max(-1000, min(1000, left_speed))
+            right_speed = max(-1000, min(1000, right_speed))
 
             self.logger.info(f"🚗 Setting motor speeds: left={left_speed}%, right={right_speed}%")
 

@@ -181,8 +181,8 @@ The robot maintains several operational states that affect behavior:
 ## Example Message Flows
 
 ### Basic Command Execution
-1. **Client** → **Robot**: `{"type": "command", "data": {"command": "motors.set_speed(50, 50)"}}`
-2. **Robot** → **Client**: `{"type": "success", "data": {"result": "None", "command": "motors.set_speed(50, 50)"}, "timestamp": 1634567890.123}`
+1. **Client** → **Robot**: `{"type": "command", "data": {"command": "motors.set_speed(200, 200)"}}`
+2. **Robot** → **Client**: `{"type": "success", "data": {"result": "None", "command": "motors.set_speed(200, 200)"}, "timestamp": 1634567890.123}`
 
 ### Health Check
 1. **Client** → **Robot**: `{"type": "ping", "data": {}}`

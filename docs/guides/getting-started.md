@@ -55,13 +55,13 @@ python main.py
 **Visual Programming Mode:**
 1. Navigate to the Visual Programming interface
 2. Drag a "Move Forward" block to the workspace
-3. Set the speed to 50
+3. Set the speed to something between 0 and 2000
 4. Click "Run" to execute the program
 5. Watch your robot move!
 
 **Python Mode:**
 1. Switch to Python mode in the interface
-2. Type: `motors.set_speed(50, 50)`
+2. Type: `motors.set_speed(200, 200)`
 3. Click "Execute" or press Ctrl+Enter
 4. Your robot will move forward
 
@@ -122,10 +122,10 @@ Combines both approaches:
 ### Basic Movement
 ```python
 # Move forward
-motors.set_speed(50, 50)
+motors.set_speed(200, 200)
 
 # Turn right
-motors.set_speed(50, -50)
+motors.set_speed(200, -200)
 
 # Stop
 motors.stop()

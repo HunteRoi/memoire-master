@@ -138,7 +138,7 @@ All messages are JSON with this structure:
   "type": "command",
   "data": {
     "command": "move_forward",
-    "speed": 50,
+    "speed": 200,
     "duration": 2.0
   }
 }
@@ -148,12 +148,12 @@ All messages are JSON with this structure:
 
 #### Motor Commands
 ```json
-{"command": "move_forward", "speed": 50, "duration": 2.0}
-{"command": "move_backward", "speed": 50, "duration": 2.0}
-{"command": "turn_left", "angle": 90, "speed": 50}
-{"command": "turn_right", "angle": 90, "speed": 50}
+{"command": "move_forward", "speed": 200, "duration": 2.0}
+{"command": "move_backward", "speed": 200, "duration": 2.0}
+{"command": "turn_left", "angle": 90, "speed": 200}
+{"command": "turn_right", "angle": 90, "speed": 200}
 {"command": "stop_motors"}
-{"command": "set_motor_speeds", "left_speed": 30, "right_speed": -30}
+{"command": "set_motor_speeds", "left_speed": 200, "right_speed": -500}
 ```
 
 #### LED Commands
@@ -190,7 +190,7 @@ All messages are JSON with this structure:
   "data": {
     "success": true,
     "action": "move_forward",
-    "speed": 50,
+    "speed": 200,
     "duration": 2.0
   }
 }

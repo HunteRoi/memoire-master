@@ -531,6 +531,14 @@ class EPuck2(EPuckInterface):
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
 
+    def stop_motor(self) -> None:
+        """Set motors to no speed."""
+        self._current_left_speed = 0
+        self._current_right_speed = 0
+        actuator_data = ActuatorsData().Stop().Build()
+        self._actuators_data = actuator_data
+        self._update_sensors_and_actuators()
+
     def set_motor_control_mode(self, position_mode: bool) -> None:
         """Set motor control mode: True for position mode, False for speed mode."""
         builder = self._build_with_current_state()
@@ -752,6 +760,15 @@ class EPuck2(EPuckInterface):
         """Get magnetometer readings (x, y, z)."""
         return self.get_magnetometer()
 
+## Ground sensors
+    def get_ground_sensors(self) -> List[int]:
+        """Get ground sensor values [left, center, right]."""
+        return self._read_ground_sensors()
+
+    @property
+    def ground_sensors(self) -> List[int]:
+        """Get all ground sensor values [left, center, right]."""
+        return self._read_ground_sensors()
 
 #################################################
 #           EPUCK1 SPECIFIC METHODS             #
@@ -905,15 +922,6 @@ class EPuck2(EPuckInterface):
     def ir_ambient(self):
         """EPuck1 compatibility: Get all ambient light sensor values."""
         return self.read_ambient_light_sensors()
-
-    def get_ground_sensors(self):
-        """Get ground sensor values [left, center, right]."""
-        return self._read_ground_sensors()
-
-    @property
-    def ground_sensors(self):
-        """Get all ground sensor values [left, center, right]."""
-        return self._read_ground_sensors()
 
 #################################################
 #            EPUCK SPECIFIC METHODS             #

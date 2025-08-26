@@ -118,7 +118,7 @@ PuckLab provides safe access to robot hardware through Python interfaces:
 
 **Motor Control**:
 ```python
-motors.set_speed(left_speed, right_speed)  # Speed range: -100 to 100
+motors.set_speed(left_speed, right_speed)  # Speed range: -2000 to 2000
 motors.stop()  # Stop both motors immediately
 ```
 

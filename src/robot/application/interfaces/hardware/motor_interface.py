@@ -18,7 +18,7 @@ class MotorInterface(ABC):
 
     @abstractmethod
     async def set_speed(self, left_speed: float, right_speed: float) -> None:
-        """Set motor speeds (-100 to 100)"""
+        """Set motor speeds (-1000 to 1000)"""
         pass
 
     @abstractmethod
