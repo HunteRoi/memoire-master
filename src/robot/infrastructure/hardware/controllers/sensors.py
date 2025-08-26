@@ -118,7 +118,7 @@ class SensorController(SensorInterface):
         """Get ground sensors readings [left, center, right]"""
         try:
             ground_data = self.pipuck.epuck.get_ground_sensors()
-            self.logger.debug(f"Ground sensors: {ground_data}")
+            self.logger.debug(f"🌱 Ground sensors: {ground_data}")
             return list(ground_data)
         except Exception as e:
             self.logger.warning(f"⚠️ Ground sensors unavailable - using defaults: {e}")

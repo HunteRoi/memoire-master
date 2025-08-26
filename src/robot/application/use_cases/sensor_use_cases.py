@@ -90,7 +90,7 @@ class SensorUseCases:
             if not await self._ensure_initialized():
                 return [0, 0, 0]
 
-            return self.sensor
+            return await self.sensor.get_ground_sensors()
 
         except Exception as e:
             self.logger.error(f"❌ Read ground sensors failed: {e}")

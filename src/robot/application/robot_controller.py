@@ -312,7 +312,7 @@ class RobotController:
     async def _handle_sensor_command(self, command: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle sensor-related commands"""
         if command == "read_ground":
-            ground_data = await self.sensor.read_ground_sensors()
+            ground_data = await self.sensor.detect_ground_color()
             return {"success": True, "data": ground_data}
         elif command == "read_battery":
             return await self.sensor.read_battery_level()
