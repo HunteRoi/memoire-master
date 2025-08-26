@@ -6,13 +6,13 @@ python-dotenv>=0.15.0,<1.0.0      # Configuration management
 websockets>=8.0,<10.0             # WebSocket server
 
 # Hardware Dependencies (for e-puck2 robot with Pi-puck)
-VL53L0X
-VL53L1X
-VL53L1X2
-pigpio
-RPi.GPIO
-smbus
-smbus2
-pipuck
-spidev
-cv2
+git+https://github.com/gctronic/VL53L0X_rasp_python
+VL53L1X>=0.0.5
+VL53L1X2>=0.1.5
+pigpio>=1.78
+RPi.GPIO>=0.7.1
+smbus>=1.1.post2
+smbus2>=0.5.0
+pipuck>=0.0.1
+spidev>=3.7
+opencv-python>=4.12.0.88
