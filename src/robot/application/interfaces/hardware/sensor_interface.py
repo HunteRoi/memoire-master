@@ -45,6 +45,11 @@ class SensorInterface(ABC):
         pass
 
     @abstractmethod
+    async def get_ground_sensors(self) -> List[int]:
+        """Get ground sensors readings [left, center, right]"""
+        pass
+
+    @abstractmethod
     async def get_all_readings(self) -> SensorReading:
         """Get all sensor readings at once"""
         pass

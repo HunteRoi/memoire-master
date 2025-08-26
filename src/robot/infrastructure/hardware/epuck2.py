@@ -168,8 +168,8 @@ class EPuck2(EPuckInterface):
                 self._bus = channel if isinstance(channel, SMBus) else SMBus(channel)
                 self._actuators_data = bytearray([0] * ACTUATORS_SIZE)
                 self._sensors_data = bytearray([0] * SENSORS_SIZE)
-                self._update_sensors_and_actuators()
                 self._initialized = True
+                self._update_sensors_and_actuators()
                 self.logger.info(f"🤖 e-puck2 connected at {hex(self._address)} on I2C channel {channel}")
                 break
             except Exception as e:
@@ -234,7 +234,7 @@ class EPuck2(EPuckInterface):
         self._actuators_data = bytearray([0] * ACTUATORS_SIZE)                  # Actuator command buffer
         self._sensors_data = bytearray([0] * SENSORS_SIZE)                      # Sensor data buffer
 
-    def _parse_sensors_data(self) -> Tuple[list[int], list[int], list[int], int, int, list[int], int]:
+    def _parse_sensors_data(self) -> Tuple[List[int], List[int], List[int], int, int, List[int], int]:
         """
         Parse the sensor data into divided specific fields:
         8 x Prox (16)   8 x Ambient (16)	4 x Mic (8)	Selector + button (1)	Left steps (2)	Right steps (2)	TV remote (1)	Checksum
@@ -275,7 +275,7 @@ class EPuck2(EPuckInterface):
 
         return proximity, proximity_ambient, microphone, selector, button, motor_steps, tv_remote
 
-    def _read_tof_sensor(self) -> list[int]:
+    def _read_tof_sensor(self) -> List[int]:
         """
         Read the Time-of-Flight sensor data and return the distances (in millimeters) as a list.
 
@@ -302,7 +302,7 @@ class EPuck2(EPuckInterface):
 
         return distance_in_millimeters
 
-    def _read_ground_sensors(self) -> list[int]:
+    def _read_ground_sensors(self) -> List[int]:
         """
         Read ground sensors data and return them in a list: [left_sensor, center_sensor, right_sensor].
 
@@ -472,7 +472,7 @@ class EPuck2(EPuckInterface):
                     gyroscope_sum[0] += struct.unpack("<h", struct.pack("<BB", gyroscope_data[1], gyroscope_data[0]))[0]
                     gyroscope_sum[1] += struct.unpack("<h", struct.pack("<BB", gyroscope_data[3], gyroscope_data[2]))[0]
                     gyroscope_sum[2] += struct.unpack("<h", struct.pack("<BB", gyroscope_data[5], gyroscope_data[4]))[0]
-                    samplesCount += 1
+                    samples_count += 1
                 time.sleep(0.050)
             gyroscope_offset[0] = int(gyroscope_sum[0]/samples_count)
             gyroscope_offset[1] = int(gyroscope_sum[1]/samples_count)
@@ -551,7 +551,7 @@ class EPuck2(EPuckInterface):
     def enable_front_leds(self) -> None:
         """Enable the front LEDs."""
         self._current_front_leds = True
-        builder = self._build_current_state()
+        builder = self._build_with_current_state()
         actuator_data = builder.WithFrontLeds().Build()
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
@@ -559,7 +559,7 @@ class EPuck2(EPuckInterface):
     def disable_front_leds(self) -> None:
         """Disable the front LEDs."""
         self._current_front_leds = False
-        builder = self._build_current_state()
+        builder = self._build_with_current_state()
         actuator_data = builder.WithoutFrontLeds().Build()
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
@@ -570,7 +570,7 @@ class EPuck2(EPuckInterface):
         for led_name in self._current_body_leds:
             self._current_body_leds[led_name] = [100, 100, 100]
 
-        builder = self._build_current_state()
+        builder = self._build_with_current_state()
         actuator_data = builder.WithWhiteBodyLeds().Build()
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
@@ -581,7 +581,7 @@ class EPuck2(EPuckInterface):
         for led_name in self._current_body_leds:
             self._current_body_leds[led_name] = [0, 0, 0]
 
-        builder = self._build_current_state()
+        builder = self._build_with_current_state()
         actuator_data = builder.WithoutBodyLeds().Build()
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
@@ -604,7 +604,7 @@ class EPuck2(EPuckInterface):
             if led_name in self._current_body_leds:
                 self._current_body_leds[led_name] = [red, green, blue]
 
-        builder = self._build_current_state()
+        builder = self._build_with_current_state()
         actuator_data = builder.WithBodyLeds(red, green, blue, led_enum).Build()
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
@@ -905,6 +905,15 @@ class EPuck2(EPuckInterface):
     def ir_ambient(self):
         """EPuck1 compatibility: Get all ambient light sensor values."""
         return self.read_ambient_light_sensors()
+
+    def get_ground_sensors(self):
+        """Get ground sensor values [left, center, right]."""
+        return self._read_ground_sensors()
+
+    @property
+    def ground_sensors(self):
+        """Get all ground sensor values [left, center, right]."""
+        return self._read_ground_sensors()
 
 #################################################
 #            EPUCK SPECIFIC METHODS             #

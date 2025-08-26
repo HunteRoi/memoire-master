@@ -114,6 +114,16 @@ class SensorController(SensorInterface):
             self.logger.warning(f"⚠️ Gyroscope unavailable - using defaults: {e}")
             return [0.0, 0.0, 0.0]
 
+    async def get_ground_sensors(self) -> List[int]:
+        """Get ground sensors readings [left, center, right]"""
+        try:
+            ground_data = self.pipuck.epuck.get_ground_sensors()
+            self.logger.debug(f"Ground sensors: {ground_data}")
+            return list(ground_data)
+        except Exception as e:
+            self.logger.warning(f"⚠️ Ground sensors unavailable - using defaults: {e}")
+            return [0, 0, 0]
+
     async def get_all_readings(self) -> SensorReading:
         """Get all sensor readings at once"""
         proximity = await self.get_proximity()
@@ -121,12 +131,14 @@ class SensorController(SensorInterface):
         magnetometer = await self.get_magnetometer()
         accelerometer = await self.get_accelerometer()
         gyroscope = await self.get_gyroscope()
+        ground_data = await self.get_ground_sensors()
         return SensorReading(
             proximity=proximity,
             light=light,
             magnetometer=magnetometer,
             accelerometer=accelerometer,
-            gyroscope=gyroscope
+            gyroscope=gyroscope,
+            ground=ground_data
         )
 
     async def get_battery_level(self) -> dict:

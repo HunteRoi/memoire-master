@@ -1,5 +1,6 @@
 import logging
 from pipuck.pipuck import PiPuck
+import RPi.GPIO as GPIO
 
 from application.robot_controller import RobotController
 from application.use_cases.motor_use_cases import MotorUseCases
@@ -52,9 +53,8 @@ class EPuck2Server:
         try:
             self.logger.info("🔧 Initializing shared PiPuck with custom EPuck2...")
 
-            # Initialize PiPuck
+            # Initialize PiPuck with minimal configuration to avoid GPIO conflicts
             self.pipuck = PiPuck(epuck_version=2, tof_sensors=[False]*6, yrl_expansion=False)
-
             # Replace PiPuck's epuck with our custom EPuck2 class
             self.pipuck.epuck = EPuck2()
             self.pipuck.epuck.initialize()
@@ -62,13 +62,9 @@ class EPuck2Server:
             self.logger.info("✅ Shared PiPuck initialized with custom EPuck2")
 
         except Exception as e:
-            self.logger.warning(f"⚠️ PiPuck initialization failed, using fallback: {e}")
-            # Fallback to minimal mock PiPuck with EPuck2
-            self.pipuck = type('MockPiPuck', (), {
-                'epuck': EPuck2(),
-                'close': lambda: None,
-                'get_battery_state': lambda battery_type: (False, 3.7, 75)
-            })()
+            self.logger.error(f"❌ PiPuck initialization failed: {e}")
+            self.pipuck = None
+            exit(1)
 
     async def start_server(self):
         """Start the e-puck2 server"""

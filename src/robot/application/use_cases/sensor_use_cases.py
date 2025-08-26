@@ -48,6 +48,7 @@ class SensorUseCases:
                     "magnetometer": sensor_data.magnetometer,
                     "accelerometer": sensor_data.accelerometer,
                     "gyroscope": sensor_data.gyroscope,
+                    "ground": sensor_data.ground,
                     "timestamp": sensor_data.timestamp
                 }
             }
@@ -89,9 +90,7 @@ class SensorUseCases:
             if not await self._ensure_initialized():
                 return [0, 0, 0]
 
-            # Note: This would need to be added to domain interface
-            # For now, return mock data
-            return [1000, 1000, 1000]  # Mock ground sensor data
+            return self.sensor
 
         except Exception as e:
             self.logger.error(f"❌ Read ground sensors failed: {e}")

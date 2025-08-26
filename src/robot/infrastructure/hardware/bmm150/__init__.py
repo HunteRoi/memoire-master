@@ -6,10 +6,6 @@ import spidev
 import os
 import math
 import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-
-
 
 class trim_register:
   def __init__(self):

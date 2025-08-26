@@ -70,6 +70,7 @@ class SensorReading:
     magnetometer: List[float]
     accelerometer: List[float]
     gyroscope: List[float]
+    ground: List[int]
     timestamp: float = None
 
     def __post_init__(self):
