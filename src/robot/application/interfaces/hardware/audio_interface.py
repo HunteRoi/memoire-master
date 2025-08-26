@@ -17,7 +17,7 @@ class AudioInterface(ABC):
         pass
 
     @abstractmethod
-    async def play_beep(self, duration: float = 0.1) -> None:
+    async def play_beep(self, duration: float = 1, beep_strength: int = 4) -> None:
         """Play a simple beep"""
         pass
 

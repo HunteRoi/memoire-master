@@ -4,8 +4,6 @@ import asyncio
 import logging
 
 from application.interfaces.hardware.audio_interface import AudioInterface
-from ..epuck2 import (SOUND_MARIO, SOUND_UNDERWORLD, SOUND_STARWARS,
-                     SOUND_TONE_4KHZ, SOUND_TONE_10KHZ, SOUND_STOP)
 
 
 class AudioController(AudioInterface):
@@ -57,11 +55,14 @@ class AudioController(AudioInterface):
             self.logger.error(f"❌ Audio command failed - hardware error: {e}")
             raise
 
-    async def play_beep(self, duration: float = 0.1) -> None:
+    async def play_beep(self, duration: float = 1, beep_strength: int = 4) -> None:
         """Play a 4KHz tone as beep using EPuck2 API"""
         try:
             self.logger.debug(f"🎶 Playing beep sound (4KHz tone) for {duration:.1f}s")
-            self.pipuck.epuck.play_tone_4khz()
+            if beep_strength <= 4:
+                self.pipuck.epuck.play_tone_4khz()
+            else:
+                self.pipuck.epuck.play_tone_10khz()
             await asyncio.sleep(duration)
             self.pipuck.epuck.stop_sound()
 

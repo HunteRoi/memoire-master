@@ -35,7 +35,7 @@ class AudioUseCases:
                 }
 
             self.logger.info("🔊 Playing connect sound")
-            await self.audio.play_beep(0.3)
+            await self.audio.play_beep(2)
 
             return {
                 "success": True,
@@ -59,7 +59,7 @@ class AudioUseCases:
                 }
 
             self.logger.info("🔊 Playing disconnect sound")
-            await self.audio.play_beep(0.3)
+            await self.audio.play_beep(3)
 
             return {
                 "success": True,
@@ -83,7 +83,7 @@ class AudioUseCases:
                 }
 
             self.logger.info("🔊 Playing error sound")
-            await self.audio.play_beep(0.3)
+            await self.audio.play_beep(1)
 
             return {
                 "success": True,
@@ -97,7 +97,7 @@ class AudioUseCases:
                 "error": str(e)
             }
 
-    async def play_beep(self, duration: float = 0.3) -> Dict[str, Any]:
+    async def play_beep(self, duration: float = 1) -> Dict[str, Any]:
         """Play a simple beep sound using WAV file"""
         try:
             if not await self._ensure_initialized():
@@ -106,11 +106,7 @@ class AudioUseCases:
                     "error": "Audio not initialized"
                 }
 
-            duration = max(0.1, min(3.0, duration))
-
             self.logger.info(f"🔊 Playing beep sound")
-
-            # Use beep WAV file (hardware controller handles fallback to tone if file missing)
             await self.audio.play_beep(duration)
 
             return {
