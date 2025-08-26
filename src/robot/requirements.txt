@@ -14,5 +14,5 @@ RPi.GPIO>=0.7.1
 smbus>=1.1.post2
 smbus2>=0.5.0
 pipuck>=0.0.1
-spidev>=3.7
-opencv-python>=4.12.0.88
+spidev>=3.6
+opencv-python>=4.4.0.40,<4.7.0.72
