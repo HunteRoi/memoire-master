@@ -260,7 +260,7 @@ class RobotController:
 
     async def _handle_motor_command(self, command: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle motor-related commands"""
-        speed = data.get("speed", 200)
+        speed = data.get("speed", 500)
         duration = data.get("duration", 1.0)
         angle = data.get("angle", 90)
 

@@ -21,22 +21,22 @@ class EPuckInterface(ABC):
 #################################################
 
     @abstractmethod
-    def go_forward(self, speed: int) -> None:
+    def go_forward(self, speed: int = 1000) -> None:
         """Set both motors to move forward at the specified speed."""
         pass
 
     @abstractmethod
-    def go_backward(self, speed: int) -> None:
+    def go_backward(self, speed: int = 1000) -> None:
         """Set both motors to move backward at the specified speed."""
         pass
 
     @abstractmethod
-    def turn_left(self, speed: int) -> None:
+    def turn_left(self, speed: int = 200) -> None:
         """Set motors to turn left at the specified speed."""
         pass
 
     @abstractmethod
-    def turn_right(self, speed: int) -> None:
+    def turn_right(self, speed: int = 200) -> None:
         """Set motors to turn right at the specified speed."""
         pass
 

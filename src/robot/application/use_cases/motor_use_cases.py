@@ -26,7 +26,7 @@ class MotorUseCases:
             self._initialized = await self.motor.initialize()
         return self._initialized
 
-    async def move_forward(self, speed: float, duration: float) -> Dict[str, Any]:
+    async def move_forward(self, speed: float = 1000, duration: float = 2) -> Dict[str, Any]:
         """Move robot forward at specified speed for duration"""
         try:
             if not await self._ensure_initialized():
@@ -60,7 +60,7 @@ class MotorUseCases:
                 "error": str(e)
             }
 
-    async def move_backward(self, speed: float, duration: float) -> Dict[str, Any]:
+    async def move_backward(self, speed: float = 1000, duration: float = 2) -> Dict[str, Any]:
         """Move robot backward at specified speed for duration"""
         try:
             if not await self._ensure_initialized():
@@ -94,7 +94,7 @@ class MotorUseCases:
                 "error": str(e)
             }
 
-    async def turn_left(self, angle: float, speed: float = 200) -> Dict[str, Any]:
+    async def turn_left(self, angle: float = 90, speed: float = 200) -> Dict[str, Any]:
         """Turn robot left by specified angle"""
         try:
             if not await self._ensure_initialized():
@@ -132,7 +132,7 @@ class MotorUseCases:
                 "error": str(e)
             }
 
-    async def turn_right(self, angle: float, speed: float = 200) -> Dict[str, Any]:
+    async def turn_right(self, angle: float = 90, speed: float = 200) -> Dict[str, Any]:
         """Turn robot right by specified angle"""
         try:
             if not await self._ensure_initialized():

@@ -55,7 +55,7 @@ python main.py
 **Visual Programming Mode:**
 1. Navigate to the Visual Programming interface
 2. Drag a "Move Forward" block to the workspace
-3. Set the speed to something between 0 and 2000
+3. Set the speed to something between 0 and 1000
 4. Click "Run" to execute the program
 5. Watch your robot move!
 

@@ -499,7 +499,7 @@ class EPuck2(EPuckInterface):
 
 # Actuators
 ## Motors
-    def go_forward(self, speed: int) -> None:
+    def go_forward(self, speed: int = 1000) -> None:
         """Set both motors to move forward at the specified speed."""
         self._current_left_speed = speed
         self._current_right_speed = speed
@@ -507,7 +507,7 @@ class EPuck2(EPuckInterface):
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
 
-    def go_backward(self, speed: int) -> None:
+    def go_backward(self, speed: int = 1000) -> None:
         """Set both motors to move backward at the specified speed."""
         self._current_left_speed = -speed
         self._current_right_speed = -speed
@@ -515,7 +515,7 @@ class EPuck2(EPuckInterface):
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
 
-    def turn_left(self, speed: int) -> None:
+    def turn_left(self, speed: int = 200) -> None:
         """Set motors to turn left at the specified speed."""
         self._current_left_speed = -speed
         self._current_right_speed = speed
@@ -523,7 +523,7 @@ class EPuck2(EPuckInterface):
         self._actuators_data = actuator_data
         self._update_sensors_and_actuators()
 
-    def turn_right(self, speed: int) -> None:
+    def turn_right(self, speed: int = 200) -> None:
         """Set motors to turn right at the specified speed."""
         self._current_left_speed = speed
         self._current_right_speed = -speed
