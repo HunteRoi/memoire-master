@@ -35,7 +35,7 @@ i18n
       fr: { translation: fr },
       nl: { translation: nl },
       de: { translation: de },
-      it: { translations: it },
+      it: { translation: it },
     },
     lng: 'en', // default language
     fallbackLng: 'en',
